@@ -2,12 +2,41 @@
 
 const express = require('express');
 const Promise = require('bluebird');
-const session = require('express-session');
-const User = require('./models/User.js');
+const jwt = require('jsonwebtoken');
+const User = require('./models/User');
+const ObjectId = require('mongodb').ObjectId;
+const RefreshToken = require('./models/RefreshToken');
+const config = require('../config');
 
 const router = express.Router();
 
-router.get('/info', (req, res) => {
+const createNewAccessToken = (userId) => {
+    let accessToken = jwt.sign({
+        id: userId,
+    }, config.secret, {
+        expiresIn: config.accessExpirationSeconds,
+    });
+    return accessToken;
+};
+
+const verifyAccessToken = (req, res, next) => {
+    let token = req.headers["authorization"]?.split(" ")[1];
+    if (!token) {
+        return res.status(401).end("No token provided");
+    }
+    jwt.verify(token, config.secret, (err, decoded) => {
+        if (err) {
+            if (err instanceof jwt.TokenExpiredError) {
+                return res.status(401).end("Access token is expired")
+            }
+            return res.status(401).end("Unauthorized");
+        }
+        req.userId = decoded.id;
+        next();
+    });
+};
+
+router.get('/info', verifyAccessToken, (req, res) => {
     res.send("INFO!!");
 });
 
@@ -17,25 +46,50 @@ router.post('/login', Promise.coroutine(function*(req, res) {
     }).select("+password");
 
     if (!user) {
-        return res.status(400).end("Invalid login credentials.");
+        return res.status(400).end("Invalid login credentials");
     }
 
     let candidatePassword = req.body.password;
     let passwordsMatch = yield user.comparePassword(candidatePassword);
 
     if (!passwordsMatch) {
-        return res.status(400).end("Invalid login credentials.");
+        return res.status(400).end("Invalid login credentials");
     }
 
     delete user.password;
 
-    req.session.userId = user._id;
-    console.log(req.body.email + " has logged in.");
+    let refreshToken = yield RefreshToken.createToken(user._id);
+    res.cookie('refreshToken', refreshToken);
 
-    res.send({
-        token: 'test123'
+    let accessToken = createNewAccessToken(user._id);
+    return res.status(200).send({
+        accessToken: accessToken,
     });
 
+}));
+
+router.post('/refresh', Promise.coroutine(function*(req, res) {
+    let refreshTokenString = req.cookies.refreshToken;
+    let refreshToken = yield RefreshToken.findOne({
+        token: refreshTokenString,
+    });
+    if (!refreshToken) {
+        res.status(400).end("Invalid refresh token");
+    }
+    if (!refreshToken.verifyExpiration) {
+        res.status(400).end("Refresh token is expired");
+    }
+    let accessToken = createNewAccessToken(refreshToken.user._id);
+    res.status(200).send({
+        accessToken: accessToken,
+    });
+}));
+
+router.post('/logout', Promise.coroutine(function*(req, res) {
+    yield RefreshToken.deleteMany({
+        user: req.userId
+    });
+    res.end();
 }));
 
 router.post('/users', Promise.coroutine(function*(req, res) {
@@ -61,16 +115,28 @@ router.post('/users', Promise.coroutine(function*(req, res) {
             password: req.body.password
         });
     } catch(err) {
-        console.log(err);
-        return res.status(400).end("Invalid user info");
+        return res.status(500).end("Unable to create account");
     }
 
-    req.session.userId = user._id;
     console.log("Account created for " + req.body.firstname);
 
-    res.send({
-        token: 'test123'
+
+    let refreshToken = yield RefreshToken.createToken(user._id);
+    res.cookie('refreshToken', refreshToken);
+
+    let accessToken = createNewAccessToken(user._id);
+    return res.status(200).send({
+        accessToken: accessToken,
     });
+}));
+
+router.get('/users/id/:userId', verifyAccessToken, Promise.coroutine(function*(req, res) {
+    let userId = new ObjectId(req.params.userId);
+    let user = yield User.findById(userId).exec();
+    if (!user) {
+        res.status(404).end("User not found");
+    }
+    res.json(user);
 }));
 
 module.exports = router;

@@ -2,15 +2,20 @@ import { useState } from 'react';
 
 export default function useToken() {
 
+
+    // need to use local storage ??? just save it in the state memory. so cant be accessed by the user as easily?
+
     const getToken = () => {
-        return JSON.parse(localStorage.getItem('token'))?.data.token;
+        const tokenString = localStorage.getItem('token');
+        return JSON.parse(tokenString);
     }
 
     const [token, setToken] = useState(getToken());
 
     const saveToken = (token) => {
-        localStorage.setItem('token', JSON.stringify(token));
-        setToken(token.data.token);
+        const tokenString = JSON.stringify(token);
+        localStorage.setItem('token', tokenString);
+        setToken(tokenString);
     }
 
     return {

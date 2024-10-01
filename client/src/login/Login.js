@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import axios from 'axios';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
-import TextInput from '~/login/TextInput';
+import ajax from "~/util.js"
+import TextInputWithLabel from '~/login/TextInputWithLabel';
 import ErrorBox from '~/login/ErrorBox';
-import styles from '~/login/styles';
+import * as S from '~/login/styles';
 
 const Login = ({ setToken }) => {
 
@@ -22,53 +22,49 @@ const Login = ({ setToken }) => {
 
     const handleSubmit = async(e) => {
         e.preventDefault();
-        try {
-            const token = await axios.post('api/login', {
-                email: formState.email,
-                password: formState.password
-            });
-            setErrorState({
-                isError: false,
-                errorMsg: ""
-            });
-            setToken(token);
-            navigate("/");
-        } catch(err) {
-            setErrorState({
-                isError: true,
-                errorMsg: err.response.data
-            });
-        };
-    }
+         await ajax.request('post', '/login', {
+            email: formState.email,
+            password: formState.password
+         }).then(res => {
+             setErrorState({
+                 isError: false,
+                 errorMsg: ""
+             });
+             setToken(res.data.accessToken);
+             navigate("/");
+         }).catch(err => {
+             setErrorState({
+                 isError: true,
+                 errorMsg: err.response.data
+             });
+         });
+    };
 
     return (
-        <div style={styles.box}>
+        <S.Container>
             <ErrorBox isError={errorState.isError} errorMsg={errorState.errorMsg} />
-            <div style={styles.boxHeader} children="Login to your account" />
+            <S.Header children="Login to your account" />
             <form onSubmit={handleSubmit}>
-                <TextInput
+                <TextInputWithLabel
                     value={formState.email}
                     placeholder="Enter your email"
                     text="Email"
                     onChange={e => {setFormState({ ...formState, email: e.target.value})} }
                 />
-                <TextInput
+                <TextInputWithLabel
                     value={formState.password}
                     placeholder="Enter your password"
                     text="Password"
                     onChange={e => {setFormState({ ...formState, password: e.target.value})} }
                     type="password"
                 />
-                <input
+                <S.Button
                     value="Log In"
                     type="submit"
-                    style={styles.button}
                 />
             </form>
-            <div style={styles.link.container}>
-                <Link to={"/signup"} children="Need an acccount?" style={styles.link.text} />
-            </div>
-        </div>
+            <S.StyledLink to={"/signup"} children="Need an acccount?" />
+        </S.Container>
     )
 }
 

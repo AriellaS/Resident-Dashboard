@@ -1,21 +1,36 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
-function Home() {
+import ajax from '~/util';
+
+const Home = () => {
 
     const [data, setData] = useState(null);
 
+    const navigate = useNavigate();
+
     useEffect(() => {
-        axios.get('/api/info')
+        ajax.request('get', '/info')
             .then(res => setData(res.data))
             .catch(err => console.error(err));
     }, []);
 
+    const handleLogout = async() => {
+        try {
+            await ajax.request('post','/logout');
+            localStorage.removeItem('token');
+            navigate('/login');
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
     return (
         <div>
             { data }
+            <input value="Log Out" type="button" onClick={handleLogout} />
         </div>
     )
-}
+};
 
 export default Home;

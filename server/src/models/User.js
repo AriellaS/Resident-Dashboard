@@ -28,14 +28,14 @@ const userSchema = new Schema({
     },
     position: {
         type: String,
-        enum: ["resident", "attending"]
+        enum: ["RESIDENT", "ATTENDING"]
     },
     email_confirmed: {
         type: Boolean,
         default: false,
     },
     created_at: Date,
-    updated_at: Date
+    updated_at: Date,
 });
 
 userSchema.pre("save", function(next) {

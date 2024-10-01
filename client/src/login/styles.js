@@ -1,80 +1,58 @@
+import styled from 'styled-components';
+import { ExclamationTriangle } from 'react-bootstrap-icons';
+import { Link } from 'react-router-dom';
+import * as shared from '~/shared';
+
 const errorColor = "#ff9900";
+const accentColor = shared.accentColor;
 
-const styles = {
-    box: {
-        width: "400px",
-        top: "50%",
-        left: "50%",
-        transform: "translate(-50%, -50%)",
-        borderRadius: "10px",
-        boxShadow: "3px 5px 10px -2px gray",
-        position: "fixed",
-        textAlign: "center",
-        backgroundColor: "white",
-        padding: "30px",
-    },
-    boxHeader: {
-        fontSize: "20px",
-        fontWeight: "bold",
-        padding: "10px"
-    },
-    inputContainer: {
-        padding: "10px 0px 10px 0px",
-        textAlign: "left",
-        fontSize: "16px",
-    },
-    input: {
-        width: "90%",
-        padding: "10px",
-        outline: "none",
-        border: "1px solid #f0f0f0",
-        borderRadius: "10px"
-    },
-    text: {
-        color: "#303030",
-        paddingBottom: "5px"
-    },
-    button: {
-        backgroundColor: "#303030",
-        borderRadius: "10px",
-        color: "white",
-        fontWeight: "bold",
-        border: "none",
-        width: "100%",
-        height: "35px",
-        cursor: "pointer",
-        fontSize: "16px",
-        marginTop: "15px",
-    },
-    link: {
-        container: {
-            fontSize: "13px",
-            paddingTop: "20px",
-        },
-        text: { color: "blue" },
-    },
-    errorBox: {
-        container: {
-            backgroundColor: "#fff8ed",
-            borderRadius: "5px",
-            border: `1px solid ${errorColor}`,
-            display: "flex",
-            flexDirection: "row",
-            width: "90%",
-            padding: "8px",
-            marginBottom: "5px",
-        },
-        glyph: {
-            size: 20,
-            color: errorColor,
-        },
-        message: {
-            color: errorColor,
-            fontSize: "13px",
-            fontFamily: "helvetica",
-            marginLeft: "5px",
-        }
-    }
-}
+export const TextInputContainer = styled.div`
+    padding: 10px 0px 10px 0px;
+    text-align: left;
+    font-size: 16px;
+`;
 
-export default styles;
+export const TextInputLabel = styled.div`
+    color: #303030;
+    padding-bottom: 5px;
+`;
+
+export const Header = styled.div`
+    font-size: 20px;
+    font-weight: bold;
+    padding: 10px;
+`;
+
+export const StyledLink = styled(Link)`
+    font-size: 13px;
+    padding-top: 20px;
+    color: ${accentColor};
+    display: block;
+`;
+
+export const ErrorBoxContainer = styled.div`
+    background-color: #fff8ed;
+    border-radius: 5px;
+    border: 1px solid ${errorColor};
+    display: flex;
+    flex-direction: row;
+    width: 90%;
+    padding: 8px;
+    margin-bottom: 5px;
+`;
+
+export const ErrorBoxMessage = styled.div`
+    color: errorColor;
+    font-size: 13px;
+    font-family: helvetica;
+    margin-left: 5px;
+`;
+
+export const WarningGlyph = styled(ExclamationTriangle)`
+    size: 20;
+    color: ${errorColor};
+`;
+
+export const Container = shared.Container;
+export const Button = shared.Button;
+export const TextInput = shared.TextInput;
