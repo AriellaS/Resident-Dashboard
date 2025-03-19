@@ -14,6 +14,12 @@ export const TextContainer = styled.div`
     }
 `;
 
+export const RoleText = styled.div`
+    color: ${shared.accentColor};
+    font-family: 'Helvetica';
+    margin-top: 15px;
+`;
+
 export const Button = shared.Button;
 export const Container = shared.Container;
 

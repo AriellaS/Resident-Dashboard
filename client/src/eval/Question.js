@@ -13,7 +13,7 @@ const Question = (props) => {
                         let id = `${props.name}_${i}`;
                         return (
                             <div key={id}>
-                                <input type="radio" id={id} name={props.name} value={optionValue}/>
+                                <input type="radio" id={id} name={props.name} value={optionValue} onChange={props.onChange}/>
                                 <S.OptionText htmlFor={id}>
                                     {props.optionTexts[i]}
                                 </S.OptionText>

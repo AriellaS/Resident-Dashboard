@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 
 import ajax from '~/util';
 import TextInputWithLabel from '~/login/TextInputWithLabel';
-import ErrorBox from '~/login/ErrorBox';
 import * as S from '~/login/styles';
 
 const Signup = ({ setToken }) => {
@@ -67,7 +66,7 @@ const Signup = ({ setToken }) => {
 
     return (
         <S.Container>
-            <ErrorBox isError={errorState.isError} errorMsg={errorState.errorMsg} />
+            <S.StyledErrorBox isError={errorState.isError} errorMsg={errorState.errorMsg} />
             <S.Header children="Create a new account" />
             <form onSubmit={handleSubmit}>
                 <TextInputWithLabel

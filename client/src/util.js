@@ -26,7 +26,6 @@ export function request(method, path, data) {
             throw err;
         });
     }
-    console.log(path)
     return axios({
         method: method,
         url: "/api" + path,

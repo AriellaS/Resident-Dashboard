@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 
 import ajax from "~/util.js"
 import TextInputWithLabel from '~/login/TextInputWithLabel';
-import ErrorBox from '~/login/ErrorBox';
 import * as S from '~/login/styles';
 
 const Login = ({ setToken }) => {
@@ -42,7 +41,7 @@ const Login = ({ setToken }) => {
 
     return (
         <S.Container>
-            <ErrorBox isError={errorState.isError} errorMsg={errorState.errorMsg} />
+            <S.StyledErrorBox isError={errorState.isError} errorMsg={errorState.errorMsg} />
             <S.Header children="Login to your account" />
             <form onSubmit={handleSubmit}>
                 <TextInputWithLabel

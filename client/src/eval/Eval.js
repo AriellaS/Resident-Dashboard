@@ -11,12 +11,19 @@ const Eval = () => {
 
     const [userData, setUserData] = useState({
         firstname: "",
-        lastname: "",
+        lastname: ""
     });
 
     const [formState, setFormState] = useState({
         briefing: "",
-        rating: 0,
+        rating: ""
+    });
+
+    const [submissionState, setSubmissionState] = useState(false);
+
+    const [errorState, setErrorState] = useState({
+        isError: false,
+        errorMsg: ""
     });
 
     useEffect(() => {
@@ -38,14 +45,41 @@ const Eval = () => {
 
     const handleSubmit = async(e) => {
         e.preventDefault();
-        await ajax.request('post', 'evals', {
+        if (!formState.briefing || !formState.rating) {
+            setErrorState({
+                isError: true,
+                errorMsg: "Please complete the required fields"
+            });
+            return;
+        }
+        await ajax.request('post', '/evals', {
             type: "ATTENDING2RESIDENT",
             evaluatee: userId,
             briefing: formState.briefing,
             rating: formState.rating
         }).then(res => {
+            setSubmissionState(true);
+            setErrorState({
+                isError: false,
+                errorMsg: ""
+            });
+        }).catch(err =>  {
+            setErrorState({
+                isError: true,
+                errorMsg: "Error submitting form"
+            });
         });
     };
+
+    if (submissionState) {
+        return (
+            <S.Container>
+                <S.StyledCheckGlyph />
+                <hr />
+                <S.SubmissionText children={`Evaluation submitted for ${userData.firstname} ${userData.lastname}`} />
+            </S.Container>
+        )
+    }
 
     return (
         <S.Container>
@@ -63,7 +97,7 @@ const Eval = () => {
                     type="radio"
                     name="rating"
                     text="How would you rate this resident's preparation for the surgery?"
-                    optionValues={[5,4,3,2,1]}
+                    optionValues={["5","4","3","2","1"]}
                     optionTexts={["5 (most prepared)","4","3","2","1 (least prepared)"]}
                     onChange={e => setFormState({...formState, rating: e.target.value}) }
                 />
@@ -72,6 +106,7 @@ const Eval = () => {
                     type="submit"
                 />
             </form>
+            <S.StyledErrorBox isError={errorState.isError} errorMsg={errorState.errorMsg} />
         </S.Container>
     )
 }

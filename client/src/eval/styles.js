@@ -1,5 +1,7 @@
 import styled from 'styled-components';
 import * as shared from '~/shared';
+import ErrorBox from '~/shared/ErrorBox';
+import { CheckCircle } from 'react-bootstrap-icons';
 
 export const Header = styled.div`
     font-size: 25px;
@@ -26,6 +28,21 @@ export const OptionsContainer = styled.div`
 export const OptionText = styled.label`
     padding: 10px;
     font-size: 15px;
+`;
+
+export const StyledErrorBox = styled(ErrorBox)`
+    margin: 10px;
+`;
+
+export const StyledCheckGlyph = styled(CheckCircle)`
+    font-size: 50px;
+    color: ${shared.accentColor};
+    margin: 10px 0;
+`;
+
+export const SubmissionText = styled.div`
+    font-size: 20px;
+    margin: 20px 0;
 `;
 
 export const Container = shared.Container;

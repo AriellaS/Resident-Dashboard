@@ -5,6 +5,9 @@ const Promise = require("bluebird");
 
 const Schema = mongoose.Schema;
 
+const BRIEFING_OPTIONS = ["PHONE", "DAYOF", "NONE"];
+const RATING_OPTIONS = ["5", "4", "3", "2", "1"];
+
 const attendingToResidentEvalSchema = new Schema({
     evaluator: {
         type: mongoose.Schema.Types.ObjectId,
@@ -16,20 +19,21 @@ const attendingToResidentEvalSchema = new Schema({
         ref: "User",
         required: true,
     },
+    briefing: {
+        type: String,
+        enum: BRIEFING_OPTIONS,
+        required: true
+    },
+    rating: {
+        type: String,
+        enum: RATING_OPTIONS,
+        required: true
+    }
 });
 
-attendingToResidentEvalSchema.pre("save", function(next) {
-    let attendingToResidentEval = this;
-
-    if (attendingToResidentEval.evaluator.role != "ATTENDING") {
-        return next(new Error("Evaluator must be an attending"));
-    }
-    if (attendingToResidentEval.evaluatee.role != "RESIDENT") {
-        return next(new Error("Evaluatee must be a resident"));
-    }
-
-    next()
-});
+attendingToResidentEvalSchema.statics.validateInput = (briefing, rating) => {
+    return BRIEFING_OPTIONS.includes(briefing) && RATING_OPTIONS.includes(rating);
+}
 
 const AttendingToResidentEval = mongoose.model("AttendingToResidentEval", attendingToResidentEvalSchema);
 

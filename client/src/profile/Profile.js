@@ -51,7 +51,7 @@ const Profile = () => {
             <S.TextContainer>
                 <div>{getName()}</div>
                 <div>{userData.email}</div>
-                <div>{userData.role}</div>
+                <S.RoleText children={userData.role} />
             </S.TextContainer>
             <hr />
             <S.Button
