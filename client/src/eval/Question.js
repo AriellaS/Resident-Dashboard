@@ -1,21 +1,27 @@
 import React from 'react';
-import styles from '~/eval/styles';
+import * as S from '~/eval/styles';
 
 const Question = (props) => {
 
     if  (props.type === 'radio') {
         return (
-            <div style={styles.question}>
-                <div>{props.text}</div>
-                {props.options.map((option, i) => {
-                    return (
-                        <label style={styles.option.label}>
-                            <input type="radio" id={i} name={props.name} value={option} style={styles.option.radio}/>
-                            {option}
-                        </label>
-                    )
-                })}
-            </div>
+            <S.QuestionContainer>
+                <hr />
+                <S.QuestionText>{props.text}</S.QuestionText>
+                <S.OptionsContainer>
+                    {props.optionValues.map((optionValue, i) => {
+                        let id = `${props.name}_${i}`;
+                        return (
+                            <div key={id}>
+                                <input type="radio" id={id} name={props.name} value={optionValue}/>
+                                <S.OptionText htmlFor={id}>
+                                    {props.optionTexts[i]}
+                                </S.OptionText>
+                            </div>
+                        )
+                    })}
+                </S.OptionsContainer>
+            </S.QuestionContainer>
         )
     }
 }

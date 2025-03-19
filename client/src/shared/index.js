@@ -30,7 +30,7 @@ export const TextInput = styled.input`
 
 export const Button = styled.input`
     background-color: ${accentColor};
-    border-radius: 7px;
+    //border-radius: 7px;
     color: white;
     font-weight: bold;
     border: none;

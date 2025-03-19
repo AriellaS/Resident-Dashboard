@@ -15,6 +15,7 @@ const Profile = () => {
         firstname: "",
         lastname: "",
         email: "",
+        role: "",
     });
 
     useEffect(() => {
@@ -24,7 +25,8 @@ const Profile = () => {
                     setUserData({
                         firstname: res.data.firstname,
                         lastname: res.data.lastname,
-                        email: res.data.email
+                        email: res.data.email,
+                        role: res.data.role
                     })
                 })
                 .catch(err => {
@@ -49,6 +51,7 @@ const Profile = () => {
             <S.TextContainer>
                 <div>{getName()}</div>
                 <div>{userData.email}</div>
+                <div>{userData.role}</div>
             </S.TextContainer>
             <hr />
             <S.Button

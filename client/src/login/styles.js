@@ -2,6 +2,7 @@ import styled from 'styled-components';
 import { ExclamationTriangle } from 'react-bootstrap-icons';
 import { Link } from 'react-router-dom';
 import * as shared from '~/shared';
+import FancyRadio from '~/shared/FancyRadio';
 
 const errorColor = "#ff9900";
 const accentColor = shared.accentColor;
@@ -46,6 +47,10 @@ export const ErrorBoxMessage = styled.div`
     font-size: 13px;
     font-family: helvetica;
     margin-left: 5px;
+`;
+
+export const StyledFancyRadio = styled(FancyRadio)`
+    margin-top: 10px;
 `;
 
 export const WarningGlyph = styled(ExclamationTriangle)`

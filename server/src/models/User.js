@@ -26,9 +26,10 @@ const userSchema = new Schema({
         type: String,
         required: true
     },
-    position: {
+    role: {
         type: String,
-        enum: ["RESIDENT", "ATTENDING"]
+        enum: ["RESIDENT", "ATTENDING"],
+        required: true
     },
     email_confirmed: {
         type: Boolean,

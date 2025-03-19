@@ -1,8 +1,8 @@
 import React, {useState, useEffect} from 'react';
-import styles from '~/eval/styles';
 import Question from '~/eval/Question';
 import ajax from '~/util';
 import { useParams } from 'react-router-dom';
+import * as S from '~/eval/styles';
 
 const Eval = () => {
 
@@ -12,7 +12,11 @@ const Eval = () => {
     const [userData, setUserData] = useState({
         firstname: "",
         lastname: "",
-        email: "",
+    });
+
+    const [formState, setFormState] = useState({
+        briefing: "",
+        rating: 0,
     });
 
     useEffect(() => {
@@ -32,25 +36,43 @@ const Eval = () => {
         fetchData();
     }, [userId]);
 
+    const handleSubmit = async(e) => {
+        e.preventDefault();
+        await ajax.request('post', 'evals', {
+            type: "ATTENDING2RESIDENT",
+            evaluatee: userId,
+            briefing: formState.briefing,
+            rating: formState.rating
+        }).then(res => {
+        });
+    };
 
     return (
-        <div style={styles.container}>
-            <div style={styles.header} children={`Evaluation for ${userData.firstname} ${userData.lastname}`} />
-            <hr />
-            <Question
-                type="radio"
-                text="How was the pre-operative briefing performed with the resident?"
-                options={["Text/Phone Call", "Discussion day of surgery", "No briefing"]}
-                name="q1"
-            />
-            <Question
-                type="radio"
-                text="How would you rate the resident's preparation for the surgery?"
-                options={["1","2","3","4","5"]}
-                name="q2"
-            />
-
-        </div>
+        <S.Container>
+            <S.Header children={`Evaluation for ${userData.firstname} ${userData.lastname}`} />
+            <form onSubmit={handleSubmit}>
+                <Question
+                    type="radio"
+                    name="briefing"
+                    text="How was the pre-operative briefing performed with this resident?"
+                    optionValues={["PHONE","DAYOF","NONE"]}
+                    optionTexts={["Text/Phone Call", "Discussion day of surgery", "No briefing"]}
+                    onChange={e => setFormState({...formState, briefing: e.target.value}) }
+                />
+                <Question
+                    type="radio"
+                    name="rating"
+                    text="How would you rate this resident's preparation for the surgery?"
+                    optionValues={[5,4,3,2,1]}
+                    optionTexts={["5 (most prepared)","4","3","2","1 (least prepared)"]}
+                    onChange={e => setFormState({...formState, rating: e.target.value}) }
+                />
+                <S.Button
+                    value="Submit"
+                    type="submit"
+                />
+            </form>
+        </S.Container>
     )
 }
 

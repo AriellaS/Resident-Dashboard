@@ -112,7 +112,8 @@ router.post('/users', Promise.coroutine(function*(req, res) {
             firstname: req.body.firstname,
             lastname: req.body.lastname,
             email: req.body.email,
-            password: req.body.password
+            password: req.body.password,
+            role: req.body.role.toUpperCase(),
         });
     } catch(err) {
         return res.status(500).end("Unable to create account");
@@ -120,12 +121,11 @@ router.post('/users', Promise.coroutine(function*(req, res) {
 
     console.log("Account created for " + req.body.firstname);
 
-
     let refreshToken = yield RefreshToken.createToken(user._id);
     res.cookie('refreshToken', refreshToken);
 
     let accessToken = createNewAccessToken(user._id);
-    return res.status(200).send({
+    return res.send({
         accessToken: accessToken,
     });
 }));
@@ -137,6 +137,22 @@ router.get('/users/id/:userId', verifyAccessToken, Promise.coroutine(function*(r
         res.status(404).end("User not found");
     }
     res.json(user);
+}));
+
+router.post('/evals', verifyAccessToken, Promise.coroutine(function*(req, res) {
+    let evalType = req.body.type;
+    let evaluator = req.params.userId;
+    let evaluatee = req.body.evaluatee;
+    if (evalType === "ATTENDING2RESIDENT") {
+    } else {
+        res.status(400).end("Invalid eval type");
+    }
+
+    // check if eval type is valid
+    // check if user exists
+    // check if evaluatee exists
+    // check if evaluator is attending,evaluatee is resident
+    // create eval
 }));
 
 module.exports = router;

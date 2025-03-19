@@ -13,7 +13,8 @@ const Signup = ({ setToken }) => {
         lastname: "",
         email: "",
         password: "",
-        confirmPassword: ""
+        confirmPassword: "",
+        role: "RESIDENT"
     });
 
     const [errorState, setErrorState] = useState({
@@ -47,7 +48,8 @@ const Signup = ({ setToken }) => {
             firstname: formState.firstname,
             lastname: formState.lastname,
             email: formState.email,
-            password: formState.password
+            password: formState.password,
+            role: formState.role
         }).then(res => {
             setErrorState({
                 isError: false,
@@ -99,6 +101,13 @@ const Signup = ({ setToken }) => {
                     text="Confirm Password"
                     onChange={e => {setFormState({ ...formState, confirmPassword: e.target.value})} }
                     type="password"
+                />
+                <S.StyledFancyRadio
+                    name="roletoggle"
+                    values={["RESIDENT", "ATTENDING"]}
+                    texts={["Resident", "Attending"]}
+                    default={0}
+                    onChange={e => {setFormState({ ...formState, role: e.target.value})} }
                 />
                 <S.Button
                     value="Sign Up"
