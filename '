@@ -1,0 +1,28 @@
+import Dropdown from 'react-bootstrap/Dropdown';
+import styled from 'styled-component';
+
+const StyledDropdown = styled(Dropdown)`
+
+`;
+
+const StyledDropdownItem = styled(Dropdown.Item)`
+`;
+
+const UserSearchDropdown = (props) => {
+    return (
+        <Dropdown show={props.users}>
+            {props.users.map((user) => {
+                return (
+                    <Dropdown.Item
+                        key={user._id}
+                        href={`/users/${user._id}`}
+                    >
+                        {`${user.firstname} ${user.lastname}`}
+                    </Dropdown.Item>
+                )
+            })}
+        </Dropdown>
+    )
+}
+
+export default UserSearchDropdown;

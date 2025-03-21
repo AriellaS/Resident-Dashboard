@@ -1,27 +1,25 @@
 import styled from 'styled-components';
 
 export const accentColor = "#008ae0";
+export const borderRadius = "10px";
+export const boxShadow = "3px 5px 10px -2px gray";
 
 export const Container = styled.section`
-    width: 50%;
-    max-width: 400px;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    border-radius: 10px;
-    box-shadow: 3px 5px 10px -2px gray;
-    position: absolute;
+    width: 100%;
+    max-width: 500px;
+    border-radius: ${borderRadius};
+    box-shadow: ${boxShadow};
     text-align: center;
     background-color: white;
     padding: 30px;
 `;
 
 export const TextInput = styled.input`
-    width: 90%;
-    padding: 15px;
+    width: 100%;
+    padding: min(3vw, 15px);
     outline: none;
     border: 2px solid #f0f0f0;
-    border-radius: 7px;
+    border-radius: ${borderRadius};
     -webkit-transition: 0.5s;
     &:focus {
         border: 2px solid ${accentColor};
@@ -30,18 +28,23 @@ export const TextInput = styled.input`
 
 export const Button = styled.input`
     background-color: ${accentColor};
-    //border-radius: 7px;
+    border-radius: 0px;
     color: white;
-    font-weight: bold;
     border: none;
     width: 100%;
     height: 45px;
-    cursor: pointer;
-    font-size: 16px;
+    font-size: min(3.5vw, 18px);
     margin-top: 20px;
     &:hover {
         filter: brightness(0.95);
     }
 `;
 
-
+export const CenterScreenContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    min-height: 100vh;
+`;

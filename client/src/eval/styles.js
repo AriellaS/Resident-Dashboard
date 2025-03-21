@@ -4,20 +4,19 @@ import ErrorBox from '~/shared/ErrorBox';
 import { CheckCircle } from 'react-bootstrap-icons';
 
 export const Header = styled.div`
-    font-size: 25px;
+    font-size: min(6vw, 25px);
 `;
 
 export const QuestionContainer = styled.div`
     background-color: white;
     margin: 20px;
-    padding: 5px;
     border-radius: 10px;
 `;
 
 export const QuestionText = styled.div`
     margin-bottom: 20px;
     margin-top: 20px;
-    font-size: 18px;
+    font-size: min(4vw, 18px);
     text-align: left;
 `;
 
@@ -26,12 +25,12 @@ export const OptionsContainer = styled.div`
 `;
 
 export const OptionText = styled.label`
-    padding: 10px;
-    font-size: 15px;
+    padding: 3px 0 0 5px;
+    font-size: min(4vw, 15px);
 `;
 
 export const StyledErrorBox = styled(ErrorBox)`
-    margin: 10px;
+    margin-top: 10px;
 `;
 
 export const StyledCheckGlyph = styled(CheckCircle)`
@@ -41,9 +40,10 @@ export const StyledCheckGlyph = styled(CheckCircle)`
 `;
 
 export const SubmissionText = styled.div`
-    font-size: 20px;
+    font-size: min(4.5vw, 20px);
     margin: 20px 0;
 `;
 
 export const Container = shared.Container;
+export const CenterScreenContainer = shared.CenterScreenContainer;
 export const Button = shared.Button;

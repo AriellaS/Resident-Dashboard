@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import * as S from '~/profile/styles';
 import ajax from '~/util';
+import Navbar from '~/shared/Navbar';
 
 const profpicpath = "/default_profpic.jpg";
 
@@ -28,8 +29,7 @@ const Profile = () => {
                         email: res.data.email,
                         role: res.data.role
                     })
-                })
-                .catch(err => {
+                }).catch(err => {
                     console.log(err);
                     // have error state for user not found
                 });
@@ -46,24 +46,27 @@ const Profile = () => {
     }
 
     return (
-        <S.Container>
-            <S.Image src={profpicpath} alt='profile' />
-            <S.TextContainer>
-                <div>{getName()}</div>
-                <div>{userData.email}</div>
-                <S.RoleText children={userData.role} />
-            </S.TextContainer>
-            <hr />
-            <S.Button
-                value="Evaluate"
-                type="button"
-                onClick={handleEvaluate}
-            />
-            <S.Button
-                value="See Performance"
-                type="button"
-            />
-        </S.Container>
+        <S.CenterScreenContainer>
+            <Navbar />
+            <S.Container>
+                <S.Image src={profpicpath} alt='profile' />
+                <S.TextContainer>
+                    <div>{getName()}</div>
+                    <div>{userData.email}</div>
+                    <S.RoleText children={userData.role} />
+                </S.TextContainer>
+                <hr />
+                <S.Button
+                    value="Evaluate"
+                    type="button"
+                    onClick={handleEvaluate}
+                />
+                <S.Button
+                    value="See Performance"
+                    type="button"
+                />
+            </S.Container>
+        </S.CenterScreenContainer>
     )
 
 };

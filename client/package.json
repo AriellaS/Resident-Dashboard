@@ -9,7 +9,9 @@
     "@testing-library/user-event": "^13.5.0",
     "ajax": "^0.0.4",
     "axios": "^1.7.5",
+    "bootstrap": "^5.3.3",
     "react": "^18.3.1",
+    "react-bootstrap": "^2.10.9",
     "react-bootstrap-icons": "^1.11.4",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.26.1",
@@ -43,7 +45,7 @@
     ]
   },
   "devDependencies": {
-    "@craco/craco": "^7.1.0",
+    "@craco/craco": "^5.9.0",
     "path": "^0.12.7"
   }
 }

@@ -9,7 +9,6 @@ const accentColor = shared.accentColor;
 export const TextInputContainer = styled.div`
     padding: 10px 0px 10px 0px;
     text-align: left;
-    font-size: 16px;
 `;
 
 export const TextInputLabel = styled.div`
@@ -18,13 +17,13 @@ export const TextInputLabel = styled.div`
 `;
 
 export const Header = styled.div`
-    font-size: 20px;
+    font-size: min(4.5vw, 22px);
     font-weight: bold;
     padding: 10px;
 `;
 
 export const StyledLink = styled(Link)`
-    font-size: 13px;
+    font-size: min(3.5vw, 15px);
     padding-top: 20px;
     color: ${accentColor};
     display: block;
@@ -32,12 +31,18 @@ export const StyledLink = styled(Link)`
 
 export const StyledFancyRadio = styled(FancyRadio)`
     margin-top: 10px;
+    font-size: min(4vw, 16px);
 `;
 
 export const StyledErrorBox = styled(ErrorBox)`
-    margin-bottom: 5px;
+    margin-top: 15px;
+`;
+
+export const TextInput = styled(shared.TextInput)`
+    width: 100%;
+    font-size: 16px;
 `;
 
 export const Container = shared.Container;
+export const CenterScreenContainer = shared.CenterScreenContainer;
 export const Button = shared.Button;
-export const TextInput = shared.TextInput;

@@ -10,6 +10,7 @@ const ErrorBoxContainer = styled.div`
     display: flex;
     flex-direction: row;
     padding: 8px;
+    width: 100%
 `;
 
 const ErrorBoxMessage = styled.div`

@@ -73,41 +73,45 @@ const Eval = () => {
 
     if (submissionState) {
         return (
-            <S.Container>
-                <S.StyledCheckGlyph />
-                <hr />
-                <S.SubmissionText children={`Evaluation submitted for ${userData.firstname} ${userData.lastname}`} />
-            </S.Container>
+            <S.CenterScreenContainer>
+                <S.Container>
+                    <S.StyledCheckGlyph />
+                    <hr />
+                    <S.SubmissionText children={`Evaluation submitted for ${userData.firstname} ${userData.lastname}`} />
+                </S.Container>
+            </S.CenterScreenContainer>
         )
     }
 
     return (
-        <S.Container>
-            <S.Header children={`Evaluation for ${userData.firstname} ${userData.lastname}`} />
-            <form onSubmit={handleSubmit}>
-                <Question
-                    type="radio"
-                    name="briefing"
-                    text="How was the pre-operative briefing performed with this resident?"
-                    optionValues={["PHONE","DAYOF","NONE"]}
-                    optionTexts={["Text/Phone Call", "Discussion day of surgery", "No briefing"]}
-                    onChange={e => setFormState({...formState, briefing: e.target.value}) }
-                />
-                <Question
-                    type="radio"
-                    name="rating"
-                    text="How would you rate this resident's preparation for the surgery?"
-                    optionValues={["5","4","3","2","1"]}
-                    optionTexts={["5 (most prepared)","4","3","2","1 (least prepared)"]}
-                    onChange={e => setFormState({...formState, rating: e.target.value}) }
-                />
-                <S.Button
-                    value="Submit"
-                    type="submit"
-                />
-            </form>
-            <S.StyledErrorBox isError={errorState.isError} errorMsg={errorState.errorMsg} />
-        </S.Container>
+        <S.CenterScreenContainer>
+            <S.Container>
+                <S.Header children={`Evaluation for ${userData.firstname} ${userData.lastname}`} />
+                <form onSubmit={handleSubmit}>
+                    <Question
+                        type="radio"
+                        name="briefing"
+                        text="How was the pre-operative briefing performed with this resident?"
+                        optionValues={["PHONE","DAYOF","NONE"]}
+                        optionTexts={["Text/Phone Call", "Discussion day of surgery", "No briefing"]}
+                        onChange={e => setFormState({...formState, briefing: e.target.value}) }
+                    />
+                    <Question
+                        type="radio"
+                        name="rating"
+                        text="How would you rate this resident's preparation for the surgery?"
+                        optionValues={["5","4","3","2","1"]}
+                        optionTexts={["5 (most prepared)","4","3","2","1 (least prepared)"]}
+                        onChange={e => setFormState({...formState, rating: e.target.value}) }
+                    />
+                    <S.Button
+                        value="Submit"
+                        type="submit"
+                    />
+                </form>
+                <S.StyledErrorBox isError={errorState.isError} errorMsg={errorState.errorMsg} />
+            </S.Container>
+        </S.CenterScreenContainer>
     )
 }
 

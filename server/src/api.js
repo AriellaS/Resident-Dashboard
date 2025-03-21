@@ -37,10 +37,6 @@ const verifyAccessToken = (req, res, next) => {
     });
 };
 
-router.get('/info', verifyAccessToken, (req, res) => {
-    res.send("INFO!!");
-});
-
 router.post('/login', Promise.coroutine(function*(req, res) {
     let user = yield User.findOne({
         email: req.body.email
@@ -145,6 +141,21 @@ router.get('/users/id/:userId', verifyAccessToken, Promise.coroutine(function*(r
     res.json(user);
 }));
 
+router.get('/users/search', verifyAccessToken, Promise.coroutine(function*(req, res) {
+    let query = req.query.q;
+    let re = new RegExp(String(query).trim().replace(/\s/g, "|"), "ig");
+
+    let users = yield User.find({
+        $or: [{
+            firstname: re
+        }, {
+            lastname: re
+        }]
+    }).select('firstname lastname role').limit(10);
+
+    res.json(users);
+}));
+
 router.post('/evals', verifyAccessToken, Promise.coroutine(function*(req, res) {
     let evalType = req.body.type;
     let evaluatorId = new ObjectId(req.session.userId);
@@ -156,8 +167,8 @@ router.post('/evals', verifyAccessToken, Promise.coroutine(function*(req, res) {
         return res.status(400).end("One cannot evaluate oneself");
     }
 
-    let evaluator = yield User.findById(evaluatorId).exec();
-    let evaluatee = yield User.findById(evaluateeId).exec();
+    let evaluator = yield User.findById(evaluatorId).select('role');
+    let evaluatee = yield User.findById(evaluateeId).select('role');
 
     if (!evaluator || !evaluatee) {
         return res.status(400).end("User not found");
@@ -193,7 +204,7 @@ router.post('/evals', verifyAccessToken, Promise.coroutine(function*(req, res) {
             //eventually
     }
 
-    console.log(`Eval submitted for ${evaluatee.firstname} by ${evaluator.firstname}`);
+    console.log('Eval submitted');
     return res.status(200).end("Eval submitted");;
 }));
 

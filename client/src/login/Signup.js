@@ -65,56 +65,59 @@ const Signup = ({ setToken }) => {
     }
 
     return (
-        <S.Container>
-            <S.StyledErrorBox isError={errorState.isError} errorMsg={errorState.errorMsg} />
-            <S.Header children="Create a new account" />
-            <form onSubmit={handleSubmit}>
-                <TextInputWithLabel
-                    value={formState.firstname}
-                    placeholder="Enter your first name"
-                    text="First Name"
-                    onChange={e => {setFormState({ ...formState, firstname: e.target.value})} }
-                />
-                <TextInputWithLabel
-                    value={formState.lastname}
-                    placeholder="Enter your last name"
-                    text="Last Name"
-                    onChange={e => {setFormState({ ...formState, lastname: e.target.value})} }
-                />
-                <TextInputWithLabel
-                    value={formState.email}
-                    placeholder="Enter your Montefiore email"
-                    text="Email"
-                    onChange={e => {setFormState({ ...formState, email: e.target.value})} }
-                />
-                <TextInputWithLabel
-                    value={formState.password}
-                    placeholder="Create a password"
-                    text="Password"
-                    onChange={e => {setFormState({ ...formState, password: e.target.value})} }
-                    type="password"
-                />
-                <TextInputWithLabel
-                    value={formState.confirmPassword}
-                    placeholder="Confirm your password"
-                    text="Confirm Password"
-                    onChange={e => {setFormState({ ...formState, confirmPassword: e.target.value})} }
-                    type="password"
-                />
-                <S.StyledFancyRadio
-                    name="roletoggle"
-                    values={["RESIDENT", "ATTENDING"]}
-                    texts={["Resident", "Attending"]}
-                    default={0}
-                    onChange={e => {setFormState({ ...formState, role: e.target.value})} }
-                />
-                <S.Button
-                    value="Sign Up"
-                    type="submit"
-                />
-            </form>
-            <S.StyledLink to="/login" children="Already have an acccount?" />
-        </S.Container>
+        <S.CenterScreenContainer>
+            <S.Container>
+                <S.Header children="Create a new account" />
+                <form onSubmit={handleSubmit}>
+                    <TextInputWithLabel
+                        value={formState.firstname}
+                        placeholder="Enter your first name"
+                        text="First Name"
+                        onChange={e => {setFormState({ ...formState, firstname: e.target.value})} }
+                    />
+                    <TextInputWithLabel
+                        value={formState.lastname}
+                        placeholder="Enter your last name"
+                        text="Last Name"
+                        onChange={e => {setFormState({ ...formState, lastname: e.target.value})} }
+                    />
+                    <TextInputWithLabel
+                        value={formState.email}
+                        placeholder="Enter your Montefiore email"
+                        text="Email"
+                        onChange={e => {setFormState({ ...formState, email: e.target.value})} }
+                        type="email"
+                    />
+                    <TextInputWithLabel
+                        value={formState.password}
+                        placeholder="Create a password"
+                        text="Password"
+                        onChange={e => {setFormState({ ...formState, password: e.target.value})} }
+                        type="password"
+                    />
+                    <TextInputWithLabel
+                        value={formState.confirmPassword}
+                        placeholder="Confirm your password"
+                        text="Confirm Password"
+                        onChange={e => {setFormState({ ...formState, confirmPassword: e.target.value})} }
+                        type="password"
+                    />
+                    <S.StyledFancyRadio
+                        name="roletoggle"
+                        values={["RESIDENT", "ATTENDING"]}
+                        texts={["Resident", "Attending"]}
+                        default={0}
+                        onChange={e => {setFormState({ ...formState, role: e.target.value})} }
+                    />
+                    <S.Button
+                        value="Sign Up"
+                        type="submit"
+                    />
+                </form>
+                <S.StyledErrorBox isError={errorState.isError} errorMsg={errorState.errorMsg} />
+                <S.StyledLink to="/login" children="Already have an acccount?" />
+            </S.Container>
+        </S.CenterScreenContainer>
     )
 }
 

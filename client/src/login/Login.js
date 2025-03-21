@@ -40,30 +40,33 @@ const Login = ({ setToken }) => {
     };
 
     return (
-        <S.Container>
-            <S.StyledErrorBox isError={errorState.isError} errorMsg={errorState.errorMsg} />
-            <S.Header children="Login to your account" />
-            <form onSubmit={handleSubmit}>
-                <TextInputWithLabel
-                    value={formState.email}
-                    placeholder="Enter your email"
-                    text="Email"
-                    onChange={e => {setFormState({ ...formState, email: e.target.value})} }
-                />
-                <TextInputWithLabel
-                    value={formState.password}
-                    placeholder="Enter your password"
-                    text="Password"
-                    onChange={e => {setFormState({ ...formState, password: e.target.value})} }
-                    type="password"
-                />
-                <S.Button
-                    value="Log In"
-                    type="submit"
-                />
-            </form>
-            <S.StyledLink to={"/signup"} children="Need an acccount?" />
-        </S.Container>
+        <S.CenterScreenContainer>
+            <S.Container>
+                <S.Header children="Login to your account" />
+                <form onSubmit={handleSubmit}>
+                    <TextInputWithLabel
+                        value={formState.email}
+                        placeholder="Enter your email"
+                        text="Email"
+                        onChange={e => {setFormState({ ...formState, email: e.target.value})} }
+                        type="email"
+                    />
+                    <TextInputWithLabel
+                        value={formState.password}
+                        placeholder="Enter your password"
+                        text="Password"
+                        onChange={e => {setFormState({ ...formState, password: e.target.value})} }
+                        type="password"
+                    />
+                    <S.Button
+                        value="Log In"
+                        type="submit"
+                    />
+                </form>
+                <S.StyledErrorBox isError={errorState.isError} errorMsg={errorState.errorMsg} />
+                <S.StyledLink to={"/signup"} children="Need an acccount?" />
+            </S.Container>
+        </S.CenterScreenContainer>
     )
 }
 
