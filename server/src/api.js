@@ -53,7 +53,7 @@ router.post('/login', Promise.coroutine(function*(req, res) {
         return res.status(400).end("Invalid login credentials");
     }
 
-    delete user.password;
+    user.password = undefined;
 
     let refreshToken = yield RefreshToken.createToken(user._id);
     let accessToken = createNewAccessToken(user._id);
@@ -62,6 +62,7 @@ router.post('/login', Promise.coroutine(function*(req, res) {
 
     return res.status(200).send({
         accessToken: accessToken,
+        user: user
     });
 
 }));
@@ -120,6 +121,8 @@ router.post('/users', Promise.coroutine(function*(req, res) {
         return res.status(500).end("Unable to create account");
     }
 
+    user.password = undefined;
+
     console.log("Account created for " + req.body.firstname);
 
     let refreshToken = yield RefreshToken.createToken(user._id);
@@ -129,6 +132,7 @@ router.post('/users', Promise.coroutine(function*(req, res) {
 
     return res.send({
         accessToken: accessToken,
+        user: user
     });
 }));
 
@@ -146,6 +150,7 @@ router.get('/users/search', verifyAccessToken, Promise.coroutine(function*(req, 
     let re = new RegExp(String(query).trim().replace(/\s/g, "|"), "ig");
 
     let users = yield User.find({
+        role: "RESIDENT",
         $or: [{
             firstname: re
         }, {

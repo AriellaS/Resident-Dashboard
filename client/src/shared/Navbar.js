@@ -19,7 +19,7 @@ const Navbar = () => {
     }
 
     return (
-        <BootstrapNavbar fixed='top' bg='light' data-bs-theme='light'>
+        <BootstrapNavbar sticky='top' bg='light' data-bs-theme='light'>
             <Container>
                 <Nav className='me-auto'>
                     <Nav.Link href='/'>Home</Nav.Link>

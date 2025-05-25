@@ -1,9 +1,8 @@
-import React from 'react';
 import * as S from '~/eval/styles';
 
 const Question = (props) => {
 
-    if  (props.type === 'radio') {
+    if  (props.type === 'RADIO') {
         return (
             <S.QuestionContainer>
                 <hr />
@@ -13,7 +12,7 @@ const Question = (props) => {
                         let id = `${props.name}_${i}`;
                         return (
                             <div key={id}>
-                                <input type="radio" id={id} name={props.name} value={optionValue} onChange={props.onChange}/>
+                                <input type='radio' id={id} name={props.name} value={optionValue} onChange={props.onChange}/>
                                 <S.OptionText htmlFor={id}>
                                     {props.optionTexts[i]}
                                 </S.OptionText>
@@ -21,6 +20,22 @@ const Question = (props) => {
                         )
                     })}
                 </S.OptionsContainer>
+            </S.QuestionContainer>
+        )
+    } else if (props.type === 'SHORT_TEXT') {
+        return (
+            <S.QuestionContainer>
+                <hr />
+                <S.QuestionText>{props.text}</S.QuestionText>
+                <S.TextInput />
+            </S.QuestionContainer>
+        )
+    } else if (props.type === 'LONG_TEXT') {
+        return (
+            <S.QuestionContainer>
+                <hr />
+                <S.QuestionText>{props.text}</S.QuestionText>
+                <S.TextArea/>
             </S.QuestionContainer>
         )
     }

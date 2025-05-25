@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import * as S from '~/profile/styles';
 import ajax from '~/util';
@@ -6,13 +6,13 @@ import Navbar from '~/shared/Navbar';
 
 const profpicpath = "/default_profpic.jpg";
 
-const Profile = () => {
+const Profile = ({ currentUser }) => {
 
     const navigate = useNavigate();
     const params = useParams();
     const userId = params.id;
 
-    const [userData, setUserData] = useState({
+    const [user, setUser] = useState({
         firstname: "",
         lastname: "",
         email: "",
@@ -23,7 +23,7 @@ const Profile = () => {
         async function fetchData() {
             await ajax.request('get',`/users/id/${userId}`)
                 .then(res => {
-                    setUserData({
+                    setUser({
                         firstname: res.data.firstname,
                         lastname: res.data.lastname,
                         email: res.data.email,
@@ -38,7 +38,7 @@ const Profile = () => {
     }, [userId]);
 
     const getName = () => {
-        return `${userData.firstname} ${userData.lastname}`
+        return `${user.firstname} ${user.lastname}`
     }
 
     const handleEvaluate = () => {
@@ -46,27 +46,31 @@ const Profile = () => {
     }
 
     return (
-        <S.CenterScreenContainer>
+        <S.ScreenContainer>
             <Navbar />
-            <S.Container>
-                <S.Image src={profpicpath} alt='profile' />
-                <S.TextContainer>
-                    <div>{getName()}</div>
-                    <div>{userData.email}</div>
-                    <S.RoleText children={userData.role} />
-                </S.TextContainer>
-                <hr />
-                <S.Button
-                    value="Evaluate"
-                    type="button"
-                    onClick={handleEvaluate}
-                />
-                <S.Button
-                    value="See Performance"
-                    type="button"
-                />
-            </S.Container>
-        </S.CenterScreenContainer>
+            <S.CenterScreenContainer>
+                <S.Container>
+                    <S.Image src={profpicpath} alt='profile' />
+                    <S.TextContainer>
+                        <div>{getName()}</div>
+                        <div>{user.email}</div>
+                        <S.RoleText children={user.role} />
+                    </S.TextContainer>
+                    <hr />
+                    <S.Button
+                        text="Evaluate"
+                        type="button"
+                        onClick={handleEvaluate}
+                        disabled={user.role==="ATTENDING"}
+                    />
+                    <S.Button
+                        text="See Performance"
+                        type="button"
+                        disabled={user.role==="ATTENDING" || currentUser.role==="RESIDENT"}
+                    />
+                </S.Container>
+            </S.CenterScreenContainer>
+        </S.ScreenContainer>
     )
 
 };

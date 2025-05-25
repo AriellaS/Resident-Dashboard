@@ -16,4 +16,5 @@ export const SearchContainer = styled.div`
 `;
 
 export const CenterScreenContainer = shared.CenterScreenContainer;
+export const ScreenContainer = shared.ScreenContainer;
 

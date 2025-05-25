@@ -5,7 +5,7 @@ import ajax from '~/util';
 import TextInputWithLabel from '~/login/TextInputWithLabel';
 import * as S from '~/login/styles';
 
-const Signup = ({ setToken }) => {
+const Signup = ({ setToken, setCurrentUser }) => {
 
     const [formState, setFormState] = useState({
         firstname: "",
@@ -55,6 +55,7 @@ const Signup = ({ setToken }) => {
                 errorMsg: "",
             });
             setToken(res.data.accessToken);
+            setCurrentUser(res.data.user);
             navigate('/');
         }).catch(err => {
             setErrorState({
@@ -110,7 +111,7 @@ const Signup = ({ setToken }) => {
                         onChange={e => {setFormState({ ...formState, role: e.target.value})} }
                     />
                     <S.Button
-                        value="Sign Up"
+                        text="Sign Up"
                         type="submit"
                     />
                 </form>

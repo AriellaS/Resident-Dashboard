@@ -13,30 +13,29 @@ const Home = () => {
     const handleSearch = async(e) => {
         let query = e.target.value;
         setQueryState(query)
-        if (query) {
-            await ajax.request('get', `/users/search?q=${query}`)
-                .then(res => {
-                    setSearchResultState(res.data);
-                }).catch(err => {
-                    console.log(err);
-                });
-        } else {
-            setSearchResultState([]);
-        }
+        await ajax.request('get', `/users/search?q=${query}`)
+            .then(res => {
+                setSearchResultState(res.data);
+            }).catch(err => {
+                console.log(err);
+            });
     }
 
     return (
-        <S.CenterScreenContainer>
+        <S.ScreenContainer>
             <Navbar />
-            <S.SearchContainer>
-                <S.SearchBar
-                    placeholder="Search users..."
-                    value={queryState}
-                    onChange={e => {handleSearch(e)}}
-                />
-                <UserSearchDropdown users={searchResultState} />
-            </S.SearchContainer>
-        </S.CenterScreenContainer>
+            <S.CenterScreenContainer>
+                <S.SearchContainer>
+                    <S.SearchBar
+                        placeholder="Search users..."
+                        value={queryState}
+                        onClick={e => {handleSearch(e)}}
+                        onChange={e => {handleSearch(e)}}
+                    />
+                    <UserSearchDropdown users={searchResultState} />
+                </S.SearchContainer>
+            </S.CenterScreenContainer>
+        </S.ScreenContainer>
     )
 };
 

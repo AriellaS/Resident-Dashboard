@@ -23,4 +23,5 @@ export const RoleText = styled.div`
 export const Button = shared.Button;
 export const Container = shared.Container;
 export const CenterScreenContainer = shared.CenterScreenContainer;
+export const ScreenContainer = shared.ScreenContainer;
 

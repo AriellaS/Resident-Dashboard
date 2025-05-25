@@ -11,7 +11,7 @@ const UserSearchDropdown = (props) => {
                         href={`/users/${user._id}`}
                         active={false}
                     >
-                        {`${user.firstname} ${user.lastname}`}
+                        {`${user.firstname} ${user.lastname} (${user.role})`}
                     </ListGroup.Item>
                 )
             })}

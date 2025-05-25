@@ -2,7 +2,6 @@ import { useState } from 'react';
 
 export default function useToken() {
 
-
     // need to use local storage ??? just save it in the state memory. so cant be accessed by the user as easily?
 
     const getToken = () => {

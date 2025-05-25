@@ -5,7 +5,7 @@ import ajax from "~/util.js"
 import TextInputWithLabel from '~/login/TextInputWithLabel';
 import * as S from '~/login/styles';
 
-const Login = ({ setToken }) => {
+const Login = ({ setToken, setCurrentUser }) => {
 
     const [formState, setFormState] = useState({
         email: "",
@@ -30,6 +30,7 @@ const Login = ({ setToken }) => {
                  errorMsg: ""
              });
              setToken(res.data.accessToken);
+             setCurrentUser(res.data.user);
              navigate("/");
          }).catch(err => {
              setErrorState({
@@ -59,8 +60,8 @@ const Login = ({ setToken }) => {
                         type="password"
                     />
                     <S.Button
-                        value="Log In"
                         type="submit"
+                        text="Log In"
                     />
                 </form>
                 <S.StyledErrorBox isError={errorState.isError} errorMsg={errorState.errorMsg} />
