@@ -12,7 +12,14 @@ const Question = (props) => {
                         let id = `${props.name}_${i}`;
                         return (
                             <div key={id}>
-                                <input type='radio' id={id} name={props.name} value={optionValue} onChange={props.onChange}/>
+                                <input
+                                    type='radio'
+                                    id={id}
+                                    name={props.name}
+                                    value={optionValue}
+                                    checked={props.value===optionValue + ''}
+                                    onChange={props.onChange}
+                                />
                                 <S.OptionText htmlFor={id}>
                                     {props.optionTexts[i]}
                                 </S.OptionText>
@@ -27,7 +34,7 @@ const Question = (props) => {
             <S.QuestionContainer>
                 <hr />
                 <S.QuestionText>{props.text}</S.QuestionText>
-                <S.TextInput />
+                <S.TextInput onChange={props.onChange} value={props.value}/>
             </S.QuestionContainer>
         )
     } else if (props.type === 'LONG_TEXT') {
@@ -35,7 +42,7 @@ const Question = (props) => {
             <S.QuestionContainer>
                 <hr />
                 <S.QuestionText>{props.text}</S.QuestionText>
-                <S.TextArea/>
+                <S.TextArea onChange={props.onChange} value={props.value}/>
             </S.QuestionContainer>
         )
     }

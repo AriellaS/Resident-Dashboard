@@ -13,6 +13,9 @@ export const SearchContainer = styled.div`
     max-width: 500px;
     top: 40%;
     position: fixed;
+    @media (max-width: 768px) {
+        top: 20%;
+    }
 `;
 
 export const CenterScreenContainer = shared.CenterScreenContainer;

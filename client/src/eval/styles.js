@@ -14,6 +14,11 @@ export const QuestionContainer = styled.div`
     border-radius: 10px;
 `;
 
+export const QuestionsContainer = styled.div`
+    //max-height: 65vh;
+    //overflow: auto;
+`;
+
 export const QuestionText = styled.div`
     margin-bottom: 20px;
     margin-top: 20px;

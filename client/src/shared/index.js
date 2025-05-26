@@ -6,16 +6,26 @@ export const accentColor = "#008ae0";
 export const borderRadius = "10px";
 export const boxShadow = "3px 5px 10px -2px gray";
 
+export const CenterScreenContainer = styled.div`
+    align-items: center;
+    text-align: center;
+    @media (min-width: 768px) {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+`;
+
 export const Container = styled.section`
     width: 100%;
     max-width: 500px;
-    max-height: 90vh;
-    overflow: auto;
-    border-radius: ${borderRadius};
-    box-shadow: ${boxShadow};
     text-align: center;
     background-color: white;
     padding: 30px;
+    @media (min-width: 768px) {
+        box-shadow: ${boxShadow};
+        border-radius: ${borderRadius};
+    }
 `;
 
 export const TextInput = styled.input`
@@ -43,7 +53,6 @@ export const TextArea = styled(TextareaAutosize)`
 `;
 
 const StyledBootstrapButton = styled(BootstrapButton)`
-    background-color: ${accentColor};
     border-radius: 0px;
     color: white;
     border: none;
@@ -51,25 +60,11 @@ const StyledBootstrapButton = styled(BootstrapButton)`
     height: 45px;
     font-size: min(3.5vw, 18px);
     margin-top: 20px;
-    @media (max-width: 768px) {
-        &:hover {
-            background-color: ${accentColor};
-        }
-    }
 `;
 
 export const Button = (props) => {
     return (<StyledBootstrapButton {...props}>{props.text}</StyledBootstrapButton>)
 }
-
-export const CenterScreenContainer = styled.div`
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    min-height: 100vh;
-`;
 
 export const ScreenContainer = styled.div`
 `;

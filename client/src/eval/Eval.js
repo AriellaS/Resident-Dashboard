@@ -86,16 +86,13 @@ const Eval = () => {
     }
 
     return (
-        <S.ScreenContainer>
-            <Navbar />
-            <S.CenterScreenContainer>
-                <S.Container>
-                    <S.Header children={`Evaluation for ${userData.firstname} ${userData.lastname}`} />
-                    <S.StyledErrorBox isError={errorState.isError} errorMsg={errorState.errorMsg} />
-                    <EvalForm />
-                </S.Container>
-            </S.CenterScreenContainer>
-        </S.ScreenContainer>
+        <S.CenterScreenContainer>
+            <S.Container>
+                <S.Header children={`Evaluation for ${userData.firstname} ${userData.lastname}`} />
+                <S.StyledErrorBox isError={errorState.isError} errorMsg={errorState.errorMsg} />
+                <EvalForm />
+            </S.Container>
+        </S.CenterScreenContainer>
     )
 }
 
