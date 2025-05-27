@@ -2,14 +2,22 @@ import React, {useState} from 'react';
 import Question from '~/eval/Question';
 import { Pages, Questions } from  '~/shared/AttendingToResidentEvalForm';
 import * as S from '~/eval/styles';
+import ajax from '~/util';
 
-const EvalForm = () => {
+const EvalForm = (props) => {
 
     const [pageState, setPageState] = useState(0);
 
     const [formState, setFormState] = useState(Object.fromEntries(Questions.map(q => (
-        [q.name, q.type.includes('TEXT') ? "" : null]
+        [q.name, ""]
     ))));
+
+    const [submissionState, setSubmissionState] = useState(false);
+
+    const [errorState, setErrorState] = useState({
+        isError: false,
+        errorMsg: ""
+    });
 
     const isOnLastPage = () => {
         return pageState >= Pages.length - 1
@@ -25,6 +33,37 @@ const EvalForm = () => {
             }
             setPageState(page);
         }
+    }
+
+    const handleSubmit = async(e) => {
+        e.preventDefault();
+        await ajax.request('post', '/evals', {
+            type: "ATTENDING2RESIDENT",
+            evaluatee: props.userData.id,
+            form: formState,
+        }).then(res => {
+            setSubmissionState(true);
+            setErrorState({
+                isError: false,
+                errorMsg: ""
+            });
+        }).catch(err =>  {
+            console.log(err)
+            setErrorState({
+                isError: true,
+                errorMsg: "Error submitting form"
+            });
+        });
+    };
+
+    if (submissionState) {
+        return (
+            <div>
+                <S.StyledCheckGlyph />
+                <hr />
+                <S.SubmissionText children={`Evaluation submitted for ${props.userData.firstname} ${props.userData.lastname}`} />
+            </div>
+        )
     }
 
     return (
@@ -56,6 +95,7 @@ const EvalForm = () => {
                     <S.NavButton
                         text="Submit"
                         variant="success"
+                        onClick={handleSubmit}
                     />
                 ) : (
                     <S.NavButton
@@ -66,6 +106,7 @@ const EvalForm = () => {
                 )}
             </S.HorizontalContainer>
             <S.ProgressBar now={pageState/(Pages.length - 1) * 100}/>
+            <S.StyledErrorBox isError={errorState.isError} errorMsg={errorState.errorMsg} />
         </div>
     )
 }

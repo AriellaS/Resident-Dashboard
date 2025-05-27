@@ -165,8 +165,16 @@ router.post('/evals', verifyAccessToken, Promise.coroutine(function*(req, res) {
     let evalType = req.body.type;
     let evaluatorId = new ObjectId(req.session.userId);
     let evaluateeId = new ObjectId(req.body.evaluatee);
-    let briefing = req.body.briefing;
-    let rating = req.body.rating;
+
+    let formObject = req.body.form;
+    let form = [];
+    Object.keys(formObject).forEach((key, i) => {
+        form[i] = {
+            name: key,
+            option: formObject[key],
+        }
+    });
+    console.log(form)
 
     if (evaluatorId.equals(evaluateeId)) {
         return res.status(400).end("One cannot evaluate oneself");
@@ -190,17 +198,17 @@ router.post('/evals', verifyAccessToken, Promise.coroutine(function*(req, res) {
         if (evaluatee.role !== "RESIDENT") {
             return res.status(400).end("Evaluatee must be a resident");
         }
-        if (!AttendingToResidentEval.validateInput(briefing, rating)) {
+        if (!AttendingToResidentEval.validateInput(form)) {
             return res.status(400).end("Invalid input");
         }
         try {
             yield AttendingToResidentEval.create({
                 evaluator: evaluatorId,
                 evaluatee: evaluateeId,
-                briefing: req.body.briefing,
-                rating: req.body.rating
+                form,
             });
         } catch(err) {
+            console.log(err)
             return res.status(500).end(err);
         }
     }

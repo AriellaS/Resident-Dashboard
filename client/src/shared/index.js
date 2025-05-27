@@ -9,11 +9,11 @@ export const boxShadow = "3px 5px 10px -2px gray";
 export const CenterScreenContainer = styled.div`
     align-items: center;
     text-align: center;
-    @media (min-width: 768px) {
+    //@media (min-width: 768px) {
         display: flex;
         flex-direction: column;
         justify-content: center;
-    }
+    //}
 `;
 
 export const Container = styled.section`
