@@ -3,17 +3,17 @@ import BootstrapButton from 'react-bootstrap/Button';
 import TextareaAutosize from 'react-textarea-autosize';
 
 export const accentColor = "#008ae0";
-export const borderRadius = "10px";
-export const boxShadow = "3px 5px 10px -2px gray";
+//export const borderRadius = "10px";
+export const borderRadius = "0px";
+//export const boxShadow = "3px 5px 10px -2px gray";
+export const boxShadow = "0px";
 
 export const CenterScreenContainer = styled.div`
     align-items: center;
     text-align: center;
-    //@media (min-width: 768px) {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-    //}
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 `;
 
 export const Container = styled.section`

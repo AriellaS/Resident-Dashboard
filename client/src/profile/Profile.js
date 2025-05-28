@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import QRCode from 'react-qr-code';
 import * as S from '~/profile/styles';
 import ajax from '~/util';
 import Navbar from '~/shared/Navbar';
@@ -45,12 +46,16 @@ const Profile = ({ currentUser }) => {
         navigate('eval');
     }
 
+    const handleSeePerformance = () => {
+        navigate('performance');
+    }
+
     return (
         <S.ScreenContainer>
             <Navbar />
             <S.CenterScreenContainer>
                 <S.Container>
-                    <S.Image src={profpicpath} alt='profile' />
+                    <QRCode value={`http://192.168.1.168:3000/users/${userId}`} />
                     <S.TextContainer>
                         <div>{getName()}</div>
                         <div>{user.email}</div>
@@ -66,6 +71,7 @@ const Profile = ({ currentUser }) => {
                     <S.Button
                         text="See Performance"
                         type="button"
+                        onClick={handleSeePerformance}
                         disabled={user.role==="ATTENDING" || currentUser.role==="RESIDENT"}
                     />
                 </S.Container>

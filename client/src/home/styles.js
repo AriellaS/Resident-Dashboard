@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import ListGroup from 'react-bootstrap/ListGroup';
 import * as shared from '~/shared';
 
 export const SearchBar = styled(shared.TextInput)`
@@ -16,6 +17,10 @@ export const SearchContainer = styled.div`
     @media (max-width: 768px) {
         top: 20%;
     }
+`;
+
+export const StyledListGroup = styled(ListGroup)`
+    border-radius: 0px;
 `;
 
 export const CenterScreenContainer = shared.CenterScreenContainer;

@@ -145,6 +145,19 @@ router.get('/users/id/:userId', verifyAccessToken, Promise.coroutine(function*(r
     res.json(user);
 }));
 
+router.get('/users/id/:userId/evals', verifyAccessToken, Promise.coroutine(function*(req, res) {
+    //TODO check that user accessing is an attending
+    let userId = new ObjectId(req.params.userId);
+    let user = yield User.findById(userId).exec();
+    if (!user) {
+        res.status(404).end("User not found");
+    }
+    let evals = yield AttendingToResidentEval.find({
+        evaluatee: userId,
+    });
+    res.json(evals);
+}));
+
 router.get('/users/search', verifyAccessToken, Promise.coroutine(function*(req, res) {
     let query = req.query.q;
     let re = new RegExp(String(query).trim().replace(/\s/g, "|"), "ig");
@@ -162,6 +175,7 @@ router.get('/users/search', verifyAccessToken, Promise.coroutine(function*(req, 
 }));
 
 router.post('/evals', verifyAccessToken, Promise.coroutine(function*(req, res) {
+    // TODO redo this so that its post /users/id/:userId/evals where useId is the evaluatee
     let evalType = req.body.type;
     let evaluatorId = new ObjectId(req.session.userId);
     let evaluateeId = new ObjectId(req.body.evaluatee);
@@ -174,7 +188,6 @@ router.post('/evals', verifyAccessToken, Promise.coroutine(function*(req, res) {
             option: formObject[key],
         }
     });
-    console.log(form)
 
     if (evaluatorId.equals(evaluateeId)) {
         return res.status(400).end("One cannot evaluate oneself");

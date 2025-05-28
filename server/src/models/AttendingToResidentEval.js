@@ -27,7 +27,7 @@ const attendingToResidentEvalSchema = new Schema({
 });
 
 attendingToResidentEvalSchema.statics.validateInput = (form) => {
-    // also check that for radio questions, option is a number less than numOptions
+    // TODO also check that for radio questions, option is a number less than numOptions
     form.forEach(q => {
         if (!QUESTION_NAMES.includes(q.name)) return false;
     });

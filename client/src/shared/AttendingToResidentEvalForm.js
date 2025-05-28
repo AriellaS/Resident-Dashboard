@@ -1,3 +1,6 @@
+const ATTRIBUTE_OPTIONS = ['Needing Attention','Developing','At Goal'];
+export const SUBSPECIALTIES = ['Comprehensive','H & N / Microvascular','Rhinology','Facial Plastics','Laryngology','Otology','Pediatric'];
+
 export const Pages = [{
     name: 'TYPE_SURGERY',
     text: 'Type of Surgery',
@@ -20,7 +23,7 @@ export const Questions = [{
         name: 'SUBSPECIALTY',
         type: 'RADIO',
         questionText: 'Otolaryngology Subspecialty',
-        optionTexts: ['Comprehensive','H & N / Microvascular','Rhinology','Facial Plastics','Laryngology','Otology','Pediatric']
+        optionTexts: SUBSPECIALTIES,
     }, {
         page: 'TYPE_SURGERY',
         name: 'SURGERY',
@@ -37,7 +40,7 @@ export const Questions = [{
         name: 'PREP_RATING',
         type: 'RADIO',
         questionText: 'How would you rate the resident\'s preparation for the surgery?',
-        optionTexts: ['5 (most prepared)','4','3','2','1 (most prepared)'],
+        optionTexts: ['1 (least)','2','3','4','5 (most)'],
     }, {
         page: 'PREPARATION',
         name: 'PREP_COMMENT',
@@ -66,73 +69,73 @@ export const Questions = [{
         name: 'KNOWLEDGE',
         type: 'RADIO',
         questionText: 'Procedural Knowledge',
-        optionTexts: ['Needing attention','Developing','Achieving goals of PGY level'],
+        optionTexts: ATTRIBUTE_OPTIONS,
     }, {
         page: 'ATTRIBUTES',
         name: 'OP_PLAN',
         type: 'RADIO',
         questionText: 'Operative Plan',
-        optionTexts: ['Needing attention','Developing','Achieving goals of PGY level'],
+        optionTexts: ATTRIBUTE_OPTIONS,
     }, {
         page: 'ATTRIBUTES',
         name: 'APPROACH',
         type: 'RADIO',
         questionText: 'Incision/Approach',
-        optionTexts: ['Needing attention','Developing','Achieving goals of PGY level'],
+        optionTexts: ATTRIBUTE_OPTIONS,
     }, {
         page: 'ATTRIBUTES',
         name: 'PLANES',
         type: 'RADIO',
         questionText: 'Tissue planes',
-        optionTexts: ['Needing attention','Developing','Achieving goals of PGY level'],
+        optionTexts: ATTRIBUTE_OPTIONS,
     }, {
         page: 'ATTRIBUTES',
         name: 'HANDLING',
         type: 'RADIO',
         questionText: 'Tissue handling',
-        optionTexts: ['Needing attention','Developing','Achieving goals of PGY level'],
+        optionTexts: ATTRIBUTE_OPTIONS,
     }, {
         page: 'ATTRIBUTES',
         name: 'BLEEDING',
         type: 'RADIO',
         questionText: 'Bleeding',
-        optionTexts: ['Needing attention','Developing','Achieving goals of PGY level'],
+        optionTexts: ATTRIBUTE_OPTIONS,
     }, {
         page: 'ATTRIBUTES',
         name: 'NEED',
         type: 'RADIO',
         questionText: 'Need for direction',
-        optionTexts: ['Needing attention','Developing','Achieving goals of PGY level'],
+        optionTexts: ATTRIBUTE_OPTIONS,
     }, {
         page: 'ATTRIBUTES',
         name: 'POSOTP_PLAN',
         type: 'RADIO',
         questionText: 'Postoperative plan',
-        optionTexts: ['Needing attention','Developing','Achieving goals of PGY level'],
+        optionTexts: ATTRIBUTE_OPTIONS,
     }, {
         page: 'ATTRIBUTES',
         name: 'COMMUNICATION',
         type: 'RADIO',
         questionText: 'Communication',
-        optionTexts: ['Needing attention','Developing','Achieving goals of PGY level'],
+        optionTexts: ATTRIBUTE_OPTIONS,
     }, {
         page: 'ATTRIBUTES',
         name: 'RESPONSIVENESS',
         type: 'RADIO',
         questionText: 'Responsiveness to feedback',
-        optionTexts: ['Needing attention','Developing','Achieving goals of PGY level'],
+        optionTexts: ATTRIBUTE_OPTIONS,
     }, {
         page: 'ATTRIBUTES',
         name: 'RESPECT',
         type: 'RADIO',
         questionText: 'Respect for others',
-        optionTexts: ['Needing attention','Developing','Achieving goals of PGY level'],
+        optionTexts: ATTRIBUTE_OPTIONS,
     }, {
         page: 'ATTRIBUTES',
         name: 'TEACHING',
         type: 'RADIO',
         questionText: 'Teaching',
-        optionTexts: ['Needing attention','Developing','Achieving goals of PGY level'],
+        optionTexts: ATTRIBUTE_OPTIONS,
     }, {
         page: 'WRITTEN',
         name: 'MORE_OF',

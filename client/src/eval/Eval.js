@@ -27,7 +27,7 @@ const Eval = () => {
                 })
                 .catch(err => {
                     console.log(err);
-                    // have error state for user not found
+                    // TODO have error state for user not found
                 });
         }
         fetchData();

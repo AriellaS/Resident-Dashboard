@@ -1,0 +1,81 @@
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { Questions } from  '~/shared/AttendingToResidentEvalForm';
+import ajax from '~/util';
+import * as S from '~/performance/styles';
+
+const Performance = () => {
+
+    const params = useParams();
+    const userId = params.id;
+
+    const [barData, setBarData] = useState([]);
+
+    useEffect(() => {
+        async function fetchData() {
+            await ajax.request('get', `/users/id/${userId}/evals`)
+                .then(res => {
+                    setBarData(compileBarData(res.data));
+                })
+                .catch(err => { console.log(err) });
+        }
+        fetchData();
+    });
+
+    type Datum = {
+        name: string,
+        count: number
+    }
+
+    type Series = {
+        label: string,
+        data: Datum[]
+    }
+
+    const compileBarData = (evalData) => {
+        let series: Series[] = [];
+        Questions.forEach(q => {
+            if (q.type==='RADIO') {
+                let answers = [];
+                evalData.forEach(e => {
+                    answers.push(e.form.find(el => { return el.name===q.name }).option);
+                });
+                let data: Datum[] = [];
+                q.optionTexts.forEach((o,i) => {
+                    data.push({
+                        name: o,
+                        count: answers.filter(a => { return a===i+'' }).length,
+                    });
+                });
+                series.push({
+                    label: q.name,
+                    data
+                });
+            }
+        });
+        return series;
+    }
+
+    return (
+        <div>
+            {barData.map((s,i) => {
+                if (Questions[i].type==='RADIO') {
+                    return (
+                        <ResponsiveContainer key={s.label} width='100%' height={600}>
+                            <S.StyledBarChart data={s.data} margin={{ right:0 , bottom: 150 }}>
+                                <CartesianGrid strokeDasharray="1 1" />
+                                <XAxis dataKey="name" angle={-45} textAnchor='end'/>
+                                <YAxis allowDecimals={false} />
+                                <Tooltip />
+                                <Bar dataKey="count" fill="#8884d8" />
+                            </S.StyledBarChart>
+                        </ResponsiveContainer>
+                    )
+                }
+            })}
+        </div>
+    )
+}
+
+export default Performance;

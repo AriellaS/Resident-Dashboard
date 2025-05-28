@@ -13,10 +13,13 @@
     "react": "^18.3.1",
     "react-bootstrap": "^2.10.9",
     "react-bootstrap-icons": "^1.11.4",
+    "react-charts": "^3.0.0-beta.57",
     "react-dom": "^18.3.1",
+    "react-qr-code": "^2.0.15",
     "react-router-dom": "^6.26.1",
     "react-scripts": "^5.0.1",
     "react-textarea-autosize": "^8.5.9",
+    "recharts": "^2.15.3",
     "styled-components": "^6.1.13",
     "survey-creator-react": "^1.11.13",
     "web-vitals": "^2.1.4"
