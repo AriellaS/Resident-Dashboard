@@ -11,6 +11,7 @@ const Performance = () => {
     const userId = params.id;
 
     const [barData, setBarData] = useState([]);
+    const [selectedSpecialty, setSelectedSpecialty] = useState('');
 
     useEffect(() => {
         async function fetchData() {
@@ -38,7 +39,9 @@ const Performance = () => {
         Questions.forEach(q => {
             let answers = [];
             evalData.forEach(e => {
-                answers.push(e.form.find(el => { return el.name===q.name }).option);
+                if (!selectedSpecialty || e.form.find(el => { return el.name==='SUBSPECIALTY' }).option===selectedSpecialty) {
+                    answers.push(e.form.find(el => { return el.name===q.name }).option);
+                }
             });
             let data: Datum[] = [];
             if (q.type==='RADIO') {
@@ -56,7 +59,6 @@ const Performance = () => {
         });
         return series;
     }
-    console.log(barData)
 
     return (
         <S.CenterScreenContainer>
@@ -69,7 +71,18 @@ const Performance = () => {
                                 <XAxis dataKey="name" angle={-45} textAnchor='end'/>
                                 <YAxis allowDecimals={false} />
                                 <Tooltip />
-                                <Bar dataKey="count" fill="#8884d8" />
+                                {Questions[i].name==='SUBSPECIALTY' ? (
+                                    <Bar
+                                        onClick={(d,i) => setSelectedSpecialty(i+'')}
+                                        dataKey="count"
+                                        fill="#8884d8"
+                                    />
+                                ) : (
+                                    <Bar
+                                        dataKey="count"
+                                        fill="#8884d8"
+                                    />
+                                )}
                             </BarChart>
                         </ResponsiveContainer>
                     )

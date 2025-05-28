@@ -15,7 +15,12 @@ export function request(method, path, data) {
                 .then(res => {
                     let newToken = res.data.accessToken;
                     localStorage.setItem('token', JSON.stringify(newToken));
-                }).catch(err => console.error(err)); //log out the user clientside here
+                }).catch(err => {
+                    console.error(err)
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('currentUser');
+                    window.location.assign('/login');
+                });
         }
         headers["Authorization"] = `Bearer ${JSON.parse(token)}`;
     }

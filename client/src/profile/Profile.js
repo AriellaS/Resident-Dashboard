@@ -5,8 +5,6 @@ import * as S from '~/profile/styles';
 import ajax from '~/util';
 import Navbar from '~/shared/Navbar';
 
-const profpicpath = "/default_profpic.jpg";
-
 const Profile = ({ currentUser }) => {
 
     const navigate = useNavigate();
@@ -32,7 +30,7 @@ const Profile = ({ currentUser }) => {
                     })
                 }).catch(err => {
                     console.log(err);
-                    // have error state for user not found
+                    //TODO have error state for user not found
                 });
         }
         fetchData();
