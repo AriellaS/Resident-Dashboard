@@ -4,7 +4,6 @@ import * as shared from '~/shared';
 
 export const SearchBar = styled(shared.TextInput)`
     box-shadow: ${shared.boxShadow};
-    //margin-bottom: 20px;
     font-size: 16px;
 `;
 

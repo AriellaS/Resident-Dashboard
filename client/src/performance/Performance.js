@@ -13,19 +13,9 @@ const Performance = () => {
     const [barData, setBarData] = useState([]);
     const [selectedSpecialty, setSelectedSpecialty] = useState('');
 
-    type Datum = {
-        name: string,
-        count: number
-    }
-
-    type Series = {
-        label: string,
-        data: Datum[]
-    }
-
     useEffect(() => {
         function compileBarData(evalData) {
-            let series: Series[] = [];
+            let series = [];
             Questions.forEach(q => {
                 let answers = [];
                 evalData.forEach(e => {
@@ -33,7 +23,7 @@ const Performance = () => {
                         answers.push(e.form.find(el => { return el.name===q.name }).option);
                     }
                 });
-                let data: Datum[] = [];
+                let data = [];
                 if (q.type==='RADIO') {
                     q.optionTexts.forEach((o,i) => {
                         data.push({
@@ -57,7 +47,7 @@ const Performance = () => {
                 .catch(err => { console.log(err) });
         }
         fetchData();
-    }, [userId, selectedSpecialty, Datum, Series]);
+    }, [userId, selectedSpecialty]);
 
 
     return (
