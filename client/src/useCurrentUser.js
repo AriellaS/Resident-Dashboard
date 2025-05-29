@@ -15,8 +15,14 @@ export default function useCurrentUser() {
         setCurrentUser(userString);
     }
 
+    const removeCurrentUser = () => {
+        localStorage.removeItem('currentUser');
+        setCurrentUser('');
+    }
+
     return {
         setCurrentUser: saveCurrentUser,
+        removeCurrentUser,
         currentUser
     }
 }

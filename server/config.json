@@ -1,7 +1,7 @@
 {
 	"secret": "secret",
-	"accessExpirationSeconds": 3600,
-	"refreshExpirationSeconds": 12000,
+	"accessExpirationSeconds": 12000,
+	"refreshExpirationSeconds": 43200,
 	"dbHost": "localhost",
 	"dbPort": 27017,
 	"dbUsername": "",

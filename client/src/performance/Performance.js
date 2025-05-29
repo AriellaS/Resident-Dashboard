@@ -13,17 +13,6 @@ const Performance = () => {
     const [barData, setBarData] = useState([]);
     const [selectedSpecialty, setSelectedSpecialty] = useState('');
 
-    useEffect(() => {
-        async function fetchData() {
-            await ajax.request('get', `/users/id/${userId}/evals`)
-                .then(res => {
-                    setBarData(compileBarData(res.data));
-                })
-                .catch(err => { console.log(err) });
-        }
-        fetchData();
-    });
-
     type Datum = {
         name: string,
         count: number
@@ -34,31 +23,42 @@ const Performance = () => {
         data: Datum[]
     }
 
-    const compileBarData = (evalData) => {
-        let series: Series[] = [];
-        Questions.forEach(q => {
-            let answers = [];
-            evalData.forEach(e => {
-                if (!selectedSpecialty || e.form.find(el => { return el.name==='SUBSPECIALTY' }).option===selectedSpecialty) {
-                    answers.push(e.form.find(el => { return el.name===q.name }).option);
-                }
-            });
-            let data: Datum[] = [];
-            if (q.type==='RADIO') {
-                q.optionTexts.forEach((o,i) => {
-                    data.push({
-                        name: o,
-                        count: answers.filter(a => { return a===i+'' }).length,
-                    });
+    useEffect(() => {
+        function compileBarData(evalData) {
+            let series: Series[] = [];
+            Questions.forEach(q => {
+                let answers = [];
+                evalData.forEach(e => {
+                    if (!selectedSpecialty || e.form.find(el => { return el.name==='SUBSPECIALTY' }).option===selectedSpecialty) {
+                        answers.push(e.form.find(el => { return el.name===q.name }).option);
+                    }
                 });
-            }
-            series.push({
-                label: q.name,
-                data
+                let data: Datum[] = [];
+                if (q.type==='RADIO') {
+                    q.optionTexts.forEach((o,i) => {
+                        data.push({
+                            name: o,
+                            count: answers.filter(a => { return a===i+'' }).length,
+                        });
+                    });
+                }
+                series.push({
+                    label: q.name,
+                    data
+                });
             });
-        });
-        return series;
-    }
+            return series;
+        }
+        async function fetchData() {
+            await ajax.request('get', `/users/id/${userId}/evals`)
+                .then(res => {
+                    setBarData(compileBarData(res.data));
+                })
+                .catch(err => { console.log(err) });
+        }
+        fetchData();
+    }, [userId, selectedSpecialty, Datum, Series]);
+
 
     return (
         <S.CenterScreenContainer>
@@ -87,7 +87,7 @@ const Performance = () => {
                         </ResponsiveContainer>
                     )
                 } else {
-                    return <div key={i}></div>
+                    return (<div key={i}></div>)
                 }
             })}
         </S.CenterScreenContainer>

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import * as S from '~/home/styles';
 import UserSearchDropdown from '~/home/UserSearchDropdown';
 import Navbar from '~/shared/Navbar';
@@ -8,18 +8,38 @@ import ajax from '~/util';
 const Home = () => {
 
     const [queryState, setQueryState] = useState('');
-    const [searchResultState, setSearchResultState] = useState([]);
+    const [searchFocus, setSearchFocus] = useState(false);
+    const [allUserData, setAllUserData] = useState([]);
+    const [queriedUserData, setQueriedUserData] = useState([]);
 
-    const handleSearch = async(e) => {
+    const handleSearchBarFocus = () => {
+        setSearchFocus(true);
+    }
+
+    const handleSearchBarFocusOut = () => {
+        //setSearchFocus(false);
+    }
+
+    const handleSearchBarChange = async(e) => {
         let query = e.target.value;
-        setQueryState(query)
-        await ajax.request('get', `/users/search?q=${query}`)
+        setQueryState(query);
+        let re = new RegExp(String(query).trim().replace(/\s/g, "|"), "ig");
+        let queriedData = allUserData.filter(u => u.firstname.match(re) || u.lastname.match(re));
+        setQueriedUserData(queriedData);
+    }
+
+    useEffect(() => {
+        async function fetchData() {
+            await ajax.request('get', `/users?role=RESIDENT`)
             .then(res => {
-                setSearchResultState(res.data);
+                setAllUserData(res.data);
+                setQueriedUserData(res.data);
             }).catch(err => {
                 console.log(err);
             });
-    }
+        }
+        fetchData();
+    }, []);
 
     return (
         <S.ScreenContainer>
@@ -29,10 +49,11 @@ const Home = () => {
                     <S.SearchBar
                         placeholder="Search users..."
                         value={queryState}
-                        onClick={e => {handleSearch(e)}}
-                        onChange={e => {handleSearch(e)}}
+                        onFocus={handleSearchBarFocus}
+                        onBlur={handleSearchBarFocusOut}
+                        onChange={e => {handleSearchBarChange(e)}}
                     />
-                    <UserSearchDropdown users={searchResultState} />
+                    {searchFocus && <UserSearchDropdown users={queriedUserData} /> }
                 </S.SearchContainer>
             </S.CenterScreenContainer>
         </S.ScreenContainer>

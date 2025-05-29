@@ -18,6 +18,8 @@ const Profile = ({ currentUser }) => {
         role: "",
     });
 
+    const [errorState, setErrorState] = useState(false);
+
     useEffect(() => {
         async function fetchData() {
             await ajax.request('get',`/users/id/${userId}`)
@@ -28,9 +30,10 @@ const Profile = ({ currentUser }) => {
                         email: res.data.email,
                         role: res.data.role
                     })
+                    setErrorState(false);
                 }).catch(err => {
                     console.log(err);
-                    //TODO have error state for user not found
+                    setErrorState(true);
                 });
         }
         fetchData();
@@ -53,25 +56,29 @@ const Profile = ({ currentUser }) => {
             <Navbar />
             <S.CenterScreenContainer>
                 <S.Container>
-                    <QRCode value={`http://192.168.1.168:3000/users/${userId}`} />
-                    <S.TextContainer>
-                        <div>{getName()}</div>
-                        <div>{user.email}</div>
-                        <S.RoleText children={user.role} />
-                    </S.TextContainer>
-                    <hr />
-                    <S.Button
-                        text="Evaluate"
-                        type="button"
-                        onClick={handleEvaluate}
-                        disabled={user.role==="ATTENDING"}
-                    />
-                    <S.Button
-                        text="See Performance"
-                        type="button"
-                        onClick={handleSeePerformance}
-                        disabled={user.role==="ATTENDING" || currentUser.role==="RESIDENT"}
-                    />
+                    {errorState ? <div>User not found.</div> :
+                    <div>
+                        <QRCode value={`http://192.168.1.168:3000/users/${userId}`} />
+                        <S.TextContainer>
+                            <div>{getName()}</div>
+                            <div>{user.email}</div>
+                            <S.RoleText children={user.role} />
+                        </S.TextContainer>
+                        <hr />
+                        <S.Button
+                            text="Evaluate"
+                            type="button"
+                            onClick={handleEvaluate}
+                            disabled={user.role==="ATTENDING"}
+                        />
+                        <S.Button
+                            text="See Performance"
+                            type="button"
+                            onClick={handleSeePerformance}
+                            disabled={user.role==="ATTENDING" || currentUser.role==="RESIDENT"}
+                        />
+                    </div>
+                    }
                 </S.Container>
             </S.CenterScreenContainer>
         </S.ScreenContainer>

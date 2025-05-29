@@ -18,8 +18,6 @@ export function request(method, path, data) {
                 }).catch(err => {
                     console.error(err)
                     localStorage.removeItem('token');
-                    localStorage.removeItem('currentUser');
-                    window.location.assign('/login');
                 });
         }
         headers["Authorization"] = `Bearer ${JSON.parse(token)}`;

@@ -17,10 +17,8 @@ import useCurrentUser from '~/useCurrentUser';
 
 const App = () => {
 
-    const { token, setToken } = useToken();
+    const { setToken } = useToken();
     const { currentUser, setCurrentUser } = useCurrentUser();
-
-    //TODO if a users token expires, delete the token from localStorage
 
     return (
         <Router>
@@ -28,19 +26,19 @@ const App = () => {
                 <Route
                     exact
                     path="/"
-                    element={<PrivateRoute isAuthenticated={!!token} component={Home} />}
+                    element={<PrivateRoute component={Home} />}
                 />
                 <Route
                     path="/users/:id"
-                    element={<PrivateRoute isAuthenticated={!!token} currentUser={currentUser} component={Profile}/>}
+                    element={<PrivateRoute currentUser={currentUser} component={Profile}/>}
                 />
                 <Route
                     path="/users/:id/eval"
-                    element={<PrivateRoute isAuthenticated={!!token} component={Eval} />}
+                    element={<PrivateRoute component={Eval} />}
                 />
                 <Route
                     path="/users/:id/performance"
-                    element={<PrivateRoute isAuthenticated={!!token && currentUser.role==="ATTENDING"} component={Performance} />}
+                    element={<PrivateRoute component={Performance} />}
                 />
                 <Route
                     exact

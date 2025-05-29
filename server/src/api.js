@@ -136,6 +136,19 @@ router.post('/users', Promise.coroutine(function*(req, res) {
     });
 }));
 
+router.get('/users', verifyAccessToken, Promise.coroutine(function*(req, res) {
+    let role = req.query.role;
+    if (role != "RESIDENT" && role != "ATTENDING") {
+        return res.status(400).end("Invalid role");
+    }
+    let users = yield User.find({
+        role: "RESIDENT",
+    }).select('firstname lastname role');
+    res.json(users);
+}));
+
+
+
 router.get('/users/id/:userId', verifyAccessToken, Promise.coroutine(function*(req, res) {
     let userId = new ObjectId(req.params.userId);
     let user = yield User.findById(userId).exec();
@@ -156,22 +169,6 @@ router.get('/users/id/:userId/evals', verifyAccessToken, Promise.coroutine(funct
         evaluatee: userId,
     });
     res.json(evals);
-}));
-
-router.get('/users/search', verifyAccessToken, Promise.coroutine(function*(req, res) {
-    let query = req.query.q;
-    let re = new RegExp(String(query).trim().replace(/\s/g, "|"), "ig");
-
-    let users = yield User.find({
-        role: "RESIDENT",
-        $or: [{
-            firstname: re
-        }, {
-            lastname: re
-        }]
-    }).select('firstname lastname role').limit(10);
-
-    res.json(users);
 }));
 
 router.post('/evals', verifyAccessToken, Promise.coroutine(function*(req, res) {

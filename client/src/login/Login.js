@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 import ajax from "~/util.js"
 import TextInputWithLabel from '~/login/TextInputWithLabel';
@@ -18,6 +18,8 @@ const Login = ({ setToken, setCurrentUser }) => {
     });
 
     const navigate = useNavigate();
+    const { search } = useLocation();
+    const next = new URLSearchParams(search).get('next');
 
     const handleSubmit = async(e) => {
         e.preventDefault();
@@ -31,7 +33,11 @@ const Login = ({ setToken, setCurrentUser }) => {
              });
              setToken(res.data.accessToken);
              setCurrentUser(res.data.user);
-             navigate("/");
+             if (next) {
+                 navigate(next);
+             } else {
+                navigate('/');
+             }
          }).catch(err => {
              setErrorState({
                  isError: true,
