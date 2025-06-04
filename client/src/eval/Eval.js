@@ -31,7 +31,7 @@ const Eval = () => {
                 });
         }
         fetchData();
-    }, [userData]);
+    }, []);
 
     return (
         <S.ScreenContainer>

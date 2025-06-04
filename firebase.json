@@ -1,0 +1,33 @@
+{
+    "apphosting": [
+        {
+            "backendId": "resident-dashboard-server",
+            "rootDir": "./server",
+            "ignore": [
+                "node_modules",
+                ".git",
+                "firebase-debug.log",
+                "firebase-debug.*.log",
+                "functions"
+            ]
+        }
+    ],
+    "hosting": {
+        "public": "./client/build",
+        "ignore": [
+            "firebase.json",
+            "**/.*",
+            "**/node_modules/**"
+        ],
+        "rewrites": [{
+            "source": "/api/**",
+			"run": {
+				"serviceId": "resident-dashboard-server",
+				"region": "us-central1"
+			}
+        }, {
+			"source": "**",
+			"destination": "/index.html"
+		}]
+    }
+}

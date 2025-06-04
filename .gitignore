@@ -2,3 +2,5 @@
 **/build
 **/*.sw[a-p]
 **/.DS_Store
+.firebase
+./server/config.json

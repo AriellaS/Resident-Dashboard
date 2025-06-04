@@ -116,7 +116,7 @@ const Signup = ({ setToken, setCurrentUser }) => {
                     />
                 </form>
                 <S.StyledErrorBox isError={errorState.isError} errorMsg={errorState.errorMsg} />
-                <S.StyledLink to="/login" children="Already have an acccount?" />
+                <S.StyledLink to="/login" children="Already have an account?" />
             </S.Container>
         </S.CenterScreenContainer>
     )
