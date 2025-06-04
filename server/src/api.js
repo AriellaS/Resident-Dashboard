@@ -1,7 +1,6 @@
 "use strict"
 
 const express = require('express');
-const Promise = require('bluebird');
 const jwt = require('jsonwebtoken');
 const User = require('./models/User');
 const AttendingToResidentEval = require('./models/AttendingToResidentEval');
@@ -37,8 +36,8 @@ const verifyAccessToken = (req, res, next) => {
     });
 };
 
-router.post('/login', Promise.coroutine(function*(req, res) {
-    let user = yield User.findOne({
+router.post('/login', async (req, res) => {
+    let user = await User.findOne({
         email: req.body.email
     }).select("+password");
 
@@ -47,7 +46,7 @@ router.post('/login', Promise.coroutine(function*(req, res) {
     }
 
     let candidatePassword = req.body.password;
-    let passwordsMatch = yield user.comparePassword(candidatePassword);
+    let passwordsMatch = await user.comparePassword(candidatePassword);
 
     if (!passwordsMatch) {
         return res.status(400).end("Invalid login credentials");
@@ -55,7 +54,7 @@ router.post('/login', Promise.coroutine(function*(req, res) {
 
     user.password = undefined;
 
-    let refreshToken = yield RefreshToken.createToken(user._id);
+    let refreshToken = await RefreshToken.createToken(user._id);
     let accessToken = createNewAccessToken(user._id);
 
     res.cookie('refreshToken', refreshToken);
@@ -65,11 +64,11 @@ router.post('/login', Promise.coroutine(function*(req, res) {
         user: user
     });
 
-}));
+});
 
-router.post('/refresh', Promise.coroutine(function*(req, res) {
+router.post('/refresh', async (req, res) => {
     let refreshTokenString = req.cookies.refreshToken;
-    let refreshToken = yield RefreshToken.findOne({
+    let refreshToken = await RefreshToken.findOne({
         token: refreshTokenString,
     });
     if (!refreshToken) {
@@ -82,26 +81,26 @@ router.post('/refresh', Promise.coroutine(function*(req, res) {
     res.status(200).send({
         accessToken: accessToken,
     });
-}));
+});
 
-router.post('/logout', Promise.coroutine(function*(req, res) {
-    yield RefreshToken.deleteMany({
+router.post('/logout', async (req, res) => {
+    await RefreshToken.deleteMany({
         user: req.session.userId
     });
     req.session.destroy((err) => {
         return res.status(500).end("Logout unsuccessful");
     });
     res.end();
-}));
+});
 
-router.post('/users', Promise.coroutine(function*(req, res) {
+router.post('/users', async (req, res) => {
     let emailPattern = /^([\w-]+(?:\.[\w-]+)*)@(montefiore\.org|einsteinmed\.edu)$/i;
     let emailIsValid = emailPattern.test(req.body.email);
     if (!emailIsValid) {
         return res.status(400).end("Invalid email");
     }
 
-    let userExists = yield User.findOne({
+    let userExists = await User.findOne({
         email: req.body.email
     });
     if (userExists) {
@@ -110,7 +109,7 @@ router.post('/users', Promise.coroutine(function*(req, res) {
 
     let user;
     try {
-        user = yield User.create({
+        user = await User.create({
             firstname: req.body.firstname,
             lastname: req.body.lastname,
             email: req.body.email,
@@ -125,7 +124,7 @@ router.post('/users', Promise.coroutine(function*(req, res) {
 
     console.log("Account created for " + req.body.firstname);
 
-    let refreshToken = yield RefreshToken.createToken(user._id);
+    let refreshToken = await RefreshToken.createToken(user._id);
     let accessToken = createNewAccessToken(user._id);
 
     res.cookie('refreshToken', refreshToken);
@@ -134,44 +133,42 @@ router.post('/users', Promise.coroutine(function*(req, res) {
         accessToken: accessToken,
         user: user
     });
-}));
+});
 
-router.get('/users', verifyAccessToken, Promise.coroutine(function*(req, res) {
+router.get('/users', verifyAccessToken, async (req, res) => {
     let role = req.query.role;
     if (role != "RESIDENT" && role != "ATTENDING") {
         return res.status(400).end("Invalid role");
     }
-    let users = yield User.find({
+    let users = await User.find({
         role: "RESIDENT",
     }).select('firstname lastname role');
     res.json(users);
-}));
+});
 
-
-
-router.get('/users/id/:userId', verifyAccessToken, Promise.coroutine(function*(req, res) {
+router.get('/users/id/:userId', verifyAccessToken, async (req, res) => {
     let userId = new ObjectId(req.params.userId);
-    let user = yield User.findById(userId).exec();
+    let user = await User.findById(userId).exec();
     if (!user) {
         res.status(404).end("User not found");
     }
     res.json(user);
-}));
+});
 
-router.get('/users/id/:userId/evals', verifyAccessToken, Promise.coroutine(function*(req, res) {
+router.get('/users/id/:userId/evals', verifyAccessToken, async (req, res) => {
     //TODO check that user accessing is an attending
     let userId = new ObjectId(req.params.userId);
-    let user = yield User.findById(userId).exec();
+    let user = await User.findById(userId).exec();
     if (!user) {
         res.status(404).end("User not found");
     }
-    let evals = yield AttendingToResidentEval.find({
+    let evals = await AttendingToResidentEval.find({
         evaluatee: userId,
     });
     res.json(evals);
-}));
+});
 
-router.post('/evals', verifyAccessToken, Promise.coroutine(function*(req, res) {
+router.post('/evals', verifyAccessToken, async (req, res) => {
     // TODO redo this so that its post /users/id/:userId/evals where useId is the evaluatee
     let evalType = req.body.type;
     let evaluatorId = new ObjectId(req.session.userId);
@@ -190,8 +187,8 @@ router.post('/evals', verifyAccessToken, Promise.coroutine(function*(req, res) {
         return res.status(400).end("One cannot evaluate oneself");
     }
 
-    let evaluator = yield User.findById(evaluatorId).select('role');
-    let evaluatee = yield User.findById(evaluateeId).select('role');
+    let evaluator = await User.findById(evaluatorId).select('role');
+    let evaluatee = await User.findById(evaluateeId).select('role');
 
     if (!evaluator || !evaluatee) {
         return res.status(400).end("User not found");
@@ -212,7 +209,7 @@ router.post('/evals', verifyAccessToken, Promise.coroutine(function*(req, res) {
             return res.status(400).end("Invalid input");
         }
         try {
-            yield AttendingToResidentEval.create({
+            await AttendingToResidentEval.create({
                 evaluator: evaluatorId,
                 evaluatee: evaluateeId,
                 form,
@@ -229,6 +226,6 @@ router.post('/evals', verifyAccessToken, Promise.coroutine(function*(req, res) {
 
     console.log('Eval submitted');
     return res.status(200).end("Eval submitted");;
-}));
+});
 
 module.exports = router;

@@ -1,7 +1,6 @@
 "use strict"
 
 const mongoose = require('mongoose');
-const Promise = require('bluebird');
 const { v4: uuidv4 } = require('uuid');
 const config = require('../../config');
 
@@ -14,7 +13,7 @@ const refreshTokenSchema = new mongoose.Schema({
     expiryDate: Date,
 });
 
-refreshTokenSchema.statics.createToken = Promise.coroutine(function*(userId) {
+refreshTokenSchema.statics.createToken = async function (userId) {
     let expiredAt = new Date();
 
     expiredAt.setSeconds(
@@ -29,9 +28,9 @@ refreshTokenSchema.statics.createToken = Promise.coroutine(function*(userId) {
         expiryDate: expiredAt.getTime(),
     });
 
-    let refreshToken = yield _object.save();
+    let refreshToken = await _object.save();
     return refreshToken.token;
-});
+};
 
 refreshTokenSchema.methods.verifyExpiration = () => {
     return this.expiryDate.getTime() < new Date().getTime();

@@ -1,7 +1,6 @@
 "use strict"
 
 const mongoose = require("mongoose");
-const Promise = require("bluebird");
 const Questions = require('../forms/AttendingToResidentEvalForm');
 const Schema = mongoose.Schema;
 

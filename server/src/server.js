@@ -4,7 +4,6 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
-const Promise = require('bluebird');
 const bodyParser = require('body-parser');
 const session = require('express-session');
 const path = require('path');

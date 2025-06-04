@@ -2,7 +2,6 @@
 
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
-const Promise = require("bluebird");
 
 const Schema = mongoose.Schema;
 const SALT_WORK_FACTOR = 10;
@@ -58,15 +57,15 @@ userSchema.pre("save", function(next) {
 
 userSchema.methods.comparePassword = function(candidatePassword) {
     let password = this.password;
-    return new Promise(function(resolve, reject) {
-        bcrypt.compare(candidatePassword, password, function(err, result) {
+    return async (resolve, reject) => {
+        bcrypt.compare(candidatePassword, password, (err, result) => {
             if (err) {
                 reject(err);
             } else {
                 resolve(result)
             }
         });
-    });
+    };
 };
 
 const User = mongoose.model("User", userSchema);
