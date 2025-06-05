@@ -11,6 +11,7 @@ const attendingToResidentEvalSchema = new Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
         required: true,
+        select: false,
     },
     evaluatee: {
         type: mongoose.Schema.Types.ObjectId,

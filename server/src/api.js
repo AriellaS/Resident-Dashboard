@@ -147,10 +147,15 @@ router.get('/users', verifyAccessToken, async (req, res) => {
 });
 
 router.get('/users/id/:userId', verifyAccessToken, async (req, res) => {
-    let userId = new ObjectId(req.params.userId);
+    let userId;
+    try {
+        userId = new ObjectId(req.params.userId);
+    } catch (err) {
+        return res.status(400).end("Invalid user ID");
+    }
     let user = await User.findById(userId).exec();
     if (!user) {
-        res.status(404).end("User not found");
+        return res.status(404).end("User not found");
     }
     res.json(user);
 });

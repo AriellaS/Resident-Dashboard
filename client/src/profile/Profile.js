@@ -58,25 +58,27 @@ const Profile = ({ currentUser }) => {
                 <S.Container>
                     {errorState ? <div>User not found.</div> :
                     <div>
-                        <QRCode value={`http://192.168.1.168:3000/users/${userId}`} />
+                        <QRCode value={`${window.location.origin}/users/${userId}`} />
                         <S.TextContainer>
                             <div>{getName()}</div>
                             <div>{user.email}</div>
                             <S.RoleText children={user.role} />
                         </S.TextContainer>
                         <hr />
-                        <S.Button
-                            text="Evaluate"
-                            type="button"
-                            onClick={handleEvaluate}
-                            disabled={user.role==="ATTENDING"}
-                        />
-                        <S.Button
-                            text="See Performance"
-                            type="button"
-                            onClick={handleSeePerformance}
-                            disabled={user.role==="ATTENDING" || currentUser.role==="RESIDENT"}
-                        />
+                        {currentUser.role==="ATTENDING" && user.role==="RESIDENT" && (
+                            <S.Button
+                                text="Evaluate"
+                                type="button"
+                                onClick={handleEvaluate}
+                            />
+                        )}
+                        {(currentUser.role==="ATTENDING" || currentUser._id===userId) && user.role==="RESIDENT" && (
+                            <S.Button
+                                text="See Performance"
+                                type="button"
+                                onClick={handleSeePerformance}
+                            />
+                        )}
                     </div>
                     }
                 </S.Container>
