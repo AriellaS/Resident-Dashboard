@@ -30,13 +30,15 @@ const userSchema = new Schema({
         enum: ["RESIDENT", "ATTENDING"],
         required: true
     },
-    email_confirmed: {
+    verification_code: {
+        type: String,
+        select: false
+    },
+    email_verified: {
         type: Boolean,
         default: false,
-    },
-    created_at: Date,
-    updated_at: Date,
-});
+    }
+}, { timestamps: true });
 
 userSchema.pre("save", function(next) {
     let user = this;

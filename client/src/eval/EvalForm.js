@@ -9,7 +9,7 @@ const EvalForm = (props) => {
     const [pageState, setPageState] = useState(0);
 
     const [formState, setFormState] = useState(Object.fromEntries(Questions.map(q => (
-        [q.name, ""]
+        [q.name, q.type==='DATE' ? null : ""]
     ))));
 
     const [submissionState, setSubmissionState] = useState(false);
@@ -37,9 +37,8 @@ const EvalForm = (props) => {
 
     const handleSubmit = async(e) => {
         e.preventDefault();
-        await ajax.request('post', '/evals', {
+        await ajax.request('post', `/users/id/${props.userData.id}/evals`, {
             type: "ATTENDING2RESIDENT",
-            evaluatee: props.userData.id,
             form: formState,
         }).then(res => {
             setSubmissionState(true);
@@ -81,7 +80,9 @@ const EvalForm = (props) => {
                                 [...Array(q.optionTexts.length).keys()] : null
                         }
                         optionTexts={q.type==='RADIO' ? q.optionTexts : null}
-                        onChange={e => setFormState({...formState, [q.name]: e.target.value}) }
+                        onChange={e => {
+                            q.type==='DATE' ? setFormState({...formState, [q.name]: e}) : setFormState({...formState, [q.name]: e.target.value}) }
+                        }
                     />
                 ))}
             </S.QuestionsContainer>

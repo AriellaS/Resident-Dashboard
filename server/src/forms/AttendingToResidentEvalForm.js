@@ -1,4 +1,7 @@
 const Questions = [{
+        name: 'DATE_SURGERY',
+        type: 'DATE'
+    }, {
         name: 'SUBSPECIALTY',
         type: 'RADIO',
         numOptions: 7,

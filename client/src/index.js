@@ -5,6 +5,8 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min';
 
 import '~/index.css';
+import 'rsuite/dist/rsuite-no-reset.min.css';
+
 import App from '~/App';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));

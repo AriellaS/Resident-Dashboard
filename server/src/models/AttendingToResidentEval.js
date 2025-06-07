@@ -23,8 +23,8 @@ const attendingToResidentEvalSchema = new Schema({
             name: { type: String, enum: QUESTION_NAMES, required: true },
             option: { type: String }
         }]
-    },
-});
+    }
+}, { timestamps: true });
 
 attendingToResidentEvalSchema.statics.validateInput = (form) => {
     // TODO also check that for radio questions, option is a number less than numOptions

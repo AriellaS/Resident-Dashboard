@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import EvalForm from '~/eval/EvalForm';
 import { useParams } from 'react-router-dom';
 import * as S from '~/eval/styles';
@@ -18,12 +18,12 @@ const Eval = () => {
 
     useEffect(() => {
         async function fetchData() {
-            await ajax.request('get',`/users/id/${userData.id}`)
+            await ajax.request('get',`/users/id/${userId}`)
                 .then(res => {
                     setUserData({
-                        ...userData,
                         firstname: res.data.firstname,
                         lastname: res.data.lastname,
+                        id: userId
                     });
                 })
                 .catch(err => {
@@ -31,7 +31,7 @@ const Eval = () => {
                 });
         }
         fetchData();
-    }, []);
+    }, [userId]);
 
     return (
         <S.ScreenContainer>

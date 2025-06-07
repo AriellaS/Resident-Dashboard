@@ -1,4 +1,5 @@
 import * as S from '~/eval/styles';
+import { DatePicker } from 'rsuite';
 
 const Question = (props) => {
 
@@ -34,7 +35,7 @@ const Question = (props) => {
             <S.QuestionContainer>
                 <hr />
                 <S.QuestionText>{props.text}</S.QuestionText>
-                <S.TextInput onChange={props.onChange} value={props.value}/>
+                <S.TextInput onChange={props.onChange} value={props.value} />
             </S.QuestionContainer>
         )
     } else if (props.type === 'LONG_TEXT') {
@@ -42,7 +43,21 @@ const Question = (props) => {
             <S.QuestionContainer>
                 <hr />
                 <S.QuestionText>{props.text}</S.QuestionText>
-                <S.TextArea onChange={props.onChange} value={props.value}/>
+                <S.TextArea onChange={props.onChange} value={props.value} />
+            </S.QuestionContainer>
+        )
+    } else if (props.type === 'DATE') {
+        return (
+            <S.QuestionContainer>
+                <hr />
+                <S.QuestionText>{props.text}</S.QuestionText>
+                <DatePicker
+                    oneTap
+                    defaultValue={new Date()}
+                    value={props.value}
+                    onChange={props.onChange}
+                    format='MM/dd/yyyy'
+                />
             </S.QuestionContainer>
         )
     }

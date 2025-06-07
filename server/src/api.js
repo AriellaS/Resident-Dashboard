@@ -2,6 +2,7 @@
 
 const express = require('express');
 const jwt = require('jsonwebtoken');
+const nodemailer = require('nodemailer');
 const User = require('./models/User');
 const AttendingToResidentEval = require('./models/AttendingToResidentEval');
 const ObjectId = require('mongodb').ObjectId;
@@ -17,6 +18,23 @@ const createNewAccessToken = (userId) => {
         expiresIn: config.accessExpirationSeconds,
     });
     return accessToken;
+};
+
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: config.emailUser,
+        pass: config.emailPassword
+    }
+});
+
+const sendVerificationEmail = (recipient, verificationCode) => {
+    transporter.sendMail({
+        from: config.emailUser,
+        to: recipient,
+        subject: `Your email verification code: ${verificationCode}`,
+        text: `Your code is ${verificationCode}. Verify your account at https://resident-dashboard.web.app/verify. If you did not request this code, please ignore this email.`
+    }, (err) => { err ? console.log(err) : console.log(`Email sent to ${recipient}`) });
 };
 
 const verifyAccessToken = (req, res, next) => {
@@ -115,6 +133,7 @@ router.post('/users', async (req, res) => {
             email: req.body.email,
             password: req.body.password,
             role: req.body.role.toUpperCase(),
+            verification_code: verificationCode
         });
     } catch(err) {
         return res.status(500).end("Unable to create account");
@@ -124,15 +143,24 @@ router.post('/users', async (req, res) => {
 
     console.log("Account created for " + req.body.firstname);
 
+    let verificationCode = [...Array(6)].map(_=>Math.random()*10|0).join("");
+    sendVerificationEmail(req.body.email, verificationCode);
+
     let refreshToken = await RefreshToken.createToken(user._id);
     let accessToken = createNewAccessToken(user._id);
-
     res.cookie('refreshToken', refreshToken);
 
     return res.send({
         accessToken: accessToken,
         user: user
     });
+});
+
+router.post('/users/id/:userId/verify', verifyAccessToken, (req, res) => {
+    // check if verified is false (if true, say user already verified)
+    // then check if code matches
+    // if matches, set verified to true
+    // change verifyAccessToken to verifyAuth - here you check token + if user exists + is verified (you can add the user data to req.session.user so that youd dont await findUser after middleware)
 });
 
 router.get('/users', verifyAccessToken, async (req, res) => {
@@ -173,11 +201,10 @@ router.get('/users/id/:userId/evals', verifyAccessToken, async (req, res) => {
     res.json(evals);
 });
 
-router.post('/evals', verifyAccessToken, async (req, res) => {
-    // TODO redo this so that its post /users/id/:userId/evals where useId is the evaluatee
+router.post('/users/id/:userId/evals', verifyAccessToken, async (req, res) => {
     let evalType = req.body.type;
+    let evaluateeId = new ObjectId(req.params.userId);
     let evaluatorId = new ObjectId(req.session.userId);
-    let evaluateeId = new ObjectId(req.body.evaluatee);
 
     let formObject = req.body.form;
     let form = [];
