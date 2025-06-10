@@ -20,15 +20,19 @@ const PrivateRoute = ({ component: Component, needsEmailVerif, ...rest }) => {
     useEffect(() => {
         async function refreshToken() {
             if (token) {
-                let jwtPayload = JSON.parse(window.atob(token.split('.')[1]));
-                if ((jwtPayload.exp - REFRESH_BEFORE_EXPIRY)*1000 < new Date().getTime()) {
-                    axios.post("/api/refresh")
-                        .then(res => {
-                            setToken(res.data.accessToken);
-                        }).catch(err => {
-                            console.error(err)
-                            removeToken();
-                        });
+                try {
+                    let jwtPayload = JSON.parse(window.atob(token.split('.')[1]));
+                    if ((jwtPayload.exp - REFRESH_BEFORE_EXPIRY)*1000 < new Date().getTime()) {
+                        axios.post("/api/refresh")
+                            .then(res => {
+                                setToken(res.data.accessToken);
+                            }).catch(err => {
+                                console.error(err)
+                                removeToken();
+                            });
+                    }
+                } catch (err) {
+                    console.log(err);
                 }
             }
         }

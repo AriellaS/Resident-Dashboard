@@ -4,7 +4,11 @@ export default function useCurrentUser() {
 
     const getCurrentUser = () => {
         const userString = localStorage.getItem('currentUser');
-        return JSON.parse(userString);
+        try {
+            return JSON.parse(userString);
+        } catch (err) {
+            return '';
+        }
     }
 
     const [currentUser, setCurrentUser] = useState(getCurrentUser());

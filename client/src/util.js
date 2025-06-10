@@ -9,18 +9,22 @@ export function request(method, path, data) {
     };
     let token = localStorage.getItem('token');
     if (token) {
-        let jwtPayload = JSON.parse(window.atob(token.split('.')[1]));
-        if (jwtPayload.exp*1000 < new Date().getTime()) {
-            axios.post("/api/refresh")
-                .then(res => {
-                    let newToken = res.data.accessToken;
-                    localStorage.setItem('token', JSON.stringify(newToken));
-                }).catch(err => {
-                    console.error(err)
-                    localStorage.removeItem('token');
-                });
+        try {
+            let jwtPayload = JSON.parse(window.atob(token.split('.')[1]));
+            if (jwtPayload.exp*1000 < new Date().getTime()) {
+                axios.post("/api/refresh")
+                    .then(res => {
+                        let newToken = res.data.accessToken;
+                        localStorage.setItem('token', JSON.stringify(newToken));
+                    }).catch(err => {
+                        console.error(err)
+                        localStorage.removeItem('token');
+                    });
+            }
+            headers["Authorization"] = `Bearer ${JSON.parse(token)}`;
+        } catch (err) {
+            console.log(err);
         }
-        headers["Authorization"] = `Bearer ${JSON.parse(token)}`;
     }
     if (method === "get" && data) {
         return axios.get("/api" + path, {
