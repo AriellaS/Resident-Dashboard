@@ -63,11 +63,20 @@ const Verify = ({ currentUser, setCurrentUser }) => {
                     msg: "New code was sent to your email"
                 });
             }).catch(err => {
-                console.log(err);
-                setAlert({
-                    state: "ERROR",
-                    msg: "Failed to send code"
-                });
+                if (err.response.data === "User is already verified") {
+                    setAlert({
+                        state: "ERROR",
+                        msg: "Your account is already verified"
+                    });
+                    setCurrentUser({ ...currentUser, email_verified: true });
+                    navigate('/');
+                } else {
+                    console.log(err);
+                    setAlert({
+                        state: "ERROR",
+                        msg: "Failed to send code"
+                    });
+                }
             });
     }
 

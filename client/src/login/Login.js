@@ -33,7 +33,6 @@ const Login = ({ setToken, setCurrentUser }) => {
                      msg: "User not found"
                  });
              } else if (res.data === "Invalid login credentials") {
-                 console.log('a')
                  setErrorState({
                      isError: true,
                      msg: "The password you entered is incorrect"

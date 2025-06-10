@@ -27,7 +27,6 @@ const SuccessContainer = styled(AlertContainer)`
 
 const AlertMessage = styled.div`
     font-size: 13px;
-    font-family: helvetica;
 `;
 
 const ErrorMessage = styled(AlertMessage)`

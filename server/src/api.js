@@ -55,6 +55,18 @@ const verifyAccessToken = (req, res, next) => {
     });
 };
 
+const verifyEmailVerif = async (req, res, next) => {
+    let user = await User.findById(req.session.userId);
+    if (!user) {
+        return res.status(400).end("User not found");
+    }
+    if (!user.email_verified) {
+        return res.status(401).end("User email not verified");
+    }
+    req.session.user = user;
+    next();
+}
+
 router.post('/login', async (req, res) => {
     let user = await User.findOne({
         email: req.body.email
@@ -173,8 +185,6 @@ router.put('/verify', verifyAccessToken, async (req, res) => {
     user.verification_code = null;
     await user.save()
     return res.status(200).end("User verified");
-
-    // change verifyAccessToken to verifyAuth - here you check token + if user exists + is verified. since youll have to await user.find here, you should pass the whole user object into req.session, use that for subsequent reqs
 });
 
 router.put('/verify/new', verifyAccessToken, async (req, res) => {
@@ -187,21 +197,23 @@ router.put('/verify/new', verifyAccessToken, async (req, res) => {
     user.verification_code = [...Array(6)].map(_=>Math.random()*10|0).join("");
     await user.save();
     //sendVerificationEmail(req.body.email, verificationCode);
+
     return res.status(200).end("New code sent");
 });
 
-router.get('/users', verifyAccessToken, async (req, res) => {
+router.get('/users', verifyAccessToken, verifyEmailVerif, async (req, res) => {
     let role = req.query.role;
     if (role != "RESIDENT" && role != "ATTENDING") {
         return res.status(400).end("Invalid role");
     }
     let users = await User.find({
-        role: "RESIDENT",
+        role: role,
+        email_verified: true
     }).select('firstname lastname role');
     res.json(users);
 });
 
-router.get('/users/id/:userId', verifyAccessToken, async (req, res) => {
+router.get('/users/id/:userId', verifyAccessToken, verifyEmailVerif, async (req, res) => {
     let userId;
     try {
         userId = new ObjectId(req.params.userId);
@@ -215,9 +227,16 @@ router.get('/users/id/:userId', verifyAccessToken, async (req, res) => {
     res.json(user);
 });
 
-router.get('/users/id/:userId/evals', verifyAccessToken, async (req, res) => {
-    //TODO check that user accessing is an attending
-    let userId = new ObjectId(req.params.userId);
+router.get('/users/id/:userId/evals', verifyAccessToken, verifyEmailVerif, async (req, res) => {
+    let userId;
+    try {
+        userId = new ObjectId(req.params.userId);
+    } catch (err) {
+        return res.status(400).end("Invalid user ID");
+    }
+    if (req.session.user.role !== "ATTENDING" && !req.session.user._id.equals(userId)) {
+        return res.status(401).end("Unauthorized");
+    }
     let user = await User.findById(userId).exec();
     if (!user) {
         res.status(404).end("User not found");
@@ -228,12 +247,24 @@ router.get('/users/id/:userId/evals', verifyAccessToken, async (req, res) => {
     res.json(evals);
 });
 
-router.post('/users/id/:userId/evals', verifyAccessToken, async (req, res) => {
+router.post('/users/id/:userId/evals', verifyAccessToken, verifyEmailVerif, async (req, res) => {
     let evalType = req.body.type;
-    let evaluateeId = new ObjectId(req.params.userId);
-    let evaluatorId = new ObjectId(req.session.userId);
-
     let formObject = req.body.form;
+    let evaluateeId = new ObjectId(req.params.userId);
+
+    if (evalType !== "ATTENDING2RESIDENT" && evalType !== "RESIDENT2RESIDENT") {
+        return res.status(400).end("Invalid eval type");
+    }
+
+    if (req.session.user._id.equals(evaluateeId)) {
+        return res.status(400).end("One cannot evaluate oneself");
+    }
+
+    let evaluatee = await User.findById(evaluateeId).select('role');
+    if (!evaluatee) {
+        return res.status(400).end("User not found");
+    }
+
     let form = [];
     Object.keys(formObject).forEach((key, i) => {
         form[i] = {
@@ -242,23 +273,8 @@ router.post('/users/id/:userId/evals', verifyAccessToken, async (req, res) => {
         }
     });
 
-    if (evaluatorId.equals(evaluateeId)) {
-        return res.status(400).end("One cannot evaluate oneself");
-    }
-
-    let evaluator = await User.findById(evaluatorId).select('role');
-    let evaluatee = await User.findById(evaluateeId).select('role');
-
-    if (!evaluator || !evaluatee) {
-        return res.status(400).end("User not found");
-    }
-
-    if (evalType !== "ATTENDING2RESIDENT" && evalType !== "RESIDENT2RESIDENT") {
-        return res.status(400).end("Invalid eval type");
-    }
-
     if (evalType === "ATTENDING2RESIDENT") {
-        if (evaluator.role !== "ATTENDING") {
+        if (req.session.user.role !== "ATTENDING") {
             return res.status(400).end("Evaluator must be an attending");
         }
         if (evaluatee.role !== "RESIDENT") {
@@ -269,7 +285,7 @@ router.post('/users/id/:userId/evals', verifyAccessToken, async (req, res) => {
         }
         try {
             await AttendingToResidentEval.create({
-                evaluator: evaluatorId,
+                evaluator: req.session.user._id,
                 evaluatee: evaluateeId,
                 form,
             });

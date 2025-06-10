@@ -7,3 +7,13 @@ body {
   -moz-osx-font-smoothing: grayscale;
   overflow: auto;
 }
+
+.btn-primary {
+    background-color: #008ae0;
+}
+
+.btn-primary:hover, .btn-primary:focus, .btn-primary:active {
+    background-color: #007ecc;
+}
+
+
