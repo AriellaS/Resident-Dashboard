@@ -158,7 +158,7 @@ router.post('/users', async (req, res) => {
 
     console.log("Account created for " + req.body.firstname);
 
-    //sendVerificationEmail(req.body.email, verificationCode);
+    sendVerificationEmail(req.body.email, verificationCode);
 
     let refreshToken = await RefreshToken.createToken(user._id);
     let accessToken = createNewAccessToken(user._id);
@@ -190,13 +190,14 @@ router.put('/verify', verifyAccessToken, async (req, res) => {
 router.put('/verify/new', verifyAccessToken, async (req, res) => {
     let userId = req.session.userId;
 
-    let user = await User.findById(userId).select('email_verified');
+    let user = await User.findById(userId).select('email email_verified');
     if (user.email_verified) {
         return res.status(400).end("User is already verified");
     }
-    user.verification_code = [...Array(6)].map(_=>Math.random()*10|0).join("");
+    let verificationCode = [...Array(6)].map(_=>Math.random()*10|0).join("");
+    user.verification_code = verificationCode;
     await user.save();
-    //sendVerificationEmail(req.body.email, verificationCode);
+    sendVerificationEmail(user.email, verificationCode);
 
     return res.status(200).end("New code sent");
 });

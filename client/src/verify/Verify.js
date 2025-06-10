@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CodeInput from '~/verify/CodeInput';
 import ajax from '~/util';
@@ -10,14 +10,12 @@ const logoPath = "/favicon/favicon.svg";
 
 const Verify = ({ currentUser, setCurrentUser }) => {
 
-    const [userEmail, setUserEmail] = useState();
     const [inputs, setInputs] = useState(new Array(NUM_DIGITS).fill(""));
     const [alert, setAlert] = useState({
         state: "HIDDEN",
         msg: ""
     });
 
-    const userId = currentUser._id;
     const navigate = useNavigate();
 
     const handleVerify = async () => {
@@ -80,24 +78,12 @@ const Verify = ({ currentUser, setCurrentUser }) => {
             });
     }
 
-    useEffect(() => {
-        async function fetchData() {
-            await ajax.request('get',`/users/id/${userId}`)
-                .then(res => {
-                    setUserEmail(res.data.email);
-                }).catch(err => {
-                    console.log(err);
-                });
-        }
-        fetchData();
-    }, [userId]);
-
     return (
         <S.CenterScreenContainer>
             <S.Container>
                 <S.Image src={logoPath} alt="EvalMD Logo" />
                 <S.Header children="Enter Verification Code" />
-                <S.SubHeader children={`We sent a code to ${userEmail}`} />
+                <S.SubHeader children={`We sent a code to ${currentUser.email}`} />
                 <CodeInput inputs={inputs} setInputs={setInputs} handleVerify={handleVerify} />
                 <S.SmallTextContainer>
                     <S.SmallTextUnderlined children={'Click here'} onClick={handleRequestNewCode} />
