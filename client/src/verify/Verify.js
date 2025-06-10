@@ -56,7 +56,6 @@ const Verify = ({ currentUser, setCurrentUser }) => {
     }
 
     const handleRequestNewCode = async () => {
-        console.log(alert)
         await ajax.request('put', `/verify/new`)
             .then(res => {
                 setAlert({

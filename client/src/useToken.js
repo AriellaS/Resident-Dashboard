@@ -14,7 +14,7 @@ export default function useToken() {
     const saveToken = (token) => {
         const tokenString = JSON.stringify(token);
         localStorage.setItem('token', tokenString);
-        setToken(tokenString);
+        setToken(token);
     }
 
     const removeToken = () => {

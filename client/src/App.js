@@ -44,7 +44,7 @@ const App = () => {
                 <Route
                     exact
                     path="/verify"
-                    element={<PrivateRoute needsEmailVerif={false} component={Verify} setCurrentUser={setCurrentUser} />}
+                    element={<PrivateRoute needsEmailVerif={false} component={Verify} />}
                 />
                 <Route
                     exact

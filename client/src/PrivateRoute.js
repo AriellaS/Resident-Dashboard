@@ -8,10 +8,10 @@ const PrivateRoute = ({ component: Component, needsEmailVerif, ...rest }) => {
 
     const { pathname } = useLocation();
     const { token, setToken, removeToken } = useToken();
-    const { currentUser } = useCurrentUser();
+    const { currentUser, setCurrentUser } = useCurrentUser();
 
     const isAuthenticated = !!token;
-    const isVerified = currentUser.email_verified;
+    const isVerified = !!currentUser && currentUser.email_verified;
 
     const pageAccessibleToUser = isAuthenticated && (!needsEmailVerif || isVerified);
 
@@ -36,7 +36,7 @@ const PrivateRoute = ({ component: Component, needsEmailVerif, ...rest }) => {
     });
 
     return pageAccessibleToUser ?
-        ( <Component currentUser={currentUser} {...rest} /> )
+        ( <Component currentUser={currentUser} setCurrentUser={setCurrentUser} {...rest} /> )
         : ( <Navigate to={isAuthenticated ? `/verify` : `/login?next=${pathname}`} /> );
 }
 

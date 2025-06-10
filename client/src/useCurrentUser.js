@@ -12,7 +12,7 @@ export default function useCurrentUser() {
     const saveCurrentUser = (user) => {
         const userString = JSON.stringify(user);
         localStorage.setItem('currentUser', userString);
-        setCurrentUser(userString);
+        setCurrentUser(user);
     }
 
     const removeCurrentUser = () => {
