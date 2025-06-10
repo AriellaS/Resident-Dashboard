@@ -3,6 +3,7 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
+const bcrypt = require("bcryptjs");
 const User = require('./models/User');
 const AttendingToResidentEval = require('./models/AttendingToResidentEval');
 const ObjectId = require('mongodb').ObjectId;
@@ -32,8 +33,8 @@ const sendVerificationEmail = (recipient, verificationCode) => {
     transporter.sendMail({
         from: config.emailUser,
         to: recipient,
-        subject: `Your email verification code: ${verificationCode}`,
-        text: `Your code is ${verificationCode}. Verify your account at https://resident-dashboard.web.app/verify. If you did not request this code, please ignore this email.`
+        subject: `Your EvalMD verification code: ${verificationCode}`,
+        text: `Your code is ${verificationCode}. Verify your account at https://evalmd.io/verify. If you did not request this code, please ignore this email.`
     }, (err) => { err ? console.log(err) : console.log(`Email sent to ${recipient}`) });
 };
 
@@ -60,28 +61,28 @@ router.post('/login', async (req, res) => {
     }).select("+password");
 
     if (!user) {
-        return res.status(400).end("Invalid login credentials");
+        return res.status(200).end("User not found");
     }
 
     let candidatePassword = req.body.password;
-    let passwordsMatch = await user.comparePassword(candidatePassword);
 
-    if (!passwordsMatch) {
-        return res.status(400).end("Invalid login credentials");
-    }
+    return user.comparePassword(candidatePassword, async (error, isMatch) => {
+        if (error || !isMatch) {
+            return res.status(200).end("Invalid login credentials");
+        }
+        user.password = undefined;
 
-    user.password = undefined;
+        let refreshToken = await RefreshToken.createToken(user._id);
+        let accessToken = createNewAccessToken(user._id);
 
-    let refreshToken = await RefreshToken.createToken(user._id);
-    let accessToken = createNewAccessToken(user._id);
+        res.cookie('refreshToken', refreshToken);
 
-    res.cookie('refreshToken', refreshToken);
+        return res.status(200).send({
+            accessToken: accessToken,
+            user: user
+        });
 
-    return res.status(200).send({
-        accessToken: accessToken,
-        user: user
     });
-
 });
 
 router.post('/refresh', async (req, res) => {
@@ -115,17 +116,18 @@ router.post('/users', async (req, res) => {
     let emailPattern = /^([\w-]+(?:\.[\w-]+)*)@(montefiore\.org|einsteinmed\.edu)$/i;
     let emailIsValid = emailPattern.test(req.body.email);
     if (!emailIsValid) {
-        return res.status(400).end("Invalid email");
+        return res.status(200).end("Invalid email");
     }
 
     let userExists = await User.findOne({
         email: req.body.email
     });
     if (userExists) {
-        return res.status(400).end("Email is already in use");
+        return res.status(200).end("Email is already in use");
     }
 
     let user;
+    let verificationCode = [...Array(6)].map(_=>Math.random()*10|0).join("");
     try {
         user = await User.create({
             firstname: req.body.firstname,
@@ -140,11 +142,11 @@ router.post('/users', async (req, res) => {
     }
 
     user.password = undefined;
+    user.verification_code = undefined;
 
     console.log("Account created for " + req.body.firstname);
 
-    let verificationCode = [...Array(6)].map(_=>Math.random()*10|0).join("");
-    sendVerificationEmail(req.body.email, verificationCode);
+    //sendVerificationEmail(req.body.email, verificationCode);
 
     let refreshToken = await RefreshToken.createToken(user._id);
     let accessToken = createNewAccessToken(user._id);
@@ -156,11 +158,36 @@ router.post('/users', async (req, res) => {
     });
 });
 
-router.post('/users/id/:userId/verify', verifyAccessToken, (req, res) => {
-    // check if verified is false (if true, say user already verified)
-    // then check if code matches
-    // if matches, set verified to true
-    // change verifyAccessToken to verifyAuth - here you check token + if user exists + is verified (you can add the user data to req.session.user so that youd dont await findUser after middleware)
+router.put('/verify', verifyAccessToken, async (req, res) => {
+    let code = req.body.code;
+    let userId = req.session.userId;
+
+    let user = await User.findById(userId).select('email_verified verification_code');
+    if (user.email_verified) {
+        return res.status(400).end("User is already verified");
+    }
+    if (code !== user.verification_code) {
+        return res.status(200).end("Verification code is incorrect");
+    }
+    user.email_verified = true;
+    user.verification_code = null;
+    await user.save()
+    return res.status(200).end("User verified");
+
+    // change verifyAccessToken to verifyAuth - here you check token + if user exists + is verified. since youll have to await user.find here, you should pass the whole user object into req.session, use that for subsequent reqs
+});
+
+router.put('/verify/new', verifyAccessToken, async (req, res) => {
+    let userId = req.session.userId;
+
+    let user = await User.findById(userId).select('email_verified');
+    if (user.email_verified) {
+        return res.status(400).end("User is already verified");
+    }
+    user.verification_code = [...Array(6)].map(_=>Math.random()*10|0).join("");
+    await user.save();
+    //sendVerificationEmail(req.body.email, verificationCode);
+    return res.status(200).end("New code sent");
 });
 
 router.get('/users', verifyAccessToken, async (req, res) => {

@@ -3,10 +3,7 @@ import BootstrapButton from 'react-bootstrap/Button';
 import TextareaAutosize from 'react-textarea-autosize';
 
 export const accentColor = "#008ae0";
-//export const borderRadius = "10px";
 export const borderRadius = "0px";
-//export const boxShadow = "3px 5px 10px -2px gray";
-export const boxShadow = "0px";
 
 export const CenterScreenContainer = styled.div`
     align-items: center;
@@ -22,10 +19,6 @@ export const Container = styled.section`
     text-align: center;
     background-color: white;
     padding: 30px;
-    @media (min-width: 768px) {
-        box-shadow: ${boxShadow};
-        border-radius: ${borderRadius};
-    }
 `;
 
 export const TextInput = styled.input`
@@ -50,6 +43,16 @@ export const TextArea = styled(TextareaAutosize)`
     &:focus {
         border: 2px solid ${accentColor};
     }
+`;
+
+export const Header = styled.div`
+    font-size: min(4.5vw, 22px);
+    font-weight: bold;
+    padding: 10px;
+`;
+
+export const SubHeader = styled.div`
+    font-size: min(4.0vw, 18px);
 `;
 
 const StyledBootstrapButton = styled(BootstrapButton)`

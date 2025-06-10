@@ -18,16 +18,22 @@ const Signup = ({ setToken, setCurrentUser }) => {
 
     const [errorState, setErrorState] = useState({
         isError: false,
-        errorMsg: ""
+        msg: ""
     });
 
     const navigate = useNavigate();
+
+    const emailIsValid = (email) => {
+        let emailPattern = /^([\w-]+(?:\.[\w-]+)*)@(montefiore\.org|einsteinmed\.edu)$/i;
+        return emailPattern.test(formState.email);
+    }
 
     const getErrorMsg = () => {
         switch(true) {
             case !formState.firstname: return 'First name is required';
             case !formState.lastname: return 'Last name is required';
             case !formState.email: return 'Email is required';
+            case !emailIsValid(): return 'Email needs to be @montefiore.org or @einsteinmed.edu'
             case !formState.password: return 'Password is required';
             case formState.password !== formState.confirmPassword: return 'Passwords do not match';
             default: return false;
@@ -40,7 +46,7 @@ const Signup = ({ setToken, setCurrentUser }) => {
         if (errorMsg) {
             return setErrorState({
                 isError: true,
-                errorMsg: errorMsg
+                msg: errorMsg
             });
         }
         await ajax.request('post', '/users', {
@@ -50,18 +56,31 @@ const Signup = ({ setToken, setCurrentUser }) => {
             password: formState.password,
             role: formState.role
         }).then(res => {
-            setErrorState({
-                isError: false,
-                errorMsg: "",
-            });
-            setToken(res.data.accessToken);
-            setCurrentUser(res.data.user);
-            navigate('/');
+            if (res.data === "Invalid email") {
+                setErrorState({
+                    isError: true,
+                    msg: "Email needs to be @montefiore.org or @einsteinmed.edu"
+                });
+            } else if (res.data === "Email is already in use") {
+                setErrorState({
+                    isError: true,
+                    msg: "An account already exists for this email"
+                });
+            } else {
+                setErrorState({
+                    isError: false,
+                    msg: "",
+                });
+                setToken(res.data.accessToken);
+                setCurrentUser(res.data.user);
+                navigate('/');
+            }
         }).catch(err => {
             setErrorState({
                 isError: true,
-                errorMsg: err.response.data
+                msg: "Unable to create account"
             });
+            console.log(err);
         });
     }
 
@@ -115,7 +134,7 @@ const Signup = ({ setToken, setCurrentUser }) => {
                         type="submit"
                     />
                 </form>
-                <S.StyledErrorBox isError={errorState.isError} errorMsg={errorState.errorMsg} />
+                <S.StyledAlertBox state={errorState.isError ? "ERROR" : "HIDDEN"} msg={errorState.msg} />
                 <S.StyledLink to="/login" children="Already have an account?" />
             </S.Container>
         </S.CenterScreenContainer>

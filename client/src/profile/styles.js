@@ -1,11 +1,6 @@
 import * as shared from '~/shared';
 import styled from 'styled-components';
 
-export const Image = styled.img`
-    width: 60%;
-    border-radius: 10px;
-`;
-
 export const TextContainer = styled.div`
     font-size: min(4vw, 20px);
     padding: 10px;

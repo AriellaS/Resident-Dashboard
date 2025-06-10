@@ -10,6 +10,7 @@ import Login from  '~/login/Login';
 import Signup from  '~/login/Signup';
 import Profile from '~/profile/Profile';
 import Eval from '~/eval/Eval';
+import Verify from '~/verify/Verify';
 import Performance from '~/performance/Performance';
 import PrivateRoute from '~/PrivateRoute';
 import useToken from '~/useToken';
@@ -18,7 +19,7 @@ import useCurrentUser from '~/useCurrentUser';
 const App = () => {
 
     const { setToken } = useToken();
-    const { currentUser, setCurrentUser } = useCurrentUser();
+    const { setCurrentUser } = useCurrentUser();
 
     return (
         <Router>
@@ -26,19 +27,24 @@ const App = () => {
                 <Route
                     exact
                     path="/"
-                    element={<PrivateRoute component={Home} />}
+                    element={<PrivateRoute needsEmailVerif component={Home} />}
                 />
                 <Route
                     path="/users/:id"
-                    element={<PrivateRoute currentUser={currentUser} component={Profile}/>}
+                    element={<PrivateRoute needsEmailVerif component={Profile}/>}
                 />
                 <Route
                     path="/users/:id/eval"
-                    element={<PrivateRoute component={Eval} />}
+                    element={<PrivateRoute needsEmailVerif component={Eval} />}
                 />
                 <Route
                     path="/users/:id/performance"
-                    element={<PrivateRoute component={Performance} />}
+                    element={<PrivateRoute needsEmailVerif component={Performance} />}
+                />
+                <Route
+                    exact
+                    path="/verify"
+                    element={<PrivateRoute needsEmailVerif={false} component={Verify} setCurrentUser={setCurrentUser} />}
                 />
                 <Route
                     exact

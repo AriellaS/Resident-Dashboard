@@ -14,7 +14,7 @@ const Login = ({ setToken, setCurrentUser }) => {
 
     const [errorState, setErrorState] = useState({
         isError: false,
-        errorMsg: ""
+        msg: ""
     });
 
     const navigate = useNavigate();
@@ -27,21 +27,35 @@ const Login = ({ setToken, setCurrentUser }) => {
             email: formState.email,
             password: formState.password
          }).then(res => {
-             setErrorState({
-                 isError: false,
-                 errorMsg: ""
-             });
-             setToken(res.data.accessToken);
-             setCurrentUser(res.data.user);
-             if (next) {
-                 navigate(next);
+             if (res.data === "User not found") {
+                 setErrorState({
+                     isError: true,
+                     msg: "User not found"
+                 });
+             } else if (res.data === "Invalid login credentials") {
+                 console.log('a')
+                 setErrorState({
+                     isError: true,
+                     msg: "The password you entered is incorrect"
+                 });
              } else {
-                navigate('/');
+                 setErrorState({
+                     isError: false,
+                     msg: ""
+                 });
+                 setToken(res.data.accessToken);
+                 setCurrentUser(res.data.user);
+                 if (next) {
+                     navigate(next);
+                 } else {
+                     navigate('/');
+                 }
              }
          }).catch(err => {
+             console.log(err);
              setErrorState({
                  isError: true,
-                 errorMsg: err.response.data
+                 msg: "Login failed"
              });
          });
     };
@@ -70,7 +84,7 @@ const Login = ({ setToken, setCurrentUser }) => {
                         text="Log In"
                     />
                 </form>
-                <S.StyledErrorBox isError={errorState.isError} errorMsg={errorState.errorMsg} />
+                <S.StyledAlertBox state={errorState.isError ? "ERROR" : "HIDDEN"} msg={errorState.msg} />
                 <S.StyledLink to={"/signup"} children="Need an acccount?" />
             </S.Container>
         </S.CenterScreenContainer>

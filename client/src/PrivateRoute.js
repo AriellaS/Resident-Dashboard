@@ -2,13 +2,18 @@ import React, { useEffect } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import useToken from '~/useToken';
+import useCurrentUser from '~/useCurrentUser';
 
-const PrivateRoute = ({ component: Component, ...rest }) => {
+const PrivateRoute = ({ component: Component, needsEmailVerif, ...rest }) => {
 
     const { pathname } = useLocation();
     const { token, setToken, removeToken } = useToken();
+    const { currentUser } = useCurrentUser();
 
     const isAuthenticated = !!token;
+    const isVerified = currentUser.email_verified;
+
+    const pageAccessibleToUser = isAuthenticated && (!needsEmailVerif || isVerified);
 
     const REFRESH_BEFORE_EXPIRY = 60; //seconds
 
@@ -30,7 +35,9 @@ const PrivateRoute = ({ component: Component, ...rest }) => {
         refreshToken();
     });
 
-    return isAuthenticated ? ( <Component {...rest} /> ) : ( <Navigate to={`/login?next=${pathname}`} /> );
+    return pageAccessibleToUser ?
+        ( <Component currentUser={currentUser} {...rest} /> )
+        : ( <Navigate to={isAuthenticated ? `/verify` : `/login?next=${pathname}`} /> );
 }
 
 export default PrivateRoute;

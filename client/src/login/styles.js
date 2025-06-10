@@ -2,7 +2,7 @@ import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import * as shared from '~/shared';
 import FancyRadio from '~/shared/FancyRadio';
-import ErrorBox from '~/shared/ErrorBox';
+import AlertBox from '~/shared/AlertBox';
 
 const accentColor = shared.accentColor;
 
@@ -16,15 +16,9 @@ export const TextInputLabel = styled.div`
     padding-bottom: 5px;
 `;
 
-export const Header = styled.div`
-    font-size: min(4.5vw, 22px);
-    font-weight: bold;
-    padding: 10px;
-`;
-
 export const StyledLink = styled(Link)`
     font-size: min(3.5vw, 15px);
-    padding-top: 20px;
+    margin-top: 20px;
     color: ${accentColor};
     display: block;
 `;
@@ -34,7 +28,7 @@ export const StyledFancyRadio = styled(FancyRadio)`
     font-size: min(4vw, 16px);
 `;
 
-export const StyledErrorBox = styled(ErrorBox)`
+export const StyledAlertBox = styled(AlertBox)`
     margin-top: 15px;
 `;
 
@@ -46,3 +40,4 @@ export const TextInput = styled(shared.TextInput)`
 export const Container = shared.Container;
 export const CenterScreenContainer = shared.CenterScreenContainer;
 export const Button = shared.Button;
+export const Header = shared.Header;

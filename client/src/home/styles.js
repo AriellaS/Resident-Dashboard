@@ -3,7 +3,6 @@ import ListGroup from 'react-bootstrap/ListGroup';
 import * as shared from '~/shared';
 
 export const SearchBar = styled(shared.TextInput)`
-    box-shadow: ${shared.boxShadow};
     font-size: 16px;
 `;
 

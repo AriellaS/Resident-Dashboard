@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import Question from '~/eval/Question';
 import { Pages, Questions } from  '~/shared/AttendingToResidentEvalForm';
 import * as S from '~/eval/styles';
+import AlertBox from '~/shared/AlertBox';
 import ajax from '~/util';
 
 const EvalForm = (props) => {
@@ -16,7 +17,7 @@ const EvalForm = (props) => {
 
     const [errorState, setErrorState] = useState({
         isError: false,
-        errorMsg: ""
+        msg: ""
     });
 
     const isOnLastPage = () => {
@@ -44,13 +45,13 @@ const EvalForm = (props) => {
             setSubmissionState(true);
             setErrorState({
                 isError: false,
-                errorMsg: ""
+                msg: ""
             });
         }).catch(err =>  {
             console.log(err)
             setErrorState({
                 isError: true,
-                errorMsg: "Error submitting form"
+                msg: "Error submitting form"
             });
         });
     };
@@ -107,7 +108,7 @@ const EvalForm = (props) => {
                 )}
             </S.HorizontalContainer>
             <S.ProgressBar now={pageState/(Pages.length - 1) * 100}/>
-            <S.StyledErrorBox isError={errorState.isError} errorMsg={errorState.errorMsg} />
+            <AlertBox state={errorState.isError ? "ERROR" : "HIDDEN"} msg={errorState.msg} />
         </div>
     )
 }

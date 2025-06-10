@@ -1,6 +1,5 @@
 import styled from 'styled-components';
 import * as shared from '~/shared';
-import ErrorBox from '~/shared/ErrorBox';
 import { CheckCircle } from 'react-bootstrap-icons';
 import BootstrapProgressBar from 'react-bootstrap/ProgressBar';
 
@@ -33,10 +32,6 @@ export const OptionsContainer = styled.div`
 export const OptionText = styled.label`
     padding: 3px 0 0 5px;
     font-size: min(4vw, 15px);
-`;
-
-export const StyledErrorBox = styled(ErrorBox)`
-    margin-top: 10px;
 `;
 
 export const StyledCheckGlyph = styled(CheckCircle)`

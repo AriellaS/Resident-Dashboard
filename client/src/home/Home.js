@@ -47,7 +47,7 @@ const Home = () => {
             <S.CenterScreenContainer>
                 <S.SearchContainer>
                     <S.SearchBar
-                        placeholder="Search users..."
+                        placeholder="Search residents..."
                         value={queryState}
                         onFocus={handleSearchBarFocus}
                         onBlur={handleSearchBarFocusOut}
