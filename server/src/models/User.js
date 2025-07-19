@@ -30,6 +30,9 @@ const userSchema = new Schema({
         enum: ["RESIDENT", "ATTENDING"],
         required: true
     },
+    pgy: {
+        type: Number,
+    },
     verification_code: {
         type: String,
         select: false

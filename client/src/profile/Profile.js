@@ -16,6 +16,7 @@ const Profile = ({ currentUser }) => {
         lastname: "",
         email: "",
         role: "",
+        pgy: null,
         emailVerified: false,
     });
 
@@ -30,6 +31,7 @@ const Profile = ({ currentUser }) => {
                         lastname: res.data.lastname,
                         email: res.data.email,
                         role: res.data.role,
+                        pgy: res.data.pgy,
                         emailVerified: res.data.email_verified
                     })
                     setErrorState(false);
@@ -64,20 +66,20 @@ const Profile = ({ currentUser }) => {
                         <S.TextContainer>
                             <div>{getName()}</div>
                             <div>{user.email}</div>
-                            <S.RoleText children={user.role} />
+                            <S.RoleText children={`${user.role}${user.pgy ? `, PGY-${user.pgy}` : ''}`} />
                         </S.TextContainer>
                         <hr />
-                        {currentUser.role==="ATTENDING" && user.role==="RESIDENT" && (
+                        {currentUser.role==='ATTENDING' && user.role==='RESIDENT' && (
                             <S.Button
-                                text="Evaluate"
-                                type="button"
+                                text='Evaluate'
+                                type='button'
                                 onClick={handleEvaluate}
                             />
                         )}
-                        {(currentUser.role==="ATTENDING" || currentUser._id===userId) && user.role==="RESIDENT" && (
+                        {(currentUser.role==='ATTENDING' || currentUser._id===userId) && user.role==='RESIDENT' && (
                             <S.Button
-                                text="See Performance"
-                                type="button"
+                                text='See Performance'
+                                type='button'
                                 onClick={handleSeePerformance}
                             />
                         )}

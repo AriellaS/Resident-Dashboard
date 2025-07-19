@@ -128,7 +128,16 @@ router.post('/users', async (req, res) => {
     let emailPattern = /^([\w-]+(?:\.[\w-]+)*)@(montefiore\.org|einsteinmed\.edu)$/i;
     let emailIsValid = emailPattern.test(req.body.email);
     if (!emailIsValid) {
-        return res.status(200).end("Invalid email");
+        return res.status(400).end("Invalid email");
+    }
+
+    if (req.body.password.length < 8) {
+        return res.status(400).end("Password does not meet requirements");
+    }
+
+    let role = req.body.role.toUpperCase();
+    if (!["RESIDENT","ATTENDING"].includes(role)) {
+        return res.status(400).end("Invalid role");
     }
 
     let userExists = await User.findOne({
@@ -146,7 +155,8 @@ router.post('/users', async (req, res) => {
             lastname: req.body.lastname,
             email: req.body.email,
             password: req.body.password,
-            role: req.body.role.toUpperCase(),
+            role: role,
+            pgy: role === "RESIDENT" ? 1 : null, // make all residents pgy-1 for now
             verification_code: verificationCode
         });
     } catch(err) {

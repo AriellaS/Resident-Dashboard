@@ -33,8 +33,9 @@ const Signup = ({ setToken, setCurrentUser }) => {
             case !formState.firstname: return 'First name is required';
             case !formState.lastname: return 'Last name is required';
             case !formState.email: return 'Email is required';
-            case !emailIsValid(): return 'Email needs to be @montefiore.org or @einsteinmed.edu'
+            case !emailIsValid(): return 'Email needs to be @montefiore.org or @einsteinmed.edu';
             case !formState.password: return 'Password is required';
+            case formState.password.length < 8: return 'Password must be at least 8 characters';
             case formState.password !== formState.confirmPassword: return 'Passwords do not match';
             default: return false;
         }
@@ -56,12 +57,7 @@ const Signup = ({ setToken, setCurrentUser }) => {
             password: formState.password,
             role: formState.role
         }).then(res => {
-            if (res.data === "Invalid email") {
-                setErrorState({
-                    isError: true,
-                    msg: "Email needs to be @montefiore.org or @einsteinmed.edu"
-                });
-            } else if (res.data === "Email is already in use") {
+            if (res.data === "Email is already in use") {
                 setErrorState({
                     isError: true,
                     msg: "An account already exists for this email"
