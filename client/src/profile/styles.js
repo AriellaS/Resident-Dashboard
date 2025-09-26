@@ -15,7 +15,10 @@ export const RoleText = styled.div`
     margin-top: 15px;
 `;
 
-export const Button = shared.Button;
+export const Button = styled(shared.Button)`
+    margin-bottom: 10px;
+`;
+
 export const Container = shared.Container;
 export const CenterScreenContainer = shared.CenterScreenContainer;
 export const ScreenContainer = shared.ScreenContainer;

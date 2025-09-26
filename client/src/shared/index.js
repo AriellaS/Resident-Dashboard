@@ -62,7 +62,6 @@ const StyledBootstrapButton = styled(BootstrapButton)`
     width: 100%;
     height: 45px;
     font-size: min(3.5vw, 18px);
-    margin-top: 20px;
 `;
 
 export const Button = (props) => {

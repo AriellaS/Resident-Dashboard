@@ -84,7 +84,7 @@ const Login = ({ setToken, setCurrentUser }) => {
                     />
                 </form>
                 <S.StyledAlertBox state={errorState.isError ? "ERROR" : "HIDDEN"} msg={errorState.msg} />
-                <S.StyledLink to={"/signup"} children="Need an acccount?" />
+                {/*<S.StyledLink to={"/signup"} children="Need an acccount?" />*/}
             </S.Container>
         </S.CenterScreenContainer>
     )

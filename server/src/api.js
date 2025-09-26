@@ -56,15 +56,11 @@ const verifyAccessToken = (req, res, next) => {
 };
 
 const verifyEmailVerif = async (req, res, next) => {
-    let user = await User.findById(req.session.userId);
-    if (!user) {
-        return res.status(400).end("User not found");
-    }
-    if (!user.email_verified) {
+    return res.status(400).end("Email verification is currently disabled");
+    /*if (!req.user.email_verified) {
         return res.status(401).end("User email not verified");
     }
-    req.session.user = user;
-    next();
+    next();*/
 }
 
 router.post('/login', async (req, res) => {
@@ -116,7 +112,7 @@ router.post('/refresh', async (req, res) => {
 
 router.post('/logout', async (req, res) => {
     await RefreshToken.deleteMany({
-        user: req.session.userId
+        user: req.user._id
     });
     req.session.destroy((err) => {
         return res.status(500).end("Logout unsuccessful");
@@ -125,14 +121,15 @@ router.post('/logout', async (req, res) => {
 });
 
 router.post('/users', async (req, res) => {
-    let emailPattern = /^([\w-]+(?:\.[\w-]+)*)@(montefiore\.org|einsteinmed\.edu)$/i;
+    return res.status(400).end("Account creation is currently disabled");
+    /*let emailPattern = /^([\w-]+(?:\.[\w-]+)*)@(montefiore\.org|einsteinmed\.edu)$/i;
     let emailIsValid = emailPattern.test(req.body.email);
     if (!emailIsValid) {
         return res.status(400).end("Invalid email");
     }
 
     if (req.body.password.length < 8) {
-        return res.status(400).end("Password does not meet requirements");
+        return res.status(400).end("Password requirements not met");
     }
 
     let role = req.body.role.toUpperCase();
@@ -177,14 +174,13 @@ router.post('/users', async (req, res) => {
     return res.send({
         accessToken: accessToken,
         user: user
-    });
+    });*/
 });
 
 router.put('/verify', verifyAccessToken, async (req, res) => {
-    let code = req.body.code;
-    let userId = req.session.userId;
-
-    let user = await User.findById(userId).select('email_verified verification_code');
+    return res.status(400).end("Email verification is currently disabled");
+    /*let code = req.body.code;
+    let user = req.user;
     if (user.email_verified) {
         return res.status(400).end("User is already verified");
     }
@@ -194,13 +190,12 @@ router.put('/verify', verifyAccessToken, async (req, res) => {
     user.email_verified = true;
     user.verification_code = null;
     await user.save()
-    return res.status(200).end("User verified");
+    return res.status(200).end("User verified");*/
 });
 
 router.put('/verify/new', verifyAccessToken, async (req, res) => {
-    let userId = req.session.userId;
-
-    let user = await User.findById(userId).select('email email_verified');
+    return res.status(400).end("Email verification is currently disabled");
+    /*let user = req.user;
     if (user.email_verified) {
         return res.status(400).end("User is already verified");
     }
@@ -209,10 +204,24 @@ router.put('/verify/new', verifyAccessToken, async (req, res) => {
     await user.save();
     sendVerificationEmail(user.email, verificationCode);
 
-    return res.status(200).end("New code sent");
+    return res.status(200).end("New code sent");*/
 });
 
-router.get('/users', verifyAccessToken, verifyEmailVerif, async (req, res) => {
+router.put('/changepw', verifyAccessToken, async (req, res) => {
+    if (req.body.password.length < 8) {
+        return res.status(400).end("Password requirements not met");
+    }
+    let user = await User.findById(req.session.userId).select("+password");
+    user.password = req.body.password;
+    user.changepw_required = false;
+    await user.save();
+    user.password = undefined;
+    //TODO: send email to user
+
+    return res.status(200).end("Password changed");
+});
+
+router.get('/users', verifyAccessToken, async (req, res) => {
     let role = req.query.role;
     if (role != "RESIDENT" && role != "ATTENDING") {
         return res.status(400).end("Invalid role");
@@ -224,7 +233,7 @@ router.get('/users', verifyAccessToken, verifyEmailVerif, async (req, res) => {
     res.json(users);
 });
 
-router.get('/users/id/:userId', verifyAccessToken, verifyEmailVerif, async (req, res) => {
+router.get('/users/id/:userId', verifyAccessToken, async (req, res) => {
     let userId;
     try {
         userId = new ObjectId(req.params.userId);
@@ -238,14 +247,14 @@ router.get('/users/id/:userId', verifyAccessToken, verifyEmailVerif, async (req,
     res.json(user);
 });
 
-router.get('/users/id/:userId/evals', verifyAccessToken, verifyEmailVerif, async (req, res) => {
+router.get('/users/id/:userId/evals', verifyAccessToken, async (req, res) => {
     let userId;
     try {
         userId = new ObjectId(req.params.userId);
     } catch (err) {
         return res.status(400).end("Invalid user ID");
     }
-    if (req.session.user.role !== "ATTENDING" && !req.session.user._id.equals(userId)) {
+    if (req.user.role !== "ATTENDING" && !req.user._id.equals(userId)) {
         return res.status(401).end("Unauthorized");
     }
     let user = await User.findById(userId).exec();
@@ -258,7 +267,7 @@ router.get('/users/id/:userId/evals', verifyAccessToken, verifyEmailVerif, async
     res.json(evals);
 });
 
-router.post('/users/id/:userId/evals', verifyAccessToken, verifyEmailVerif, async (req, res) => {
+router.post('/users/id/:userId/evals', verifyAccessToken, async (req, res) => {
     let evalType = req.body.type;
     let formObject = req.body.form;
     let evaluateeId = new ObjectId(req.params.userId);
@@ -267,7 +276,7 @@ router.post('/users/id/:userId/evals', verifyAccessToken, verifyEmailVerif, asyn
         return res.status(400).end("Invalid eval type");
     }
 
-    if (req.session.user._id.equals(evaluateeId)) {
+    if (req.user._id.equals(evaluateeId)) {
         return res.status(400).end("One cannot evaluate oneself");
     }
 
@@ -285,7 +294,7 @@ router.post('/users/id/:userId/evals', verifyAccessToken, verifyEmailVerif, asyn
     });
 
     if (evalType === "ATTENDING2RESIDENT") {
-        if (req.session.user.role !== "ATTENDING") {
+        if (req.user.role !== "ATTENDING") {
             return res.status(400).end("Evaluator must be an attending");
         }
         if (evaluatee.role !== "RESIDENT") {
@@ -296,7 +305,7 @@ router.post('/users/id/:userId/evals', verifyAccessToken, verifyEmailVerif, asyn
         }
         try {
             await AttendingToResidentEval.create({
-                evaluator: req.session.user._id,
+                evaluator: req.user._id,
                 evaluatee: evaluateeId,
                 form,
             });

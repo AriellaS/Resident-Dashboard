@@ -7,7 +7,7 @@ import AlertBox from '~/shared/AlertBox';
 const accentColor = shared.accentColor;
 
 export const TextInputContainer = styled.div`
-    padding: 10px 0px 10px 0px;
+    margin-bottom: 20px;
     text-align: left;
 `;
 
@@ -25,6 +25,7 @@ export const StyledLink = styled(Link)`
 
 export const StyledFancyRadio = styled(FancyRadio)`
     margin-top: 10px;
+    margin-bottom: 20px;
     font-size: min(4vw, 16px);
 `;
 

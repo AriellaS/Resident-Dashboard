@@ -8,6 +8,7 @@ const bodyParser = require('body-parser');
 const session = require('express-session');
 const path = require('path');
 const fs = require('fs');
+const User = require('./models/User');
 
 const app = express();
 //const port = process.env.PORT || 8080;
@@ -58,13 +59,21 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 
 app.use(session({
-    secret: "test123",
+    secret: config.secret,
     resave: false,
     cookie: {
         secure: false,
         maxAge: 60000
     }
 }));
+
+app.use(async (req, res, next) => {
+    if (req.session && req.session.userId) {
+        let user = await User.findById(req.session.userId);
+        req.user = user;
+    }
+    next();
+});
 
 // API
 const api = require('./api');

@@ -4,16 +4,15 @@ import axios from 'axios';
 import useToken from '~/useToken';
 import useCurrentUser from '~/useCurrentUser';
 
-const PrivateRoute = ({ component: Component, needsEmailVerif, ...rest }) => {
+const PrivateRoute = ({ component: Component, changePwNotRequired, ...rest }) => {
 
     const { pathname } = useLocation();
     const { token, setToken, removeToken } = useToken();
     const { currentUser, setCurrentUser } = useCurrentUser();
 
-    const isAuthenticated = !!token;
-    const isVerified = !!currentUser && currentUser.email_verified;
-
-    const pageAccessibleToUser = isAuthenticated && (!needsEmailVerif || isVerified);
+    const userIsAuthenticated = !!token;
+    const userRequiresPwChange = !!currentUser && currentUser.changepw_required;
+    const pageAccessibleToUser = userIsAuthenticated && (changePwNotRequired || !userRequiresPwChange);
 
     const REFRESH_BEFORE_EXPIRY = 60; //seconds
 
@@ -39,9 +38,15 @@ const PrivateRoute = ({ component: Component, needsEmailVerif, ...rest }) => {
         refreshToken();
     });
 
-    return pageAccessibleToUser ?
-        ( <Component currentUser={currentUser} setCurrentUser={setCurrentUser} {...rest} /> )
-        : ( <Navigate to={isAuthenticated ? `/verify` : `/login?next=${pathname}`} /> );
+    if (pageAccessibleToUser) {
+        return (
+            <Component currentUser={currentUser} setCurrentUser={setCurrentUser} {...rest} />
+        )
+    } else {
+        return (
+            <Navigate to={userIsAuthenticated ? `/changepw` : `/login?next=${pathname}`}/>
+        )
+    }
 }
 
 export default PrivateRoute;

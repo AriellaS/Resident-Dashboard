@@ -40,6 +40,10 @@ const userSchema = new Schema({
     email_verified: {
         type: Boolean,
         default: false,
+    },
+    changepw_required: {
+        type: Boolean,
+        default: true,
     }
 }, { timestamps: true });
 
