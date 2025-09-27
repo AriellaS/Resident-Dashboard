@@ -153,7 +153,7 @@ router.post('/users', async (req, res) => {
         email: req.body.email,
         password: req.body.password,
         role: role,
-        pgy: role === "RESIDENT" ? req.body.pgy : null, // make all residents pgy-1 for now
+        pgy: role === "RESIDENT" ? req.body.pgy : null,
         verification_code: verificationCode
     });
     if (!user) {
@@ -281,7 +281,7 @@ router.post('/users/id/:userId/evals', verifyAccessToken, verifyAccount, async (
     if (!evaluatee) {
         return res.status(400).end("Evaluatee not found");
     }
-    if (evaluatee.account_verified) {
+    if (!evaluatee.account_verified) {
         return res.status(400).end("Evaluatee not verified");
     }
 

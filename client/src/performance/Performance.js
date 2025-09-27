@@ -54,7 +54,6 @@ const Performance = () => {
         fetchData();
     }, [userId, selectedSpecialty]);
 
-
     return (
         <S.ScreenContainer>
             <Navbar />
@@ -62,26 +61,29 @@ const Performance = () => {
                 {barData.map((s,i) => {
                     if (Questions[i].type==='RADIO') {
                         return (
-                            <ResponsiveContainer key={i} aspect={1} width='100%'>
-                                <BarChart data={s.data} barSize={70} margin={{ right: 10, bottom: 120 }}>
-                                    <CartesianGrid strokeDasharray="1 1" />
-                                    <XAxis dataKey="name" angle={-45} textAnchor='end'/>
-                                    <YAxis allowDecimals={false} />
-                                    <Tooltip />
-                                    {Questions[i].name==='SUBSPECIALTY' ? (
-                                        <Bar
-                                            onClick={(d,i) => setSelectedSpecialty(i+'')}
-                                            dataKey="count"
-                                            fill="#8884d8"
-                                        />
-                                    ) : (
-                                        <Bar
-                                            dataKey="count"
-                                            fill="#8884d8"
-                                        />
-                                    )}
-                                </BarChart>
-                            </ResponsiveContainer>
+                            <S.ChartContainer key={i}>
+                                <S.Header children={Questions[i].questionText} />
+                                <ResponsiveContainer aspect={1} width='100%'>
+                                    <BarChart data={s.data} barSize={70} margin={{ right: 10, bottom: 120 }}>
+                                        <CartesianGrid strokeDasharray="1 1" />
+                                        <XAxis dataKey="name" angle={-45} textAnchor='end'/>
+                                        <YAxis allowDecimals={false} />
+                                        <Tooltip />
+                                        {Questions[i].name==='SUBSPECIALTY' ? (
+                                            <Bar
+                                                onClick={(d,i) => setSelectedSpecialty(selectedSpecialty ? '' : i+'')}
+                                                dataKey="count"
+                                                fill="#8884d8"
+                                            />
+                                        ) : (
+                                            <Bar
+                                                dataKey="count"
+                                                fill="#8884d8"
+                                            />
+                                        )}
+                                    </BarChart>
+                                  </ResponsiveContainer>
+                            </S.ChartContainer>
                         )
                     } else {
                         return (<div key={i}></div>)
