@@ -228,7 +228,7 @@ router.get('/users', verifyAccessToken, verifyAccount, async (req, res) => {
     }
     let users = await User.find({
         role: role,
-    }).select('firstname lastname role');
+    }).select('firstname lastname role pgy');
     res.json(users);
 });
 
@@ -321,7 +321,6 @@ router.post('/users/id/:userId/evals', verifyAccessToken, verifyAccount, async (
             //eventually
     }
 
-    console.log('Eval submitted');
     return res.status(200).end("Eval submitted");;
 });
 

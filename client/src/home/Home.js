@@ -23,7 +23,7 @@ const Home = () => {
     const handleSearchBarChange = async(e) => {
         let query = e.target.value;
         setQueryState(query);
-        let re = new RegExp(String(query).trim().replace(/\s/g, "|"), "ig");
+        let re = new RegExp(`^${String(query).trim().replace(/\s/g, "|")}`, "ig");
         let queriedData = allUserData.filter(u => u.firstname.match(re) || u.lastname.match(re));
         setQueriedUserData(queriedData);
     }
@@ -53,7 +53,7 @@ const Home = () => {
                         onBlur={handleSearchBarFocusOut}
                         onChange={e => {handleSearchBarChange(e)}}
                     />
-                    {searchFocus && <UserSearchDropdown users={queriedUserData} /> }
+                    {searchFocus && <UserSearchDropdown users={queriedUserData.sort((a,b) => a.pgy - b.pgy)} /> }
                 </S.SearchContainer>
             </S.CenterScreenContainer>
         </S.ScreenContainer>

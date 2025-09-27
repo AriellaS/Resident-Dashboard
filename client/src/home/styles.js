@@ -20,6 +20,20 @@ export const StyledListGroup = styled(ListGroup)`
     border-radius: 0px;
 `;
 
+export const StyledListGroupItem = styled(ListGroup.Item)`
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+`;
+
+export const SearchText_Name = styled.div`
+`;
+
+export const SearchText_Pgy = styled.div`
+    margin-left: 5px;
+    color: gray
+`;
+
 export const CenterScreenContainer = shared.CenterScreenContainer;
 export const ScreenContainer = shared.ScreenContainer;
 

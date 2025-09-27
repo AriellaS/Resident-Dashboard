@@ -1,4 +1,3 @@
-import ListGroup from 'react-bootstrap/ListGroup';
 import * as S from '~/home/styles';
 
 const UserSearchDropdown = (props) => {
@@ -6,14 +5,15 @@ const UserSearchDropdown = (props) => {
         <S.StyledListGroup variant='light'>
             {props.users.map((user) => {
                 return (
-                    <ListGroup.Item
+                    <S.StyledListGroupItem
                         key={user._id}
                         action
                         href={`/users/${user._id}`}
                         active={false}
                     >
-                        {`${user.firstname} ${user.lastname}`}
-                    </ListGroup.Item>
+                        <S.SearchText_Name>{`${user.firstname} ${user.lastname}`}</S.SearchText_Name>
+                        <S.SearchText_Pgy>{`(PGY-${user.pgy})`}</S.SearchText_Pgy>
+                    </S.StyledListGroupItem>
                 )
             })}
         </S.StyledListGroup>
