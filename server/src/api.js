@@ -113,8 +113,8 @@ router.post('/login', async (req, res) => {
 });
 
 router.post('/logout', async (req, res) => {
-    await RefreshToken.deleteMany({
-        user: req.session.userId,
+    await RefreshToken.deleteOne({
+        token: req.cookies.refreshToken,
     });
     req.session.destroy((err) => {
         return res.status(500).end("Logout unsuccessful");
@@ -213,7 +213,7 @@ router.put('/changepw', verifyAccessToken, verifyAccount, async (req, res) => {
     user.changepw_required = false;
     await user.save();
     await RefreshToken.deleteMany({
-        user: req.session.userId,
+        user: req.user._id,
         token: { $ne: req.cookies.refreshToken }
     });
     //TODO: send email to user
