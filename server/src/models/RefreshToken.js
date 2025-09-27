@@ -10,31 +10,24 @@ const refreshTokenSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
     },
-    expiryDate: Date,
+    createdAt: {
+        type: Date,
+        default: Date.now,
+        expires: config.refreshExpirationSeconds
+    },
 });
 
 refreshTokenSchema.statics.createToken = async function (userId) {
-    let expiredAt = new Date();
-
-    expiredAt.setSeconds(
-        expiredAt.getSeconds() + config.refreshExpirationSeconds
-    );
-
     let _token = uuidv4();
 
     let _object = new this({
         token: _token,
         user: userId,
-        expiryDate: expiredAt.getTime(),
     });
 
     let refreshToken = await _object.save();
     return refreshToken.token;
 };
-
-refreshTokenSchema.methods.verifyExpiration = () => {
-    return this.expiryDate.getTime() < new Date().getTime();
-}
 
 const RefreshToken = mongoose.model("RefreshToken", refreshTokenSchema);
 

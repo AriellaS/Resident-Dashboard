@@ -102,10 +102,7 @@ router.post('/refresh', async (req, res) => {
         token: refreshTokenString,
     });
     if (!refreshToken) {
-        return res.status(400).end("Invalid refresh token");
-    }
-    if (!refreshToken.verifyExpiration) {
-        return res.status(400).end("Refresh token is expired");
+        return res.status(400).end("Refresh token is invalid or expired");
     }
     let accessToken = createNewAccessToken(refreshToken.user._id);
     res.status(200).send({
