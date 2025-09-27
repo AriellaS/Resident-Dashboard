@@ -1,0 +1,12 @@
+{
+    "secret": "secret",
+    "accessExpirationSeconds": 30,
+    "refreshExpirationSeconds": 60,
+    "dbHost": "localhost",
+    "dbPort": 27017,
+    "dbUsername": "test",
+    "dbPassword": "test",
+    "dbName": "ResidentDashboard",
+}
+
+

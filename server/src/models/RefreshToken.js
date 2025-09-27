@@ -2,7 +2,8 @@
 
 const mongoose = require('mongoose');
 const { v4: uuidv4 } = require('uuid');
-const config = require('../../config');
+const util = require('../util');
+const config = util.getConfig();
 
 const refreshTokenSchema = new mongoose.Schema({
     token: String,
@@ -13,7 +14,7 @@ const refreshTokenSchema = new mongoose.Schema({
     createdAt: {
         type: Date,
         default: Date.now,
-        expires: config.refreshExpirationSeconds
+        expires: config.refreshExpirationSeconds,
     },
 });
 

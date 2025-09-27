@@ -9,44 +9,15 @@ const session = require('express-session');
 const path = require('path');
 const fs = require('fs');
 const User = require('./models/User');
+const util = require('./util');
 
+const config = util.getConfig();
 const app = express();
-//const port = process.env.PORT || 8080;
 const port = 8080;
-const configPath = path.join(__dirname, '../config.json');
-const defaultConfig = {
-    secret: "secret",
-    accessExpirationSeconds: 12000,
-    refreshExpirationSeconds: 43200,
-    dbHost: "localhost",
-    dbPort: 27017,
-    dbUsername: "test",
-    dbPassword: "test",
-    dbName: "ResidentDashboard",
-};
-const isProduction = process.env.NODE_ENV==='production';
-console.log(`Environemnt: ${process.env.NODE_ENV}`);
-
-let config;
-if (isProduction) {
-    if (fs.existsSync(configPath)) {
-        config = JSON.parse(fs.readFileSync(configPath));
-        for (let key in defaultConfig) {
-            if (!(key in config)) {
-                config[key] = defaultConfig[key];
-            }
-        }
-    } else {
-        config = defaultConfig;
-        console.log("Generated default config.json");
-    }
-    fs.writeFileSync(configPath, JSON.stringify(config, null, "\t"))
-} else {
-    config = defaultConfig
-}
+console.log(`Environment: ${process.env.NODE_ENV}`);
 
 // Connect to MongoDB
-mongoose.connect(`mongodb${isProduction?`+srv`:``}://${config.dbUsername}:${config.dbPassword}@${config.dbHost}:${config.dbPort}/${config.dbName}`, {
+mongoose.connect(`mongodb${util.isProduction?`+srv`:``}://${config.dbUsername}:${config.dbPassword}@${config.dbHost}:${config.dbPort}/${config.dbName}`, {
     useNewUrlParser: true,
     useUnifiedTopology: true
 })

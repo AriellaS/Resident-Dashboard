@@ -8,18 +8,11 @@ const User = require('./models/User');
 const AttendingToResidentEval = require('./models/AttendingToResidentEval');
 const ObjectId = require('mongodb').ObjectId;
 const RefreshToken = require('./models/RefreshToken');
-const config = require('../config');
+const util = require('./util.js');
+
+const config = util.getConfig();
 
 const router = express.Router();
-
-const createNewAccessToken = (userId) => {
-    let accessToken = jwt.sign({
-        id: userId,
-    }, config.secret, {
-        expiresIn: config.accessExpirationSeconds,
-    });
-    return accessToken;
-};
 
 const transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -36,6 +29,15 @@ const sendVerificationEmail = (recipient, verificationCode) => {
         subject: `Your EvalMD verification code: ${verificationCode}`,
         text: `Your code is ${verificationCode}. Verify your account at https://evalmd.io/verify. If you did not request this code, please ignore this email.`
     }, (err) => { err ? console.log(err) : console.log(`Email sent to ${recipient}`) });
+};
+
+const createNewAccessToken = (userId) => {
+    let accessToken = jwt.sign({
+        id: userId,
+    }, config.secret, {
+        expiresIn: config.accessExpirationSeconds,
+    });
+    return accessToken;
 };
 
 const verifyAccessToken = async (req, res, next) => {
@@ -66,6 +68,20 @@ const verifyAccount = async (req, res, next) => {
     next();
 }
 
+router.post('/refresh', async (req, res) => {
+    let refreshTokenString = req.cookies.refreshToken;
+    let refreshToken = await RefreshToken.findOne({
+        token: refreshTokenString,
+    });
+    if (!refreshToken) {
+        return res.status(400).end("Refresh token is invalid or expired");
+    }
+    let accessToken = createNewAccessToken(refreshToken.user._id);
+    res.status(200).send({
+        accessToken: accessToken,
+    });
+});
+
 router.post('/login', async (req, res) => {
     let user = await User.findOne({
         email: req.body.email
@@ -93,20 +109,6 @@ router.post('/login', async (req, res) => {
             user: user
         });
 
-    });
-});
-
-router.post('/refresh', async (req, res) => {
-    let refreshTokenString = req.cookies.refreshToken;
-    let refreshToken = await RefreshToken.findOne({
-        token: refreshTokenString,
-    });
-    if (!refreshToken) {
-        return res.status(400).end("Refresh token is invalid or expired");
-    }
-    let accessToken = createNewAccessToken(refreshToken.user._id);
-    res.status(200).send({
-        accessToken: accessToken,
     });
 });
 
@@ -210,7 +212,10 @@ router.put('/changepw', verifyAccessToken, verifyAccount, async (req, res) => {
     user.password = req.body.password;
     user.changepw_required = false;
     await user.save();
-    user.password = undefined;
+    await RefreshToken.deleteMany({
+        user: req.session.userId,
+        token: { $ne: req.cookies.refreshToken }
+    });
     //TODO: send email to user
 
     return res.status(200).end("Password changed");
@@ -321,3 +326,4 @@ router.post('/users/id/:userId/evals', verifyAccessToken, verifyAccount, async (
 });
 
 module.exports = router;
+
