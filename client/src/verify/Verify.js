@@ -6,8 +6,6 @@ import * as S from '~/verify/styles';
 
 const NUM_DIGITS = 6;
 
-const logoPath = "/favicon/favicon.svg";
-
 const Verify = ({ currentUser, setCurrentUser }) => {
 
     const [inputs, setInputs] = useState(new Array(NUM_DIGITS).fill(""));
@@ -18,7 +16,8 @@ const Verify = ({ currentUser, setCurrentUser }) => {
 
     const navigate = useNavigate();
 
-    const handleVerify = async () => {
+    const handleVerify = async (e) => {
+        e.preventDefault();
         const code = inputs.join("");
         await ajax.request('put', `/verify`, { code: code })
             .then(res => {
@@ -28,7 +27,7 @@ const Verify = ({ currentUser, setCurrentUser }) => {
                         msg: "The code you entered is incorrect"
                     });
                 } else if (res.data === "User verified") {
-                    setCurrentUser({ ...currentUser, email_verified: true });
+                    setCurrentUser({ ...currentUser, account_verified: true });
                     setAlert({
                         state: "SUCCESS",
                         msg: "Account verified"
@@ -42,7 +41,7 @@ const Verify = ({ currentUser, setCurrentUser }) => {
                         state: "ERROR",
                         msg: "Your account is already verified"
                     });
-                    setCurrentUser({ ...currentUser, email_verified: true });
+                    setCurrentUser({ ...currentUser, account_verified: true });
                     navigate('/');
                 } else {
                     setAlert({
@@ -66,7 +65,7 @@ const Verify = ({ currentUser, setCurrentUser }) => {
                         state: "ERROR",
                         msg: "Your account is already verified"
                     });
-                    setCurrentUser({ ...currentUser, email_verified: true });
+                    setCurrentUser({ ...currentUser, account_verified: true });
                     navigate('/');
                 } else {
                     console.log(err);
@@ -81,7 +80,6 @@ const Verify = ({ currentUser, setCurrentUser }) => {
     return (
         <S.CenterScreenContainer>
             <S.Container>
-                <S.Image src={logoPath} alt="EvalMD Logo" />
                 <S.Header children="Enter Verification Code" />
                 <S.SubHeader children={`We sent a code to ${currentUser.email}`} />
                 <CodeInput inputs={inputs} setInputs={setInputs} handleVerify={handleVerify} />

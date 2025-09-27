@@ -5,6 +5,8 @@ import ajax from "~/util.js"
 import TextInputWithLabel from '~/login/TextInputWithLabel';
 import * as S from '~/login/styles';
 
+const logoPath = "/favicon/favicon.svg";
+
 const Login = ({ setToken, setCurrentUser }) => {
 
     const [formState, setFormState] = useState({
@@ -62,6 +64,7 @@ const Login = ({ setToken, setCurrentUser }) => {
     return (
         <S.CenterScreenContainer>
             <S.Container>
+                <S.Image src={logoPath} alt="EvalMD Logo" />
                 <S.Header children="Login to your account" />
                 <form onSubmit={handleSubmit}>
                     <TextInputWithLabel

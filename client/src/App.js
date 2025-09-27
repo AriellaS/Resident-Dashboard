@@ -8,11 +8,11 @@ import {
 
 import Home from  '~/home/Home';
 import Login from  '~/login/Login';
-//import Signup from  '~/login/Signup';
+import Signup from  '~/login/Signup';
 import ChangePw from '~/changepw/ChangePw';
 import Profile from '~/profile/Profile';
 import Eval from '~/eval/Eval';
-//import Verify from '~/verify/Verify';
+import Verify from '~/verify/Verify';
 import Performance from '~/performance/Performance';
 import PrivateRoute from '~/PrivateRoute';
 
@@ -30,30 +30,29 @@ const App = () => {
                 <Route
                     exact
                     path="/"
-                    element={<PrivateRoute component={Home} />}
+                    element={<PrivateRoute verficationRequired pwChangeRequired component={Home} />}
                 />
                 <Route
                     path="/users/:id"
-                    element={<PrivateRoute component={Profile}/>}
+                    element={<PrivateRoute verificationRequired pwChangeRequired component={Profile}/>}
                 />
                 <Route
                     path="/users/:id/eval"
-                    element={<PrivateRoute component={Eval} />}
+                    element={<PrivateRoute verificationRequired pwChangeRequired component={Eval} />}
                 />
                 <Route
                     path="/users/:id/performance"
-                    element={<PrivateRoute component={Performance} />}
+                    element={<PrivateRoute verificationRequired pwChangeRequired component={Performance} />}
                 />
                 <Route
                     exact
                     path="/verify"
-                    //element={<PrivateRoute ={false} component={Verify} />}
-                    element={<Navigate to='/' repalce />}
+                    element={<PrivateRoute component={Verify} />}
                 />
                 <Route
                     exact
                     path="/changepw"
-                    element={<PrivateRoute changePwNotRequired component={ChangePw} />}
+                    element={<PrivateRoute verificationRequired component={ChangePw} />}
                 />
                 <Route
                     exact
@@ -63,8 +62,7 @@ const App = () => {
                 <Route
                     exact
                     path="/signup"
-                    //element={<Signup setToken={setToken} setCurrentUser={setCurrentUser}/>}
-                    element={<Navigate to='/' repalce />}
+                    element={<Signup setToken={setToken} setCurrentUser={setCurrentUser}/>}
                 />
                 <Route
                     path="*"

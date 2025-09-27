@@ -37,7 +37,7 @@ const userSchema = new Schema({
         type: String,
         select: false
     },
-    email_verified: {
+    account_verified: {
         type: Boolean,
         default: false,
     },

@@ -38,29 +38,32 @@ const sendVerificationEmail = (recipient, verificationCode) => {
     }, (err) => { err ? console.log(err) : console.log(`Email sent to ${recipient}`) });
 };
 
-const verifyAccessToken = (req, res, next) => {
+const verifyAccessToken = async (req, res, next) => {
     let token = req.headers["authorization"]?.split(" ")[1];
     if (!token) {
         return res.status(401).end("No token provided");
     }
-    jwt.verify(token, config.secret, (err, decoded) => {
+    jwt.verify(token, config.secret, async (err, decoded) => {
         if (err) {
             if (err instanceof jwt.TokenExpiredError) {
                 return res.status(401).end("Access token is expired")
             }
             return res.status(401).end("Unauthorized");
         }
-        req.session.userId = decoded.id;
+        let user = await User.findById(decoded.id);
+        if (!user) {
+            return res.status(400).end("User not found");
+        }
+        req.user = user;
         next();
     });
 };
 
-const verifyEmailVerif = async (req, res, next) => {
-    return res.status(400).end("Email verification is currently disabled");
-    /*if (!req.user.email_verified) {
-        return res.status(401).end("User email not verified");
+const verifyAccount = async (req, res, next) => {
+    if (!req.user.account_verified) {
+        return res.status(401).end("User not verified");
     }
-    next();*/
+    next();
 }
 
 router.post('/login', async (req, res) => {
@@ -112,7 +115,7 @@ router.post('/refresh', async (req, res) => {
 
 router.post('/logout', async (req, res) => {
     await RefreshToken.deleteMany({
-        user: req.user._id
+        user: req. ession.userId,
     });
     req.session.destroy((err) => {
         return res.status(500).end("Logout unsuccessful");
@@ -121,8 +124,7 @@ router.post('/logout', async (req, res) => {
 });
 
 router.post('/users', async (req, res) => {
-    return res.status(400).end("Account creation is currently disabled");
-    /*let emailPattern = /^([\w-]+(?:\.[\w-]+)*)@(montefiore\.org|einsteinmed\.edu)$/i;
+    let emailPattern = /^([\w-]+(?:\.[\w-]+)*)@(montefiore\.org|einsteinmed\.edu)$/i;
     let emailIsValid = emailPattern.test(req.body.email);
     if (!emailIsValid) {
         return res.status(400).end("Invalid email");
@@ -144,19 +146,17 @@ router.post('/users', async (req, res) => {
         return res.status(200).end("Email is already in use");
     }
 
-    let user;
     let verificationCode = [...Array(6)].map(_=>Math.random()*10|0).join("");
-    try {
-        user = await User.create({
-            firstname: req.body.firstname,
-            lastname: req.body.lastname,
-            email: req.body.email,
-            password: req.body.password,
-            role: role,
-            pgy: role === "RESIDENT" ? 1 : null, // make all residents pgy-1 for now
-            verification_code: verificationCode
-        });
-    } catch(err) {
+    let user = await User.create({
+        firstname: req.body.firstname,
+        lastname: req.body.lastname,
+        email: req.body.email,
+        password: req.body.password,
+        role: role,
+        pgy: role === "RESIDENT" ? 1 : null, // make all residents pgy-1 for now
+        verification_code: verificationCode
+    });
+    if (!user) {
         return res.status(500).end("Unable to create account");
     }
 
@@ -165,7 +165,7 @@ router.post('/users', async (req, res) => {
 
     console.log("Account created for " + req.body.firstname);
 
-    sendVerificationEmail(req.body.email, verificationCode);
+    //sendVerificationEmail(req.body.email, verificationCode);
 
     let refreshToken = await RefreshToken.createToken(user._id);
     let accessToken = createNewAccessToken(user._id);
@@ -174,44 +174,42 @@ router.post('/users', async (req, res) => {
     return res.send({
         accessToken: accessToken,
         user: user
-    });*/
+    });
 });
 
 router.put('/verify', verifyAccessToken, async (req, res) => {
-    return res.status(400).end("Email verification is currently disabled");
-    /*let code = req.body.code;
-    let user = req.user;
-    if (user.email_verified) {
+    let code = req.body.code;
+    let user = await User.findById(req.user._id).select("+verification_code");
+    if (user.account_verified) {
         return res.status(400).end("User is already verified");
     }
     if (code !== user.verification_code) {
         return res.status(200).end("Verification code is incorrect");
     }
-    user.email_verified = true;
+    user.account_verified = true;
     user.verification_code = null;
     await user.save()
-    return res.status(200).end("User verified");*/
+    return res.status(200).end("User verified");
 });
 
 router.put('/verify/new', verifyAccessToken, async (req, res) => {
-    return res.status(400).end("Email verification is currently disabled");
-    /*let user = req.user;
-    if (user.email_verified) {
+    let user = req.user;
+    if (user.account_verified) {
         return res.status(400).end("User is already verified");
     }
     let verificationCode = [...Array(6)].map(_=>Math.random()*10|0).join("");
     user.verification_code = verificationCode;
     await user.save();
-    sendVerificationEmail(user.email, verificationCode);
+    //sendVerificationEmail(user.email, verificationCode);
 
-    return res.status(200).end("New code sent");*/
+    return res.status(200).end("New verification code created");
 });
 
-router.put('/changepw', verifyAccessToken, async (req, res) => {
+router.put('/changepw', verifyAccessToken, verifyAccount, async (req, res) => {
     if (req.body.password.length < 8) {
         return res.status(400).end("Password requirements not met");
     }
-    let user = await User.findById(req.session.userId).select("+password");
+    let user = await User.findById(req.user._id).select("+password");
     user.password = req.body.password;
     user.changepw_required = false;
     await user.save();
@@ -221,19 +219,18 @@ router.put('/changepw', verifyAccessToken, async (req, res) => {
     return res.status(200).end("Password changed");
 });
 
-router.get('/users', verifyAccessToken, async (req, res) => {
+router.get('/users', verifyAccessToken, verifyAccount, async (req, res) => {
     let role = req.query.role;
     if (role != "RESIDENT" && role != "ATTENDING") {
         return res.status(400).end("Invalid role");
     }
     let users = await User.find({
         role: role,
-        email_verified: true
     }).select('firstname lastname role');
     res.json(users);
 });
 
-router.get('/users/id/:userId', verifyAccessToken, async (req, res) => {
+router.get('/users/id/:userId', verifyAccessToken, verifyAccount, async (req, res) => {
     let userId;
     try {
         userId = new ObjectId(req.params.userId);
@@ -247,7 +244,7 @@ router.get('/users/id/:userId', verifyAccessToken, async (req, res) => {
     res.json(user);
 });
 
-router.get('/users/id/:userId/evals', verifyAccessToken, async (req, res) => {
+router.get('/users/id/:userId/evals', verifyAccessToken, verifyAccount, async (req, res) => {
     let userId;
     try {
         userId = new ObjectId(req.params.userId);
@@ -267,7 +264,7 @@ router.get('/users/id/:userId/evals', verifyAccessToken, async (req, res) => {
     res.json(evals);
 });
 
-router.post('/users/id/:userId/evals', verifyAccessToken, async (req, res) => {
+router.post('/users/id/:userId/evals', verifyAccessToken, verifyAccount, async (req, res) => {
     let evalType = req.body.type;
     let formObject = req.body.form;
     let evaluateeId = new ObjectId(req.params.userId);

@@ -38,6 +38,10 @@ export const TextInput = styled(shared.TextInput)`
     font-size: 16px;
 `;
 
+export const Image = styled.img`
+    width: 30%;
+`;
+
 export const Container = shared.Container;
 export const CenterScreenContainer = shared.CenterScreenContainer;
 export const Button = shared.Button;

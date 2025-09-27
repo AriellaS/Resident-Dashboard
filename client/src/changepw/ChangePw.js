@@ -3,8 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import ajax from '~/util';
 import * as S from '~/changepw/styles'
 
-const logoPath = "/favicon/favicon.svg";
-
 const ChangePw = ({ currentUser, setCurrentUser }) => {
 
     const [formState, setFormState] = useState({
@@ -59,8 +57,7 @@ const ChangePw = ({ currentUser, setCurrentUser }) => {
     return (
         <S.CenterScreenContainer>
             <S.Container>
-                <S.Image src={logoPath} alt="EvalMD Logo" />
-                <S.Header children="Enter new password" />
+                <S.Header children="Create new password" />
                 <form onSubmit={handleSubmit}>
                     <S.TextInput
                         value={formState.password}

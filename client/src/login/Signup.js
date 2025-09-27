@@ -13,7 +13,8 @@ const Signup = ({ setToken, setCurrentUser }) => {
         email: "",
         password: "",
         confirmPassword: "",
-        role: "RESIDENT"
+        role: "RESIDENT",
+        pgy: 1,
     });
 
     const [errorState, setErrorState] = useState({
@@ -55,7 +56,8 @@ const Signup = ({ setToken, setCurrentUser }) => {
             lastname: formState.lastname,
             email: formState.email,
             password: formState.password,
-            role: formState.role
+            role: formState.role,
+            pgy: formState.role === "RESIDENT" ? formState.pgy : null,
         }).then(res => {
             if (res.data === "Email is already in use") {
                 setErrorState({
@@ -125,6 +127,15 @@ const Signup = ({ setToken, setCurrentUser }) => {
                         default={0}
                         onChange={e => {setFormState({ ...formState, role: e.target.value})} }
                     />
+                    {formState.role === "RESIDENT" && (
+                        <S.StyledFancyRadio
+                            name="pgytoggle"
+                            values={[1, 2, 3, 4, 5]}
+                            texts={["1", "2", "3", "4", "5"]}
+                            default={0}
+                            onChange={e => {setFormState({ ...formState, pgy: e.target.value})} }
+                        />
+                    )}
                     <S.Button
                         text="Sign Up"
                         type="submit"

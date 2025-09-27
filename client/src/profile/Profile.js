@@ -17,7 +17,7 @@ const Profile = ({ currentUser }) => {
         email: "",
         role: "",
         pgy: null,
-        emailVerified: false,
+        accountVerified: false,
     });
 
     const [errorState, setErrorState] = useState(false);
@@ -32,7 +32,7 @@ const Profile = ({ currentUser }) => {
                         email: res.data.email,
                         role: res.data.role,
                         pgy: res.data.pgy,
-                        emailVerified: res.data.email_verified
+                        accountVerified: res.data.account_verified,
                     })
                     setErrorState(false);
                 }).catch(err => {
@@ -60,7 +60,7 @@ const Profile = ({ currentUser }) => {
             <Navbar />
             <S.CenterScreenContainer>
                 <S.Container>
-                    {errorState || !user.emailVerified ? <div>User not found.</div> :
+                    {errorState || !user.accountVerified ? <div>User not found.</div> :
                     <div>
                         <QRCode value={`${window.location.origin}/users/${userId}`} />
                         <S.TextContainer>

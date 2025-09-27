@@ -67,14 +67,6 @@ app.use(session({
     }
 }));
 
-app.use(async (req, res, next) => {
-    if (req.session && req.session.userId) {
-        let user = await User.findById(req.session.userId);
-        req.user = user;
-    }
-    next();
-});
-
 // API
 const api = require('./api');
 app.use("/api", api);
