@@ -115,7 +115,7 @@ router.post('/refresh', async (req, res) => {
 
 router.post('/logout', async (req, res) => {
     await RefreshToken.deleteMany({
-        user: req. ession.userId,
+        user: req.session.userId,
     });
     req.session.destroy((err) => {
         return res.status(500).end("Logout unsuccessful");

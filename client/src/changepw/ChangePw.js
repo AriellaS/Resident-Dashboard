@@ -38,7 +38,7 @@ const ChangePw = ({ currentUser, setCurrentUser }) => {
         await ajax.request('put', `/changepw`, { password: formState.password })
             .then(res => {
                 if (res.data === "Password changed") {
-                    setCurrentUser({ ...currentUser, needsChangePw: false});
+                    setCurrentUser({ ...currentUser, changepw_required: false});
                     setAlert({
                         state: "SUCCESS",
                         msg: "Password changed successfully"
