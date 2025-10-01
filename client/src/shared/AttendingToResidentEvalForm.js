@@ -101,15 +101,9 @@ export const Questions = [{
     optionTexts: ATTRIBUTE_OPTIONS,
 }, {
     page: 'ATTRIBUTES',
-    name: 'BLEEDING',
+    name: 'INSTRUMENT',
     type: 'RADIO',
-    questionText: 'Bleeding',
-    optionTexts: ATTRIBUTE_OPTIONS,
-}, {
-    page: 'ATTRIBUTES',
-    name: 'NEED',
-    type: 'RADIO',
-    questionText: 'Need for direction',
+    questionText: 'Instrument choice and use',
     optionTexts: ATTRIBUTE_OPTIONS,
 }, {
     page: 'ATTRIBUTES',
@@ -118,39 +112,15 @@ export const Questions = [{
     questionText: 'Postoperative plan',
     optionTexts: ATTRIBUTE_OPTIONS,
 }, {
-    page: 'ATTRIBUTES',
-    name: 'COMMUNICATION',
-    type: 'RADIO',
-    questionText: 'Communication',
-    optionTexts: ATTRIBUTE_OPTIONS,
-}, {
-    page: 'ATTRIBUTES',
-    name: 'RESPONSIVENESS',
-    type: 'RADIO',
-    questionText: 'Responsiveness to feedback',
-    optionTexts: ATTRIBUTE_OPTIONS,
-}, {
-    page: 'ATTRIBUTES',
-    name: 'RESPECT',
-    type: 'RADIO',
-    questionText: 'Respect for others',
-    optionTexts: ATTRIBUTE_OPTIONS,
-}, {
-    page: 'ATTRIBUTES',
-    name: 'TEACHING',
-    type: 'RADIO',
-    questionText: 'Teaching',
-    optionTexts: ATTRIBUTE_OPTIONS,
+    page: 'WRITTEN',
+    name: 'POSITIVE',
+    type: 'LONG_TEXT',
+    questionText: 'In what ways did this resident demonstrate strong performance during the procedure?',
 }, {
     page: 'WRITTEN',
-    name: 'MORE_OF',
+    name: 'NEGATIVE',
     type: 'LONG_TEXT',
-    questionText: 'What would you like this resident to do more of when operating with you?',
-}, {
-    page: 'WRITTEN',
-    name: 'LESS_OF',
-    type: 'LONG_TEXT',
-    questionText: 'What would you like this resident to do less of when operating with you?',
+    questionText: 'In what aspects of the procedure could this resident have improved?',
 }, {
     page: 'WRITTEN',
     name: 'GENERAL',

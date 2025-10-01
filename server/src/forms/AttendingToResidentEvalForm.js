@@ -52,38 +52,18 @@ const Questions = [{
         type: 'RADIO',
         numOptions: 3,
     }, {
-        name: 'BLEEDING',
+        name: 'INSTRUMENT',
         type: 'RADIO',
         numOptions: 3,
     }, {
-        name: 'NEED',
+        name: 'POSTOP_PLAN',
         type: 'RADIO',
         numOptions: 3,
     }, {
-        name: 'POSOTP_PLAN',
-        type: 'RADIO',
-        numOptions: 3,
-    }, {
-        name: 'COMMUNICATION',
-        type: 'RADIO',
-        numOptions: 3,
-    }, {
-        name: 'RESPONSIVENESS',
-        type: 'RADIO',
-        numOptions: 3,
-    }, {
-        name: 'RESPECT',
-        type: 'RADIO',
-        numOptions: 3,
-    }, {
-        name: 'TEACHING',
-        type: 'RADIO',
-        numOptions: 3,
-    }, {
-        name: 'MORE_OF',
+        name: 'POSITIVE',
         type: 'TEXT',
     }, {
-        name: 'LESS_OF',
+        name: 'NEGATIVE',
         type: 'TEXT',
     }, {
         name: 'GENERAL',
