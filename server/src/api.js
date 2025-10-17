@@ -263,7 +263,7 @@ router.get('/users/id/:userId/evals', verifyAccessToken, verifyAccount, async (r
     let evals = await AttendingToResidentEval.find({
         evaluatee: userId,
     });
-    res.json(evals);
+    res.json({ evals: evals, user: user });
 });
 
 router.post('/users/id/:userId/evals', verifyAccessToken, verifyAccount, async (req, res) => {

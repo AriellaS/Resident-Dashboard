@@ -6,6 +6,11 @@ export const Container = styled(shared.Container)`
     max-width: 1000px;
 `;
 
+export const PageTitle = styled.div`
+    font-size: min(6vw, 50px);
+    cursor: pointer
+`;
+
 export const DashboardItem = styled.div`
     background-color: var(--bs-light);
     padding: 1.5vw;

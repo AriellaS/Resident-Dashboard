@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { PieChart, Pie, BarChart, Bar, XAxis, Cell, Legend, Tooltip, Text, ResponsiveContainer } from 'recharts';
 import 'react-circular-progressbar/dist/styles.css';
 import { Questions, SUBSPECIALTIES } from  '~/shared/AttendingToResidentEvalForm';
@@ -10,6 +10,7 @@ import * as S from '~/performance/styles';
 const Performance = () => {
 
     const params = useParams();
+    const navigate = useNavigate();
     const userId = params.id;
 
     const emptyEvalData = Questions.filter(q => q.type==='RADIO').map(({ page, name, optionTexts }) => ({
@@ -18,11 +19,28 @@ const Performance = () => {
         data: optionTexts.map(o => ({ name: o, count: 0 }))
     }));
 
-    const [numEvals, setNumEvals] = useState(0);
-    const [evalData, setEvalData] = useState(emptyEvalData);
+    const [evals, setEvals] = useState([]);
+    const [selectedSpecialty, setSelectedSpecialty] = useState('');
+    const [user, setUser] = useState({
+        firstname: "",
+        lastname: "",
+        pgy: null,
+    });
 
-    const subspecialtyData = evalData.find(d => d.name==='SUBSPECIALTY').data;
+    const filteredEvals = selectedSpecialty ? evals.filter(e => e.form.find(f => f.name==='SUBSPECIALTY').option===SUBSPECIALTIES.findIndex(s => s.name===selectedSpecialty)+'') : evals;
+    const evalData = emptyEvalData.map(q => ({
+        ...q,
+        data: q.data.map((o,i) => ({
+            ...o,
+            count: filteredEvals.flatMap(e => e.form)?.filter(f => f.name===q.name && f.option===i+'').length
+        }))
+    }));
+    const specialtyData = SUBSPECIALTIES.map((s,i) => ({
+            name: s.name,
+            count: evals.flatMap(e => e.form)?.filter(f => f.name==='SUBSPECIALTY' && f.option===i+'').length
+    }));
     const barData = evalData.filter(d => ['PREP_RATING','GUIDANCE','PERFORMANCE'].includes(d.name));
+    const selectedSpecialtyColor = SUBSPECIALTIES.find(s => s.name===selectedSpecialty)?.color;
 
     const calculateScore = (questionData) =>  {
         let scoreSum = 0;
@@ -45,14 +63,12 @@ const Performance = () => {
         async function fetchData() {
             await ajax.request('get', `/users/id/${userId}/evals`)
                 .then(res => {
-                    setNumEvals(res.data.length);
-                    setEvalData(evalData.map(q => ({
-                        ...q,
-                        data: q.data.map((o,i) => ({
-                            ...o,
-                            count: res.data.flatMap(d => d.form).filter(f => f.name===q.name && f.option===i+'').length
-                        }))
-                    })));
+                    setEvals(res.data.evals);
+                    setUser({
+                        firstname: res.data.user.firstname,
+                        lastname: res.data.user.lastname,
+                        pgy: res.data.user.pgy
+                    });
                 })
                 .catch(err => { console.log(err) });
         }
@@ -64,26 +80,36 @@ const Performance = () => {
             <Navbar />
             <S.CenterScreenContainer>
                 <S.Container>
+                    <S.PageTitle
+                        onClick={() => navigate('..', { relative: "path" })}
+                        children={`${user.firstname} ${user.lastname}, PGY-${user.pgy}`}
+                    />
                     <S.HorizontalContainer>
                         <S.DashboardItem>
                             <S.DashboardItemHeading children="Total Evals Recieved"/>
-                            <S.DashboardItemLargeText children={numEvals}/>
+                            <S.DashboardItemLargeText children={evals.length}/>
                         </S.DashboardItem>
-                        <S.DashboardItem>
+                        <S.DashboardItem onClick={() => setSelectedSpecialty('')}>
                             <S.DashboardItemHeading children="Subspecialties"/>
                             <S.PieChartContainer>
                             <ResponsiveContainer width='100%' >
                                 <PieChart>
                                     <Pie
-                                        data={subspecialtyData}
+                                        data={specialtyData}
                                         dataKey='count'
                                         innerRadius='50%'
                                         outerRadius='80%'
-                                        fill="#8884d8"
-                                        isAnimationActive={true}
+                                        isAnimationActive={false}
                                     >
-                                        {subspecialtyData.map((sd, i) => (
-                                            <Cell key={i} fill={SUBSPECIALTIES.find(s => s.name===sd.name)?.color || '#ccc'} />
+                                        {specialtyData?.map((sd, i) => (
+                                            <Cell
+                                                key={i}
+                                                fill={SUBSPECIALTIES.find(s => s.name===sd.name)?.color || '#ccc'}
+                                                onClick={(e) => {
+                                                    e.stopPropagation()
+                                                    setSelectedSpecialty(sd.name)
+                                                }}
+                                            />
                                         ))}
                                     </Pie>
                                     <Legend align='left' verticalAlign='bottom' layout='vertical' />
@@ -101,7 +127,7 @@ const Performance = () => {
                                     key={i}
                                     value={calculateScore(d.data)}
                                     strokeWidth={10}
-                                    styles={{path: { stroke: S.accentColor }}}
+                                    styles={{path: { stroke: selectedSpecialtyColor || S.accentColor }}}
                                 >
                                     <S.ProgressBarText children={Questions.find(q => q.name===d.name).questionText} />
                                     <S.ProgressBarText children={parseInt(calculateScore(d.data))+'%'} />
@@ -119,7 +145,7 @@ const Performance = () => {
                                             barSize={15}
                                             data={d.data}
                                         >
-                                            <Bar dataKey="count" fill={S.accentColor} />
+                                            <Bar dataKey="count" fill={selectedSpecialtyColor || S.accentColor} />
                                             <XAxis interval={0} height={50} tick={<CustomizedAxisTick />} dataKey="name" />
                                             <Tooltip />
                                         </BarChart>
