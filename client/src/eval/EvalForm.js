@@ -1,4 +1,5 @@
 import React, {useState} from 'react';
+import { useNavigate } from 'react-router-dom';
 import Question from '~/eval/Question';
 import { Pages, Questions } from  '~/shared/AttendingToResidentEvalForm';
 import * as S from '~/eval/styles';
@@ -6,6 +7,8 @@ import AlertBox from '~/shared/AlertBox';
 import ajax from '~/util';
 
 const EvalForm = (props) => {
+
+    const navigate = useNavigate();
 
     const [pageState, setPageState] = useState(0);
 
@@ -56,12 +59,21 @@ const EvalForm = (props) => {
         });
     };
 
+    const handleSeeProfile= () => {
+        navigate('..', { relative: "path" });
+    }
+
     if (submissionState) {
         return (
             <div>
                 <S.StyledCheckGlyph />
                 <hr />
                 <S.SubmissionText children={`Evaluation submitted for ${props.userData.firstname} ${props.userData.lastname}`} />
+                <S.Button
+                    text='Back to Profile'
+                    type='button'
+                    onClick={handleSeeProfile}
+                />
             </div>
         )
     }

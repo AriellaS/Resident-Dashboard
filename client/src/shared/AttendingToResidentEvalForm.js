@@ -1,5 +1,27 @@
 const ATTRIBUTE_OPTIONS = ['Needing Attention','Developing','At Goal'];
-export const SUBSPECIALTIES = ['Comprehensive','H & N / Microvascular','Rhinology','Facial Plastics','Laryngology','Otology','Pediatric'];
+export const SUBSPECIALTIES = [{
+    name: 'Comprehensive',
+    color: '#ff7b61'
+}, {
+    name: 'H & N / Microvascular',
+    color: '#786bff'
+}, {
+    name: 'Rhinology',
+    color: '#8f2e45'
+}, {
+    name: 'Facial Plastics',
+    color: '#ff87f3'
+}, {
+    name: 'Laryngology',
+    color: '#5eb9e0'
+}, {
+    name: 'Otology',
+    color: '#ce83fc'
+}, {
+    name: 'Pediatric',
+    color: '#c9b853'
+}];
+
 
 export const Pages = [{
     name: 'TYPE_SURGERY',
@@ -28,7 +50,7 @@ export const Questions = [{
     name: 'SUBSPECIALTY',
     type: 'RADIO',
     questionText: 'Otolaryngology Subspecialty',
-    optionTexts: SUBSPECIALTIES,
+    optionTexts: SUBSPECIALTIES.flatMap(s => s.name),
 }, {
     page: 'TYPE_SURGERY',
     name: 'SURGERY',
@@ -107,7 +129,7 @@ export const Questions = [{
     optionTexts: ATTRIBUTE_OPTIONS,
 }, {
     page: 'ATTRIBUTES',
-    name: 'POSOTP_PLAN',
+    name: 'POSTOP_PLAN',
     type: 'RADIO',
     questionText: 'Postoperative plan',
     optionTexts: ATTRIBUTE_OPTIONS,

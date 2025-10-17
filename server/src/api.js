@@ -28,7 +28,7 @@ const sendVerificationEmail = (recipient, verificationCode) => {
         to: recipient,
         subject: `Your EvalMD verification code: ${verificationCode}`,
         text: `Your code is ${verificationCode}. Verify your account at https://evalmd.io/verify. If you did not request this code, please ignore this email.`
-    }, (err) => { err ? console.log(err) : console.log(`Email sent to ${recipient}`) });
+    }, (err) => { err ? console.log("Error sending email") : console.log(`Email sent to ${recipient}`) });
 };
 
 const createNewAccessToken = (userId) => {
@@ -306,14 +306,13 @@ router.post('/users/id/:userId/evals', verifyAccessToken, verifyAccount, async (
             return res.status(400).end("Invalid input");
         }
         try {
-            await AttendingToResidentEval.create({
+            let evaluation = await AttendingToResidentEval.create({
                 evaluator: req.user._id,
                 evaluatee: evaluateeId,
                 form,
             });
         } catch(err) {
-            console.log(err)
-            return res.status(500).end(err);
+            return res.status(500).end("Unable to submit eval");
         }
     }
 
