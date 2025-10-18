@@ -55,7 +55,7 @@ const Performance = () => {
     const CustomizedAxisTick = (props) => {
         const {x, y, payload} = props;
         return (
-            <Text x={x} y={y} width={75} angle={-45} textAnchor="end" verticalAnchor="start" style={{fontSize: '0.6vw'}}>{payload.value}</Text>
+            <Text x={x} y={y} width={75} angle={-45} textAnchor="end" verticalAnchor="start" style={{fontSize: '8px'}}>{payload.value}</Text>
         )
     };
 
@@ -92,35 +92,34 @@ const Performance = () => {
                         <S.DashboardItem onClick={() => setSelectedSpecialty('')}>
                             <S.DashboardItemHeading children="Subspecialties"/>
                             <S.PieChartContainer>
-                            <ResponsiveContainer width='100%' >
-                                <PieChart>
-                                    <Pie
-                                        data={specialtyData}
-                                        dataKey='count'
-                                        innerRadius='50%'
-                                        outerRadius='80%'
-                                        isAnimationActive={false}
-                                    >
-                                        {specialtyData?.map((sd, i) => (
-                                            <Cell
-                                                key={i}
-                                                fill={SUBSPECIALTIES.find(s => s.name===sd.name)?.color || '#ccc'}
-                                                onClick={(e) => {
-                                                    e.stopPropagation()
-                                                    setSelectedSpecialty(sd.name)
-                                                }}
-                                            />
-                                        ))}
-                                    </Pie>
-                                    <Legend align='left' verticalAlign='bottom' layout='vertical' />
-                                    <Tooltip />
-                                </PieChart>
-                            </ResponsiveContainer>
+                                <ResponsiveContainer width='100%' >
+                                    <PieChart>
+                                        <Pie
+                                            data={specialtyData}
+                                            dataKey='count'
+                                            innerRadius='50%'
+                                            outerRadius='80%'
+                                            isAnimationActive={false}
+                                        >
+                                            {specialtyData?.map((sd, i) => (
+                                                <Cell
+                                                    key={i}
+                                                    fill={SUBSPECIALTIES.find(s => s.name===sd.name)?.color || '#ccc'}
+                                                    onClick={(e) => {
+                                                        e.stopPropagation()
+                                                        setSelectedSpecialty(sd.name)
+                                                    }}
+                                                />
+                                            ))}
+                                        </Pie>
+                                        <Legend align='left' verticalAlign='middle' layout='vertical' />
+                                        <Tooltip />
+                                    </PieChart>
+                                </ResponsiveContainer>
                             </S.PieChartContainer>
                         </S.DashboardItem>
                     </S.HorizontalContainer>
                     <S.DashboardItem>
-                        <S.DashboardItemHeading children="Attributes"/>
                         <S.HorizontalContainer>
                             {evalData.filter(d => d.page === 'ATTRIBUTES').map((d,i) => (
                                 <S.ProgressBar
@@ -139,7 +138,8 @@ const Performance = () => {
                         <S.HorizontalContainer>
                             {barData.map((d,i) => {
                                 return (
-                                    <ResponsiveContainer aspect={1} width='25%' key={i} style={i > 0 ? { marginLeft: '50px' } : {}}>
+                                    <S.BarChartContainer key={i}>
+                                        <ResponsiveContainer aspect={1}>
                                         <S.BarChartHeading children={Questions.find(q => d.name===q.name).questionText}/>
                                         <BarChart
                                             barSize={15}
@@ -150,6 +150,7 @@ const Performance = () => {
                                             <Tooltip />
                                         </BarChart>
                                     </ResponsiveContainer>
+                                    </S.BarChartContainer>
                                 )
                             })}
                         </S.HorizontalContainer>
