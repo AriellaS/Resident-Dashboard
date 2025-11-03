@@ -16,13 +16,7 @@ import Verify from '~/verify/Verify';
 import Performance from '~/performance/Performance';
 import PrivateRoute from '~/PrivateRoute';
 
-import useToken from '~/useToken';
-import useCurrentUser from '~/useCurrentUser';
-
 const App = () => {
-
-    const { token, setToken, removeToken } = useToken();
-    const { setCurrentUser } = useCurrentUser();
 
     return (
         <Router>
@@ -57,12 +51,12 @@ const App = () => {
                 <Route
                     exact
                     path="/login"
-                    element={<Login token={token} setToken={setToken} removeToken={removeToken} setCurrentUser={setCurrentUser}/>}
+                    element={<Login />}
                 />
                 <Route
                     exact
                     path="/signup"
-                    element={<Signup setToken={setToken} setCurrentUser={setCurrentUser}/>}
+                    element={<Signup />}
                 />
                 <Route
                     path="*"

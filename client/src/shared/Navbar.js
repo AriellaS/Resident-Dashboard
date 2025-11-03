@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import BootstrapNavbar from 'react-bootstrap/Navbar';
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
+import Cookies from 'js-cookie';
 import ajax from '~/util';
 import useToken from '~/useToken';
 import useCurrentUser from '~/useCurrentUser';
@@ -17,6 +18,7 @@ const Navbar = () => {
             .then(res => {
                 removeToken();
                 removeCurrentUser();
+                Cookies.remove('refreshToken');
                 navigate('/login');
             }).catch(err => {
                 console.log(err);

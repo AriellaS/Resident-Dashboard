@@ -2,13 +2,15 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import axios from 'axios';
-import ajax from "~/util.js"
+import useToken from '~/useToken';
+import useCurrentUser from '~/useCurrentUser';
+import ajax from '~/util.js';
 import TextInputWithLabel from '~/login/TextInputWithLabel';
 import * as S from '~/login/styles';
 
 const logoPath = "/favicon/favicon.svg";
 
-const Login = ({ token, setToken, removeToken, setCurrentUser }) => {
+const Login = () => {
 
     const [formState, setFormState] = useState({
         email: "",
@@ -21,6 +23,8 @@ msg: ""
     });
 
     const navigate = useNavigate();
+    const { token, setToken, removeToken } = useToken();
+    const { setCurrentUser } = useCurrentUser();
     const { search } = useLocation();
     const next = new URLSearchParams(search).get('next');
 

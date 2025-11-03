@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-
+import useToken from '~/useToken';
+import useCurrentUser from '~/useCurrentUser';
 import ajax from '~/util';
 import TextInputWithLabel from '~/login/TextInputWithLabel';
 import * as S from '~/login/styles';
 
-const Signup = ({ setToken, setCurrentUser }) => {
+const Signup = () => {
 
     const [formState, setFormState] = useState({
         firstname: "",
@@ -23,6 +24,8 @@ const Signup = ({ setToken, setCurrentUser }) => {
     });
 
     const navigate = useNavigate();
+    const { setToken } = useToken();
+    const { setCurrentUser } = useCurrentUser();
 
     const emailIsValid = (email) => {
         let emailPattern = /^([\w-]+(?:\.[\w-]+)*)@(montefiore\.org|einsteinmed\.edu)$/i;

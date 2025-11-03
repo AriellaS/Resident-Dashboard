@@ -4,3 +4,4 @@
 **/.DS_Store
 .firebase
 ./server/config.json
+firebase-debug.log

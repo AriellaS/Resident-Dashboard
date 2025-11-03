@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import Cookies from 'js-cookie';
@@ -11,8 +11,7 @@ const PrivateRoute = ({ component: Component, verificationRequired, pwChangeRequ
     const { token, setToken, removeToken } = useToken();
     const { currentUser, setCurrentUser } = useCurrentUser();
 
-    const [userIsAuthenticated, setUserIsAuthenticated] = useState(!!token);
-
+    const userIsAuthenticated = !!token;
     const userVerified = !!currentUser && currentUser.account_verified;
     const userRequiresPwChange = !!currentUser && currentUser.changepw_required;
     const pageAccessibleToUser = userIsAuthenticated && (!verificationRequired || userVerified) && (!pwChangeRequired || !userRequiresPwChange);
@@ -26,7 +25,6 @@ const PrivateRoute = ({ component: Component, verificationRequired, pwChangeRequ
                         axios.post("/api/refresh")
                             .then(res => {
                                 setToken(res.data.accessToken);
-                                setUserIsAuthenticated(true);
                             }).catch(err => {
                                 console.error(err)
                                 removeToken();
@@ -40,7 +38,6 @@ const PrivateRoute = ({ component: Component, verificationRequired, pwChangeRequ
                 axios.post("/api/refresh")
                     .then(res => {
                         setToken(res.data.accessToken);
-                        setUserIsAuthenticated(true);
                     }).catch(err => {
                         console.error(err)
                         removeToken();
