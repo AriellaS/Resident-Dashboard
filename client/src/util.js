@@ -31,6 +31,7 @@ export async function refreshAccessTokenAndHandleRequest(headers, method, path, 
         }).catch(err => {
             console.error(err)
             localStorage.removeItem('token');
+            Cookies.remove('refreshToken');
         });
 }
 

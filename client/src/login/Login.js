@@ -48,6 +48,7 @@ msg: ""
                 }).catch(err => {
                     console.error(err)
                     removeToken();
+                    Cookies.remove('refreshToken');
                 });
         }
     });

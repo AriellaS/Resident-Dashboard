@@ -28,6 +28,7 @@ const PrivateRoute = ({ component: Component, verificationRequired, pwChangeRequ
                             }).catch(err => {
                                 console.error(err)
                                 removeToken();
+                                Cookies.remove('refreshToken');
                             });
                     }
                 } catch (err) {
@@ -41,6 +42,7 @@ const PrivateRoute = ({ component: Component, verificationRequired, pwChangeRequ
                     }).catch(err => {
                         console.error(err)
                         removeToken();
+                        Cookies.remove('refreshToken');
                     });
             }
         }
