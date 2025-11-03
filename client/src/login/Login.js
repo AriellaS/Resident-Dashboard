@@ -1,13 +1,14 @@
-import React, { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-
+import Cookies from 'js-cookie';
+import axios from 'axios';
 import ajax from "~/util.js"
 import TextInputWithLabel from '~/login/TextInputWithLabel';
 import * as S from '~/login/styles';
 
 const logoPath = "/favicon/favicon.svg";
 
-const Login = ({ setToken, setCurrentUser }) => {
+const Login = ({ token, setToken, removeToken, setCurrentUser }) => {
 
     const [formState, setFormState] = useState({
         email: "",
@@ -16,12 +17,36 @@ const Login = ({ setToken, setCurrentUser }) => {
 
     const [errorState, setErrorState] = useState({
         isError: false,
-        msg: ""
+msg: ""
     });
 
     const navigate = useNavigate();
     const { search } = useLocation();
     const next = new URLSearchParams(search).get('next');
+
+    useEffect(() => {
+        if (token) {
+            if (next) {
+                navigate(next);
+            } else {
+                navigate('/');
+            }
+        }
+        if (!token && Cookies.get('refreshToken')) {
+            axios.post("/api/refresh")
+                .then(res => {
+                    setToken(res.data.accessToken);
+                    if (next) {
+                        navigate(next);
+                    } else {
+                        navigate('/');
+                    }
+                }).catch(err => {
+                    console.error(err)
+                    removeToken();
+                });
+        }
+    });
 
     const handleSubmit = async(e) => {
         e.preventDefault();

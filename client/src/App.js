@@ -21,7 +21,7 @@ import useCurrentUser from '~/useCurrentUser';
 
 const App = () => {
 
-    const { setToken } = useToken();
+    const { token, setToken, removeToken } = useToken();
     const { setCurrentUser } = useCurrentUser();
 
     return (
@@ -57,7 +57,7 @@ const App = () => {
                 <Route
                     exact
                     path="/login"
-                    element={<Login setToken={setToken} setCurrentUser={setCurrentUser}/>}
+                    element={<Login token={token} setToken={setToken} removeToken={removeToken} setCurrentUser={setCurrentUser}/>}
                 />
                 <Route
                     exact

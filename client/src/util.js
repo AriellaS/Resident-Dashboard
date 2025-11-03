@@ -1,4 +1,5 @@
 import axios from "axios";
+import Cookies from "js-cookie";
 
 let ajax = {};
 
@@ -20,6 +21,19 @@ const handleRequest = (headers, method, path, data) => {
     });
 }
 
+export async function refreshAccessTokenAndHandleRequest(headers, method, path, data) {
+    return await axios.post("/api/refresh")
+        .then(res => {
+            let tokenString = JSON.stringify(res.data.accessToken);
+            localStorage.setItem('token', tokenString);
+            headers["Authorization"] = `Bearer ${JSON.parse(tokenString)}`;
+            return handleRequest(headers, method, path, data);
+        }).catch(err => {
+            console.error(err)
+            localStorage.removeItem('token');
+        });
+}
+
 export async function request(method, path, data) {
     let headers = {
         "Content-type": "application/json"
@@ -29,22 +43,16 @@ export async function request(method, path, data) {
         try {
             let jwtPayload = JSON.parse(window.atob(tokenString.split('.')[1]));
             if (jwtPayload.exp*1000 < new Date().getTime()) {
-                return await axios.post("/api/refresh")
-                    .then(res => {
-                        tokenString = JSON.stringify(res.data.accessToken);
-                        localStorage.setItem('token', tokenString);
-                        headers["Authorization"] = `Bearer ${JSON.parse(tokenString)}`;
-                        return handleRequest(headers, method, path, data);
-                    }).catch(err => {
-                        console.error(err)
-                        localStorage.removeItem('token');
-                    });
+                return refreshAccessTokenAndHandleRequest(headers, method, path, data);
             }
             headers["Authorization"] = `Bearer ${JSON.parse(tokenString)}`;
             return handleRequest(headers, method, path, data);
         } catch (err) {
             console.log(err);
         }
+    }
+    if (!tokenString && Cookies.get('refreshToken')) {
+        return refreshAccessTokenAndHandleRequest(headers, method, path, data);
     }
     return handleRequest(headers, method, path, data);
 }
