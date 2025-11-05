@@ -33,8 +33,8 @@ app.use(session({
     secret: config.secret,
     resave: false,
     cookie: {
-        secure: false,
-        maxAge: 60000
+        secure: util.isProduction,
+        maxAge: config.sessionExpirationSeconds * 1000,
     }
 }));
 

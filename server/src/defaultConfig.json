@@ -6,7 +6,7 @@
     "dbPort": 27017,
     "dbUsername": "test",
     "dbPassword": "test",
-    "dbName": "ResidentDashboard",
+    "dbName": "ResidentDashboard"
 }
 
 

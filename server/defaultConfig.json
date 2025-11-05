@@ -1,5 +1,6 @@
 {
 	"secret": "secret",
+	"sessionExpirationSeconds": 60,
 	"accessExpirationSeconds": 60,
 	"refreshExpirationSeconds": 3600,
 	"dbHost": "localhost",

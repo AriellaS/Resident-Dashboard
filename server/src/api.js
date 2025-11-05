@@ -102,7 +102,10 @@ router.post('/login', async (req, res) => {
         let refreshToken = await RefreshToken.createToken(user._id);
         let accessToken = createNewAccessToken(user._id);
 
-        res.cookie('refreshToken', refreshToken);
+        res.cookie('refreshToken', refreshToken, {
+            maxAge: config.refreshExpirationSeconds * 1000,
+            secure: util.isProduction,
+        });
 
         return res.status(200).send({
             accessToken: accessToken,
@@ -168,7 +171,10 @@ router.post('/users', async (req, res) => {
 
     let refreshToken = await RefreshToken.createToken(user._id);
     let accessToken = createNewAccessToken(user._id);
-    res.cookie('refreshToken', refreshToken);
+    res.cookie('refreshToken', refreshToken, {
+        maxAge: config.refreshExpirationSeconds * 1000,
+        secure: util.isProduction,
+    });
 
     return res.send({
         accessToken: accessToken,
