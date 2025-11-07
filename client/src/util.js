@@ -30,8 +30,10 @@ export async function refreshAccessTokenAndHandleRequest(headers, method, path, 
             return handleRequest(headers, method, path, data);
         }).catch(err => {
             console.error(err)
-            localStorage.removeItem('token');
-            Cookies.remove('refreshToken');
+            if (err.response.data === 'Refresh token is invalid or expired') {
+                localStorage.removeItem('token');
+                Cookies.remove('refreshToken');
+            }
         });
 }
 

@@ -27,8 +27,10 @@ const PrivateRoute = ({ component: Component, verificationRequired, pwChangeRequ
                                 setToken(res.data.accessToken);
                             }).catch(err => {
                                 console.error(err)
-                                removeToken();
-                                Cookies.remove('refreshToken');
+                                if (err.response.data === 'Refresh token is invalid or expired') {
+                                    removeToken();
+                                    Cookies.remove('refreshToken');
+                                }
                             });
                     }
                 } catch (err) {
@@ -41,8 +43,10 @@ const PrivateRoute = ({ component: Component, verificationRequired, pwChangeRequ
                         setToken(res.data.accessToken);
                     }).catch(err => {
                         console.error(err)
-                        removeToken();
-                        Cookies.remove('refreshToken');
+                        if (err.response.data === 'Refresh token is invalid or expired') {
+                            removeToken();
+                            Cookies.remove('refreshToken');
+                        }
                     });
             }
         }

@@ -47,8 +47,10 @@ msg: ""
                     }
                 }).catch(err => {
                     console.error(err)
-                    removeToken();
-                    Cookies.remove('refreshToken');
+                    if (err.response.data === 'Refresh token is invalid or expired') {
+                        removeToken();
+                        Cookies.remove('refreshToken');
+                    }
                 });
         }
     });
