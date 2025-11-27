@@ -72,6 +72,15 @@ export const ProgressBarText = styled.div`
     font-size: 12px;
 `;
 
+export const WrittenFeedbackText = styled.div`
+    min-height: 100px;
+    padding-left: 10vw;
+    padding-right: 10vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+`;
+
 export const CenterScreenContainer = shared.CenterScreenContainer;
 export const ScreenContainer = shared.ScreenContainer;
 export const Header = shared.Header;

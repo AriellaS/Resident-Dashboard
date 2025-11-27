@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { PieChart, Pie, BarChart, Bar, XAxis, Cell, Legend, Tooltip, Text, ResponsiveContainer } from 'recharts';
+import Carousel from 'react-bootstrap/Carousel';
 import 'react-circular-progressbar/dist/styles.css';
 import { Questions, SUBSPECIALTIES } from  '~/shared/AttendingToResidentEvalForm';
 import Navbar from '~/shared/Navbar';
@@ -13,12 +14,6 @@ const Performance = () => {
     const navigate = useNavigate();
     const userId = params.id;
 
-    const emptyEvalData = Questions.filter(q => q.type==='RADIO').map(({ page, name, optionTexts }) => ({
-        page,
-        name,
-        data: optionTexts.map(o => ({ name: o, count: 0 }))
-    }));
-
     const [evals, setEvals] = useState([]);
     const [selectedSpecialty, setSelectedSpecialty] = useState('');
     const [user, setUser] = useState({
@@ -27,19 +22,35 @@ const Performance = () => {
         pgy: null,
     });
 
+    const emptyNumericalData = Questions.filter(q => q.type==='RADIO').map(({ page, name, questionText, optionTexts }) => ({
+        page,
+        name,
+        questionText,
+        data: optionTexts.map(o => ({ name: o, count: 0 }))
+    }));
+    const emptyWrittenData = Questions.filter(q => q.type==='LONG_TEXT').map(({ page, name, questionText }) => ({
+        page,
+        name,
+        questionText
+    }));
+
     const filteredEvals = selectedSpecialty ? evals.filter(e => e.form.find(f => f.name==='SUBSPECIALTY').option===SUBSPECIALTIES.findIndex(s => s.name===selectedSpecialty)+'') : evals;
-    const evalData = emptyEvalData.map(q => ({
+    const numericalData = emptyNumericalData.map(q => ({
         ...q,
         data: q.data.map((o,i) => ({
             ...o,
             count: filteredEvals.flatMap(e => e.form)?.filter(f => f.name===q.name && f.option===i+'').length
         }))
     }));
+    const writtenData = emptyWrittenData.map(q => ({
+        ...q,
+        data: filteredEvals.flatMap(e => e.form)?.filter(f => f.name===q.name).flatMap(f => f.option)
+    }));
     const specialtyData = SUBSPECIALTIES.map((s,i) => ({
             name: s.name,
             count: evals.flatMap(e => e.form)?.filter(f => f.name==='SUBSPECIALTY' && f.option===i+'').length
     }));
-    const barData = evalData.filter(d => ['PREP_RATING','GUIDANCE','PERFORMANCE'].includes(d.name));
+    const barData = numericalData.filter(d => ['PREP_RATING','GUIDANCE','PERFORMANCE'].includes(d.name));
     const selectedSpecialtyColor = SUBSPECIALTIES.find(s => s.name===selectedSpecialty)?.color;
 
     const calculateScore = (questionData) =>  {
@@ -73,7 +84,7 @@ const Performance = () => {
                 .catch(err => { console.log(err) });
         }
         fetchData();
-    }, [userId, evalData]);
+    }, [userId]);
 
     return (
         <S.ScreenContainer>
@@ -121,14 +132,14 @@ const Performance = () => {
                     </S.HorizontalContainer>
                     <S.DashboardItem>
                         <S.HorizontalContainer>
-                            {evalData.filter(d => d.page === 'ATTRIBUTES').map((d,i) => (
+                            {numericalData.filter(d => d.page === 'ATTRIBUTES').map((d,i) => (
                                 <S.ProgressBar
                                     key={i}
                                     value={calculateScore(d.data)}
                                     strokeWidth={10}
                                     styles={{path: { stroke: selectedSpecialtyColor || S.accentColor }}}
                                 >
-                                    <S.ProgressBarText children={Questions.find(q => q.name===d.name).questionText} />
+                                    <S.ProgressBarText children={d.questionText} />
                                     <S.ProgressBarText children={parseInt(calculateScore(d.data))+'%'} />
                                 </S.ProgressBar>
                             ))}
@@ -140,7 +151,7 @@ const Performance = () => {
                                 return (
                                     <S.BarChartContainer key={i}>
                                         <ResponsiveContainer aspect={1}>
-                                        <S.BarChartHeading children={Questions.find(q => d.name===q.name).questionText}/>
+                                        <S.BarChartHeading children={d.questionText}/>
                                         <BarChart
                                             barSize={15}
                                             data={d.data}
@@ -154,6 +165,38 @@ const Performance = () => {
                                 )
                             })}
                         </S.HorizontalContainer>
+                    </S.DashboardItem>
+                    <S.DashboardItem>
+                        <S.DashboardItemHeading children="Areas of Strength"/>
+                        <Carousel interval={null} indicators={false} variant='dark' >
+                            {writtenData.find(d => d.name==='POSITIVE').data?.filter(t => t!=='').map((text,i) => {
+                                return (
+                                    <Carousel.Item>
+                                        <S.WrittenFeedbackText>{text}</S.WrittenFeedbackText>
+                                    </Carousel.Item>
+                                )
+                            })}
+                        </Carousel>
+                        <S.DashboardItemHeading children="Areas for Improvement"/>
+                        <Carousel interval={null} indicators={false} variant='dark'>
+                            {writtenData.find(d => d.name==='NEGATIVE').data?.filter(t => t!=='').map((text,i) => {
+                                return (
+                                    <Carousel.Item>
+                                        <S.WrittenFeedbackText>{text}</S.WrittenFeedbackText>
+                                    </Carousel.Item>
+                                )
+                            })}
+                        </Carousel>
+                        <S.DashboardItemHeading children="General Feedback"/>
+                        <Carousel interval={null} indicators={false} variant='dark'>
+                            {writtenData.find(d => d.name==='GENERAL').data?.filter(t => t!=='').map((text,i) => {
+                                return (
+                                    <Carousel.Item>
+                                        <S.WrittenFeedbackText>{text}</S.WrittenFeedbackText>
+                                    </Carousel.Item>
+                                )
+                            })}
+                        </Carousel>
                     </S.DashboardItem>
                 </S.Container>
             </S.CenterScreenContainer>
