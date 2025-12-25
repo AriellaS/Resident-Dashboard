@@ -1,6 +1,5 @@
 import styled from 'styled-components';
-import { Exclamation } from 'react-bootstrap-icons';
-import { Check } from 'react-bootstrap-icons';
+import { Exclamation, Check } from 'react-bootstrap-icons';
 import { accentColor } from '~/shared';
 
 const errorColorLight = "#fff8ed";

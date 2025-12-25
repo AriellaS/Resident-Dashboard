@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { PieChart, Pie, BarChart, Bar, XAxis, Cell, Legend, Tooltip, Text, ResponsiveContainer } from 'recharts';
 import Carousel from 'react-bootstrap/Carousel';
 import 'react-circular-progressbar/dist/styles.css';
+import OpenAI from 'openai';
 import { Questions, SUBSPECIALTIES } from  '~/shared/AttendingToResidentEvalForm';
 import Navbar from '~/shared/Navbar';
 import ajax from '~/util';
@@ -70,6 +71,21 @@ const Performance = () => {
         )
     };
 
+    const client = new OpenAI({
+        apiKey: "a",
+        dangerouslyAllowBrowser: true
+    });
+
+    const generateAIReport = async () => {
+        const response = await client.responses.create({
+
+            model: 'gpt-5-nano',
+            input: `Write a short summary to describe this surgical resident's performance given the following evaluation data: ${evals}. The data in the "form" field uses the following questions key: ${Questions}.`
+        });
+        console.log(response.output_text);
+        console.log(evals)
+    }
+
     useEffect(() => {
         async function fetchData() {
             await ajax.request('get', `/users/id/${userId}/evals`)
@@ -83,6 +99,7 @@ const Performance = () => {
                 })
                 .catch(err => { console.log(err) });
         }
+
         fetchData();
     }, [userId]);
 
@@ -95,6 +112,10 @@ const Performance = () => {
                         onClick={() => navigate('..', { relative: "path" })}
                         children={`${user.firstname} ${user.lastname}, PGY-${user.pgy}`}
                     />
+                    <S.DashboardItem>
+                        <S.Button text="Generate AI summary report" onClick={generateAIReport} />
+                        <S.MagicGlyph />
+                    </S.DashboardItem>
                     <S.HorizontalContainer>
                         <S.DashboardItem>
                             <S.DashboardItemHeading children="Total Evals Recieved"/>
@@ -167,36 +188,42 @@ const Performance = () => {
                         </S.HorizontalContainer>
                     </S.DashboardItem>
                     <S.DashboardItem>
-                        <S.DashboardItemHeading children="Areas of Strength"/>
-                        <Carousel interval={null} indicators={false} variant='dark' >
-                            {writtenData.find(d => d.name==='POSITIVE').data?.filter(t => t!=='').map((text,i) => {
-                                return (
-                                    <Carousel.Item>
-                                        <S.WrittenFeedbackText>{text}</S.WrittenFeedbackText>
-                                    </Carousel.Item>
-                                )
-                            })}
-                        </Carousel>
-                        <S.DashboardItemHeading children="Areas for Improvement"/>
-                        <Carousel interval={null} indicators={false} variant='dark'>
-                            {writtenData.find(d => d.name==='NEGATIVE').data?.filter(t => t!=='').map((text,i) => {
-                                return (
-                                    <Carousel.Item>
-                                        <S.WrittenFeedbackText>{text}</S.WrittenFeedbackText>
-                                    </Carousel.Item>
-                                )
-                            })}
-                        </Carousel>
-                        <S.DashboardItemHeading children="General Feedback"/>
-                        <Carousel interval={null} indicators={false} variant='dark'>
-                            {writtenData.find(d => d.name==='GENERAL').data?.filter(t => t!=='').map((text,i) => {
-                                return (
-                                    <Carousel.Item>
-                                        <S.WrittenFeedbackText>{text}</S.WrittenFeedbackText>
-                                    </Carousel.Item>
-                                )
-                            })}
-                        </Carousel>
+                        <S.WrittenFeedbackContainer>
+                            <S.DashboardItemHeading children="Areas of Strength"/>
+                            <Carousel interval={null} indicators={false} variant='dark' >
+                                {writtenData.find(d => d.name==='POSITIVE').data?.filter(t => t!=='').map((text,i) => {
+                                    return (
+                                        <Carousel.Item key={i}>
+                                            <S.WrittenFeedbackText>{text}</S.WrittenFeedbackText>
+                                        </Carousel.Item>
+                                    )
+                                })}
+                            </Carousel>
+                        </S.WrittenFeedbackContainer>
+                        <S.WrittenFeedbackContainer>
+                            <S.DashboardItemHeading children="Areas for Improvement"/>
+                            <Carousel interval={null} indicators={false} variant='dark'>
+                                {writtenData.find(d => d.name==='NEGATIVE').data?.filter(t => t!=='').map((text,i) => {
+                                    return (
+                                        <Carousel.Item key={i}>
+                                            <S.WrittenFeedbackText>{text}</S.WrittenFeedbackText>
+                                        </Carousel.Item>
+                                    )
+                                })}
+                            </Carousel>
+                        </S.WrittenFeedbackContainer>
+                        <S.WrittenFeedbackContainer>
+                            <S.DashboardItemHeading children="General Feedback"/>
+                            <Carousel interval={null} indicators={false} variant='dark'>
+                                {writtenData.find(d => d.name==='GENERAL').data?.filter(t => t!=='').map((text,i) => {
+                                    return (
+                                        <Carousel.Item key={i}>
+                                            <S.WrittenFeedbackText>{text}</S.WrittenFeedbackText>
+                                        </Carousel.Item>
+                                    )
+                                })}
+                            </Carousel>
+                        </S.WrittenFeedbackContainer>
                     </S.DashboardItem>
                 </S.Container>
             </S.CenterScreenContainer>

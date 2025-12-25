@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import * as shared from '~/shared';
 import { CircularProgressbarWithChildren } from 'react-circular-progressbar';
+import { Magic } from 'react-bootstrap-icons';
 
 export const PageTitle = styled.div`
     font-size: min(6vw, 50px);
@@ -72,6 +73,10 @@ export const ProgressBarText = styled.div`
     font-size: 12px;
 `;
 
+export const WrittenFeedbackContainer = styled.div`
+    margin: 20px;
+`;
+
 export const WrittenFeedbackText = styled.div`
     min-height: 100px;
     padding-left: 10vw;
@@ -81,7 +86,12 @@ export const WrittenFeedbackText = styled.div`
     justify-content: center;
 `;
 
+export const MagicGlyph = styled(Magic)`
+    size: 20;
+`;
+
 export const CenterScreenContainer = shared.CenterScreenContainer;
 export const ScreenContainer = shared.ScreenContainer;
 export const Header = shared.Header;
 export const accentColor = shared.accentColor;
+export const Button = shared.Button;
