@@ -72,6 +72,10 @@ export const ProgressBarText = styled.div`
     font-size: 12px;
 `;
 
+export const WrittenFeedbackContainer = styled.div`
+    margin: 20px;
+`;
+
 export const WrittenFeedbackText = styled.div`
     min-height: 100px;
     padding-left: 10vw;

@@ -7,6 +7,15 @@ export const Header = styled.div`
     font-size: min(6vw, 25px);
 `;
 
+export const AttributesReminder = styled.div`
+    font-size: min(3.5vw, 16px);
+`;
+
+export const RoleText = styled.div`
+    color: ${shared.accentColor};
+    font-family: 'Helvetica';
+`;
+
 export const QuestionContainer = styled.div`
     background-color: white;
     margin: 20px;

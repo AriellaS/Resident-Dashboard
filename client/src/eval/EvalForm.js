@@ -81,6 +81,14 @@ const EvalForm = (props) => {
     return (
         <div>
             {Pages[pageState].text}
+            {Pages[pageState].name==='ATTRIBUTES' && (
+                <S.AttributesReminder>
+                    <hr />
+                    {`Please answer these based on resident's level as a `}
+                    <S.RoleText>{`PGY-${props.userData.pgy}`}</S.RoleText>
+
+                </S.AttributesReminder>
+            )}
             <S.QuestionsContainer>
                 {Questions.filter(q => q.page === Pages[pageState].name).map(q => (
                     <Question

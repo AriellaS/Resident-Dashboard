@@ -23,6 +23,7 @@ const Eval = () => {
                     setUserData({
                         firstname: res.data.firstname,
                         lastname: res.data.lastname,
+                        pgy: res.data.pgy,
                         id: userId
                     });
                 })

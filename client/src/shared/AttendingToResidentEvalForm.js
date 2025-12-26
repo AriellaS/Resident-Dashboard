@@ -58,21 +58,10 @@ export const Questions = [{
     questionText: 'What type of surgery was performed?',
 }, {
     page: 'PREPARATION',
-    name: 'BRIEFING',
-    type: 'RADIO',
-    questionText: 'How was the pre-operative briefing performed with the resident?',
-    optionTexts: ['Text/phone call the day before surgery', 'Discussion the day of surgery', 'There was no pre-operative briefing'],
-}, {
-    page: 'PREPARATION',
     name: 'PREP_RATING',
     type: 'RADIO',
     questionText: 'How would you rate the resident\'s preparation for the surgery?',
     optionTexts: ['1 (least)','2','3','4','5 (most)'],
-}, {
-    page: 'PREPARATION',
-    name: 'PREP_COMMENT',
-    type: 'SHORT_TEXT',
-    questionText: 'Please comment on the resident\'s preparation for the procedure',
 }, {
     page: 'INTRA_OP',
     name: 'GUIDANCE',
@@ -85,12 +74,6 @@ export const Questions = [{
     type: 'RADIO',
     questionText: 'What was the resident\'s performance for the majority of the critical portions of this case?',
     optionTexts: ['Unprepared/critical deficiency','Inexperienced with the procedure','Intermediate performance','Practice ready performance','Exceptional performance'],
-}, {
-    page: 'INTRA_OP',
-    name: 'COMPLEXITY',
-    type: 'RADIO',
-    questionText: 'How complex was the case relative to similar procedures?',
-    optionTexts: ['Easiest 1/2','Average','Hardest 1/3'],
 }, {
     page: 'ATTRIBUTES',
     name: 'KNOWLEDGE',
@@ -137,16 +120,10 @@ export const Questions = [{
     page: 'WRITTEN',
     name: 'POSITIVE',
     type: 'LONG_TEXT',
-    questionText: 'In what ways did this resident demonstrate strong performance during the procedure?',
+    questionText: 'Please list 2-3 strengths the resident displayed during the procedure.',
 }, {
     page: 'WRITTEN',
     name: 'NEGATIVE',
     type: 'LONG_TEXT',
-    questionText: 'In what aspects of the procedure could this resident have improved?',
-}, {
-    page: 'WRITTEN',
-    name: 'GENERAL',
-    type: 'LONG_TEXT',
-    questionText: 'Generalized Feedback',
-}
-];
+    questionText: 'Please list 2-3 ways the resident could have improved.',
+}];

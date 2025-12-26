@@ -167,36 +167,30 @@ const Performance = () => {
                         </S.HorizontalContainer>
                     </S.DashboardItem>
                     <S.DashboardItem>
-                        <S.DashboardItemHeading children="Areas of Strength"/>
-                        <Carousel interval={null} indicators={false} variant='dark' >
-                            {writtenData.find(d => d.name==='POSITIVE').data?.filter(t => t!=='').map((text,i) => {
-                                return (
-                                    <Carousel.Item>
-                                        <S.WrittenFeedbackText>{text}</S.WrittenFeedbackText>
-                                    </Carousel.Item>
-                                )
-                            })}
-                        </Carousel>
-                        <S.DashboardItemHeading children="Areas for Improvement"/>
-                        <Carousel interval={null} indicators={false} variant='dark'>
-                            {writtenData.find(d => d.name==='NEGATIVE').data?.filter(t => t!=='').map((text,i) => {
-                                return (
-                                    <Carousel.Item>
-                                        <S.WrittenFeedbackText>{text}</S.WrittenFeedbackText>
-                                    </Carousel.Item>
-                                )
-                            })}
-                        </Carousel>
-                        <S.DashboardItemHeading children="General Feedback"/>
-                        <Carousel interval={null} indicators={false} variant='dark'>
-                            {writtenData.find(d => d.name==='GENERAL').data?.filter(t => t!=='').map((text,i) => {
-                                return (
-                                    <Carousel.Item>
-                                        <S.WrittenFeedbackText>{text}</S.WrittenFeedbackText>
-                                    </Carousel.Item>
-                                )
-                            })}
-                        </Carousel>
+                        <S.WrittenFeedbackContainer>
+                            <S.DashboardItemHeading children="Areas of Strength"/>
+                            <Carousel interval={null} indicators={false} variant='dark' >
+                                {writtenData.find(d => d.name==='POSITIVE').data?.filter(t => t!=='').map((text,i) => {
+                                    return (
+                                        <Carousel.Item key={i}>
+                                            <S.WrittenFeedbackText>{text}</S.WrittenFeedbackText>
+                                        </Carousel.Item>
+                                    )
+                                })}
+                            </Carousel>
+                        </S.WrittenFeedbackContainer>
+                        <S.WrittenFeedbackContainer>
+                            <S.DashboardItemHeading children="Areas for Improvement"/>
+                            <Carousel interval={null} indicators={false} variant='dark'>
+                                {writtenData.find(d => d.name==='NEGATIVE').data?.filter(t => t!=='').map((text,i) => {
+                                    return (
+                                        <Carousel.Item key={i}>
+                                            <S.WrittenFeedbackText>{text}</S.WrittenFeedbackText>
+                                        </Carousel.Item>
+                                    )
+                                })}
+                            </Carousel>
+                        </S.WrittenFeedbackContainer>
                     </S.DashboardItem>
                 </S.Container>
             </S.CenterScreenContainer>
