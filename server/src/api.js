@@ -5,7 +5,6 @@ const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
 const bcrypt = require('bcryptjs');
 const OpenAI = require('openai');
-const { defineSecret } = require("firebase-functions/params");
 const User = require('./models/User');
 const AttendingToResidentEval = require('./models/AttendingToResidentEval');
 const ObjectId = require('mongodb').ObjectId;
@@ -14,11 +13,10 @@ const util = require('./util.js');
 
 const config = util.getConfig();
 const router = express.Router();
-const OPENAI_API_KEY = defineSecret("OPENAI_API_KEY");
 
 const requestAIReport = async(condensedEvals, questionSchema) => {
     const client = new OpenAI({
-        apiKey: OPENAI_API_KEY.value(),
+        apiKey: process.env.OPENAI_API_KEY,
     });
 
     const prompt = `You are summarizing a surgical resident’s performance based on attending evaluations.

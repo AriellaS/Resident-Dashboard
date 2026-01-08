@@ -17,9 +17,9 @@
 //   logger.info("Hello logs!", {structuredData: true});
 //   response.send("Hello from Firebase!");
 // });
+// exports.app = functions.https.onRequest((req,res) => response.send("hi"));
 
 const { onRequest } = require("firebase-functions/v2/https");
 const app = require("../server/server.js");
 
-exports.resident-dashboard-server = onRequest({ secrets: ["OPENAI_API_KEY"] }, app);
-//exports.app = functions.https.onRequest((req,res) => response.send("hi"));
+exports["resident-dashboard-server"] = onRequest({ secrets: ["OPENAI_API_KEY"] }, app);

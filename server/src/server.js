@@ -6,10 +6,9 @@ const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const session = require('express-session');
-const path = require('path');
-const fs = require('fs');
 const User = require('./models/User');
 const util = require('./util');
+const api = require('./api');
 
 const config = util.getConfig();
 const app = express();
@@ -39,10 +38,11 @@ app.use(session({
 }));
 
 // API
-const api = require('./api');
 app.use("/api", api);
 
 // Listen
 app.listen(port, () => {
    console.log(`Server running on port ${port}`);
 });
+
+module.exports = app;
