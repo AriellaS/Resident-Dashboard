@@ -18,9 +18,8 @@
 //   response.send("Hello from Firebase!");
 // });
 
-
-const functions = require("firebase-functions");
+const { onRequest } = require("firebase-functions/v2/https");
 const app = require("../server/server.js");
 
-exports.resident-dashboard-server = functions.https.onRequest(app);
+exports.resident-dashboard-server = onRequest({ secrets: ["OPENAI_API_KEY"] }, app);
 //exports.app = functions.https.onRequest((req,res) => response.send("hi"));

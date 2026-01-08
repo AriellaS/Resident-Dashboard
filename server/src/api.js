@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
 const bcrypt = require('bcryptjs');
 const OpenAI = require('openai');
+const { defineSecret } = require("firebase-functions/params");
 const User = require('./models/User');
 const AttendingToResidentEval = require('./models/AttendingToResidentEval');
 const ObjectId = require('mongodb').ObjectId;
@@ -12,20 +13,31 @@ const RefreshToken = require('./models/RefreshToken');
 const util = require('./util.js');
 
 const config = util.getConfig();
-
 const router = express.Router();
+const OPENAI_API_KEY = defineSecret("OPENAI_API_KEY");
 
-const openAIClient = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY
-});
+const requestAIReport = async(condensedEvals, questionSchema) => {
+    const client = new OpenAI({
+        apiKey: OPENAI_API_KEY.value(),
+    });
 
-const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: config.emailUser,
-        pass: config.emailPassword
-    }
-});
+    const prompt = `You are summarizing a surgical resident’s performance based on attending evaluations.
+
+Resident feedback data:
+${JSON.stringify(condensedEvals)}
+
+Question schema (defines the meaning of each response and any option labels):
+${JSON.stringify(questionSchema)}
+
+Write a concise narrative summary of the resident’s overall performance, highlighting key strengths and areas for improvement. Do not mention question identifiers or field names in the response. Ignore any data that does not appear in the question schema. Limit the response to a maximum of four sentences.`;
+
+    const response = await client.responses.create({
+        model: "gpt-5-nano",
+        input: prompt
+    });
+
+    return response.output_text;
+}
 
 const sendVerificationEmail = (recipient, verificationCode) => {
     transporter.sendMail({
@@ -302,30 +314,15 @@ router.post('/users/id/:userId/evals/aisummary', verifyAccessToken, verifyAccoun
         return acc;
     }, {}));
 
-    let prompt = `You are summarizing a surgical resident’s performance based on attending evaluations.
-
-Resident feedback data:
-${JSON.stringify(condensedEvals)}
-
-Question schema (defines the meaning of each response and any option labels):
-${JSON.stringify(questionSchema)}
-
-Write a concise narrative summary of the resident’s overall performance, highlighting key strengths and areas for improvement. Do not mention question identifiers or field names in the response. Ignore any data that does not appear in the question schema. Limit the response to a maximum of four sentences.`
-
-    let openAIResponse;
+    let aiSummary;
     try {
-        openAIResponse = await openAIClient.responses.create({
-            model: 'gpt-5-nano',
-            input: prompt
-        });
+        aiSummary = await requestAIReport(condensedEvals, questionSchema);
     } catch(err) {
         console.log(err);
         return res.status(500).end("Error requesting AI summary");
     }
 
-    return res.status(200).send({
-        aiSummary: openAIResponse.output_text
-    });
+    return res.status(200).send({ aiSummary });
 
 });
 
