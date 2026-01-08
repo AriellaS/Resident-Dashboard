@@ -1,7 +1,6 @@
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 import * as shared from '~/shared';
 import { CircularProgressbarWithChildren } from 'react-circular-progressbar';
-import { Magic } from 'react-bootstrap-icons';
 
 export const PageTitle = styled.div`
     font-size: min(6vw, 50px);
@@ -86,8 +85,13 @@ export const WrittenFeedbackText = styled.div`
     justify-content: center;
 `;
 
-export const MagicGlyph = styled(Magic)`
-    size: 20;
+const fadeInOut = keyframes`
+  0%, 100% { opacity: 0; }
+  50% { opacity: 1; }
+`;
+
+export const FadingText = styled.p`
+  animation: ${fadeInOut} 2s ease-in-out infinite;
 `;
 
 export const CenterScreenContainer = shared.CenterScreenContainer;

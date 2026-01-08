@@ -3,7 +3,6 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { PieChart, Pie, BarChart, Bar, XAxis, Cell, Legend, Tooltip, Text, ResponsiveContainer } from 'recharts';
 import Carousel from 'react-bootstrap/Carousel';
 import 'react-circular-progressbar/dist/styles.css';
-import OpenAI from 'openai';
 import { Questions, SUBSPECIALTIES } from  '~/shared/AttendingToResidentEvalForm';
 import Navbar from '~/shared/Navbar';
 import ajax from '~/util';
@@ -22,6 +21,8 @@ const Performance = () => {
         lastname: "",
         pgy: null,
     });
+    const [AISummary, setAISummary] = useState("");
+    const [AISummaryLoading, setAISummaryLoading] = useState(false);
 
     const emptyNumericalData = Questions.filter(q => q.type==='RADIO').map(({ page, name, questionText, optionTexts }) => ({
         page,
@@ -54,6 +55,12 @@ const Performance = () => {
     const barData = numericalData.filter(d => ['PREP_RATING','GUIDANCE','PERFORMANCE'].includes(d.name));
     const selectedSpecialtyColor = SUBSPECIALTIES.find(s => s.name===selectedSpecialty)?.color;
 
+    const condensedQuestionSchemaForLLM = Questions.map(({ name, questionText, optionTexts }) => ({
+            name,
+            questionText,
+            ...(optionTexts && { optionTexts })
+        }));
+
     const calculateScore = (questionData) =>  {
         let scoreSum = 0;
         let countSum = 0;
@@ -71,19 +78,17 @@ const Performance = () => {
         )
     };
 
-    const client = new OpenAI({
-        apiKey: "a",
-        dangerouslyAllowBrowser: true
-    });
-
     const generateAIReport = async () => {
-        const response = await client.responses.create({
+        setAISummaryLoading(true);
 
-            model: 'gpt-5-nano',
-            input: `Write a short summary to describe this surgical resident's performance given the following evaluation data: ${evals}. The data in the "form" field uses the following questions key: ${Questions}.`
+        await ajax.request('post', `users/id/${userId}/evals/aisummary`, { questionSchema: condensedQuestionSchemaForLLM }).then(res => {
+            setAISummary(res.aiSummary);
+            setAISummaryLoading(false);
+        }).catch(err => {
+            console.log(err)
+            setAISummary("Error generating AI report!");
+            setAISummaryLoading(false);
         });
-        console.log(response.output_text);
-        console.log(evals)
     }
 
     useEffect(() => {
@@ -113,8 +118,11 @@ const Performance = () => {
                         children={`${user.firstname} ${user.lastname}, PGY-${user.pgy}`}
                     />
                     <S.DashboardItem>
-                        <S.Button text="Generate AI summary report" onClick={generateAIReport} />
-                        <S.MagicGlyph />
+                        {AISummaryLoading ?
+                            <S.FadingText>{"Generating summary..."}</S.FadingText> :
+                            !AISummary && <S.Button text="Generate AI summary" onClick={generateAIReport} />
+                        }
+                        {AISummary}
                     </S.DashboardItem>
                     <S.HorizontalContainer>
                         <S.DashboardItem>
