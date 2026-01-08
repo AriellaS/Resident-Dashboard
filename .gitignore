@@ -2,6 +2,8 @@
 **/build
 **/*.sw[a-p]
 **/.DS_Store
+**/.env
 .firebase
 ./server/config.json
 firebase-debug.log
+

@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 import * as shared from '~/shared';
 import { CircularProgressbarWithChildren } from 'react-circular-progressbar';
 
@@ -85,7 +85,17 @@ export const WrittenFeedbackText = styled.div`
     justify-content: center;
 `;
 
+const fadeInOut = keyframes`
+  0%, 100% { opacity: 0; }
+  50% { opacity: 1; }
+`;
+
+export const FadingText = styled.div`
+  animation: ${fadeInOut} 2s ease-in-out infinite;
+`;
+
 export const CenterScreenContainer = shared.CenterScreenContainer;
 export const ScreenContainer = shared.ScreenContainer;
 export const Header = shared.Header;
 export const accentColor = shared.accentColor;
+export const Button = shared.Button;

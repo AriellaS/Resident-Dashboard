@@ -3,7 +3,8 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
-const bcrypt = require("bcryptjs");
+const bcrypt = require('bcryptjs');
+const OpenAI = require('openai');
 const User = require('./models/User');
 const AttendingToResidentEval = require('./models/AttendingToResidentEval');
 const ObjectId = require('mongodb').ObjectId;
@@ -13,6 +14,10 @@ const util = require('./util.js');
 const config = util.getConfig();
 
 const router = express.Router();
+
+const openAIClient = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY
+});
 
 const transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -272,6 +277,58 @@ router.get('/users/id/:userId/evals', verifyAccessToken, verifyAccount, async (r
     res.json({ evals: evals, user: user });
 });
 
+router.post('/users/id/:userId/evals/aisummary', verifyAccessToken, verifyAccount, async (req, res) => {
+    let userId;
+    let questionSchema = req.body.questionSchema;
+
+    try {
+        userId = new ObjectId(req.params.userId);
+    } catch (err) {
+        return res.status(400).end("Invalid user ID");
+    }
+    if (req.user.role !== "ATTENDING" && !req.user._id.equals(userId)) {
+        return res.status(401).end("Unauthorized");
+    }
+    let user = await User.findById(userId).exec();
+    if (!user) {
+        res.status(404).end("User not found");
+    }
+    let evals = await AttendingToResidentEval.find({
+        evaluatee: userId,
+    });
+
+    let condensedEvals = evals.map(({ form }) => form.reduce((acc, { name, option }) => {
+        if (option !== null && option !== "") acc[name] = option;
+        return acc;
+    }, {}));
+
+    let prompt = `You are summarizing a surgical resident’s performance based on attending evaluations.
+
+Resident feedback data:
+${JSON.stringify(condensedEvals)}
+
+Question schema (defines the meaning of each response and any option labels):
+${JSON.stringify(questionSchema)}
+
+Write a concise narrative summary of the resident’s overall performance, highlighting key strengths and areas for improvement. Do not mention question identifiers or field names in the response. Ignore any data that does not appear in the question schema. Limit the response to a maximum of four sentences.`
+
+    let openAIResponse;
+    try {
+        openAIResponse = await openAIClient.responses.create({
+            model: 'gpt-5-nano',
+            input: prompt
+        });
+    } catch(err) {
+        console.log(err);
+        return res.status(500).end("Error requesting AI summary");
+    }
+
+    return res.status(200).send({
+        aiSummary: openAIResponse.output_text
+    });
+
+});
+
 router.post('/users/id/:userId/evals', verifyAccessToken, verifyAccount, async (req, res) => {
     let evalType = req.body.type;
     let formObject = req.body.form;
@@ -328,6 +385,7 @@ router.post('/users/id/:userId/evals', verifyAccessToken, verifyAccount, async (
 
     return res.status(200).end("Eval submitted");;
 });
+
 
 module.exports = router;
 

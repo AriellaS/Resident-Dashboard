@@ -21,6 +21,8 @@ const Performance = () => {
         lastname: "",
         pgy: null,
     });
+    const [AISummary, setAISummary] = useState("");
+    const [AISummaryLoading, setAISummaryLoading] = useState(false);
 
     const emptyNumericalData = Questions.filter(q => q.type==='RADIO').map(({ page, name, questionText, optionTexts }) => ({
         page,
@@ -53,6 +55,12 @@ const Performance = () => {
     const barData = numericalData.filter(d => ['PREP_RATING','GUIDANCE','PERFORMANCE'].includes(d.name));
     const selectedSpecialtyColor = SUBSPECIALTIES.find(s => s.name===selectedSpecialty)?.color;
 
+    const condensedQuestionSchemaForLLM = Questions.map(({ name, questionText, optionTexts }) => ({
+            name,
+            questionText,
+            ...(optionTexts && { optionTexts })
+        }));
+
     const calculateScore = (questionData) =>  {
         let scoreSum = 0;
         let countSum = 0;
@@ -70,6 +78,18 @@ const Performance = () => {
         )
     };
 
+    const generateAIReport = async () => {
+        setAISummaryLoading(true);
+        await ajax.request('post', `/users/id/${userId}/evals/aisummary`, { questionSchema: condensedQuestionSchemaForLLM }).then(res => {
+            setAISummary(res.data.aiSummary);
+            setAISummaryLoading(false);
+        }).catch(err => {
+            console.log(err)
+            setAISummary("Error generating AI report!");
+            setAISummaryLoading(false);
+        });
+    }
+
     useEffect(() => {
         async function fetchData() {
             await ajax.request('get', `/users/id/${userId}/evals`)
@@ -83,6 +103,7 @@ const Performance = () => {
                 })
                 .catch(err => { console.log(err) });
         }
+
         fetchData();
     }, [userId]);
 
@@ -95,6 +116,13 @@ const Performance = () => {
                         onClick={() => navigate('..', { relative: "path" })}
                         children={`${user.firstname} ${user.lastname}, PGY-${user.pgy}`}
                     />
+                    <S.DashboardItem>
+                        {AISummaryLoading ?
+                            <S.FadingText>{"Generating summary..."}</S.FadingText> :
+                            !AISummary && <S.Button text="Generate AI summary" onClick={generateAIReport} />
+                        }
+                        {AISummary}
+                    </S.DashboardItem>
                     <S.HorizontalContainer>
                         <S.DashboardItem>
                             <S.DashboardItemHeading children="Total Evals Recieved"/>
