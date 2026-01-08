@@ -90,7 +90,7 @@ const fadeInOut = keyframes`
   50% { opacity: 1; }
 `;
 
-export const FadingText = styled.p`
+export const FadingText = styled.div`
   animation: ${fadeInOut} 2s ease-in-out infinite;
 `;
 

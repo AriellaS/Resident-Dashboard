@@ -80,9 +80,8 @@ const Performance = () => {
 
     const generateAIReport = async () => {
         setAISummaryLoading(true);
-
-        await ajax.request('post', `users/id/${userId}/evals/aisummary`, { questionSchema: condensedQuestionSchemaForLLM }).then(res => {
-            setAISummary(res.aiSummary);
+        await ajax.request('post', `/users/id/${userId}/evals/aisummary`, { questionSchema: condensedQuestionSchemaForLLM }).then(res => {
+            setAISummary(res.data.aiSummary);
             setAISummaryLoading(false);
         }).catch(err => {
             console.log(err)

@@ -4,7 +4,7 @@ const express = require('express');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
 const bcrypt = require('bcryptjs');
-const OpenAi = require('openai');
+const OpenAI = require('openai');
 const User = require('./models/User');
 const AttendingToResidentEval = require('./models/AttendingToResidentEval');
 const ObjectId = require('mongodb').ObjectId;
@@ -314,11 +314,12 @@ Write a concise narrative summary of the resident’s overall performance, highl
 
     let openAIResponse;
     try {
-        openAIResponse = await client.responses.create({
+        openAIResponse = await openAIClient.responses.create({
             model: 'gpt-5-nano',
             input: prompt
         });
     } catch(err) {
+        console.log(err);
         return res.status(500).end("Error requesting AI summary");
     }
 
