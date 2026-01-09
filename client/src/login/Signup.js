@@ -28,7 +28,7 @@ const Signup = () => {
     const { setCurrentUser } = useCurrentUser();
 
     const emailIsValid = (email) => {
-        let emailPattern = /^([\w-]+(?:\.[\w-]+)*)@(montefiore\.org|einsteinmed\.edu)$/i;
+        let emailPattern = /^[\w.-]+@[\w.-]+\.[a-z]{2,}$/i;
         return emailPattern.test(formState.email);
     }
 
@@ -37,7 +37,7 @@ const Signup = () => {
             case !formState.firstname: return 'First name is required';
             case !formState.lastname: return 'Last name is required';
             case !formState.email: return 'Email is required';
-            case !emailIsValid(): return 'Email needs to be @montefiore.org or @einsteinmed.edu';
+            case !emailIsValid(): return 'Email is invalid';
             case !formState.password: return 'Password is required';
             case formState.password.length < 8: return 'Password must be at least 8 characters';
             case formState.password !== formState.confirmPassword: return 'Passwords do not match';

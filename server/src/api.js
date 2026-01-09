@@ -141,7 +141,7 @@ router.post('/logout', async (req, res) => {
 });
 
 router.post('/users', async (req, res) => {
-    let emailPattern = /^([\w-]+(?:\.[\w-]+)*)@(montefiore\.org|einsteinmed\.edu)$/i;
+    let emailPattern = /^[\w.-]+@[\w.-]+\.[a-z]{2,}$/i;
     let emailIsValid = emailPattern.test(req.body.email);
     if (!emailIsValid) {
         return res.status(400).end("Invalid email");
