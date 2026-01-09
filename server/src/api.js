@@ -99,7 +99,7 @@ router.post('/refresh', async (req, res) => {
 
 router.post('/login', async (req, res) => {
     let user = await User.findOne({
-        email: req.body.email
+        email: req.body.email.toLowerCase()
     }).select("+password");
 
     if (!user) {
@@ -167,7 +167,7 @@ router.post('/users', async (req, res) => {
     let user = await User.create({
         firstname: req.body.firstname,
         lastname: req.body.lastname,
-        email: req.body.email,
+        email: req.body.email.toLowerCase(),
         password: req.body.password,
         role: role,
         pgy: role === "RESIDENT" ? req.body.pgy : null,
