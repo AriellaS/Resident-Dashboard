@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { Link } from 'react-router-dom';
 import BootstrapButton from 'react-bootstrap/Button';
 import TextareaAutosize from 'react-textarea-autosize';
 
@@ -67,6 +68,13 @@ const StyledBootstrapButton = styled(BootstrapButton)`
 export const Button = (props) => {
     return (<StyledBootstrapButton {...props}>{props.text}</StyledBootstrapButton>)
 }
+
+export const StyledLink = styled(Link)`
+    font-size: min(3.5vw, 16px);
+    margin-top: 20px;
+    color: gray;
+    display: block;
+`;
 
 export const ScreenContainer = styled.div`
 `;

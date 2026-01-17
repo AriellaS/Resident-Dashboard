@@ -1,9 +1,11 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import useToken from '~/useToken';
+import useCurrentUser from '~/useCurrentUser';
 import ajax from '~/util';
 import * as S from '~/changepw/styles'
 
-const ChangePw = ({ currentUser, setCurrentUser }) => {
+const ChangePw = () => {
 
     const [formState, setFormState] = useState({
         password: "",
@@ -16,6 +18,11 @@ const ChangePw = ({ currentUser, setCurrentUser }) => {
     });
 
     const navigate = useNavigate();
+    const params = useParams();
+    const { setToken } = useToken();
+    const { currentUser, setCurrentUser } = useCurrentUser();
+
+    const pwResetToken = params.token;
 
     const getErrorMsg = () => {
         switch(true) {
@@ -35,23 +42,40 @@ const ChangePw = ({ currentUser, setCurrentUser }) => {
                 msg: errorMsg
             });
         }
-        await ajax.request('put', `/changepw`, { password: formState.password })
-            .then(res => {
-                if (res.data === "Password changed") {
+        if (pwResetToken) {
+            await ajax.request('put', `/changepw/token/${pwResetToken}`, { password: formState.password })
+                .then(res => {
+                    setToken(res.data.accessToken);
+                    setCurrentUser(res.data.user);
+                    setAlert({
+                        state: "SUCCESS",
+                        msg: "Password changed successfully"
+                    });
+                    navigate('/');
+                }).catch(err => {
+                    setAlert({
+                        state: "ERROR",
+                        msg: "The link you used is invalid or expired"
+                    });
+                });
+
+        } else {
+            await ajax.request('put', `/changepw`, { password: formState.password })
+                .then(res => {
                     setCurrentUser({ ...currentUser, changepw_required: false});
                     setAlert({
                         state: "SUCCESS",
                         msg: "Password changed successfully"
                     });
                     navigate('/');
-                }
-            }).catch(err => {
-                console.log(err);
-                setAlert({
-                    state: "ERROR",
-                    msg: "Failed to change password"
+                }).catch(err => {
+                    console.log(err);
+                    setAlert({
+                        state: "ERROR",
+                        msg: "Failed to change password"
+                    });
                 });
-            });
+        }
     }
 
     return (
@@ -78,6 +102,7 @@ const ChangePw = ({ currentUser, setCurrentUser }) => {
                     />
                 </form>
                 <S.StyledAlertBox state={alert.state} msg={alert.msg} />
+                { pwResetToken && <S.StyledLink to={'/forgotpw'} children={'Click here to get a new link'}/> }
             </S.Container>
         </S.CenterScreenContainer>
     )

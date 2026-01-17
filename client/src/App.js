@@ -10,6 +10,7 @@ import Home from  '~/home/Home';
 import Login from  '~/login/Login';
 import Signup from  '~/login/Signup';
 import ChangePw from '~/changepw/ChangePw';
+import ForgotPw from '~/forgotpw/ForgotPw';
 import Profile from '~/profile/Profile';
 import Eval from '~/eval/Eval';
 import Verify from '~/verify/Verify';
@@ -45,8 +46,17 @@ const App = () => {
                 />
                 <Route
                     exact
-                    path="/changepw"
+                    path="/changepw" // For when user is logged in but requires password change
                     element={<PrivateRoute verificationRequired component={ChangePw} />}
+                />
+                <Route
+                    exact
+                    path="/forgotpw"
+                    element={<ForgotPw />}
+                />
+                <Route
+                    path="/changepw/token/:token" // For when user unable to log in, access using password reset link
+                    element={<ChangePw />}
                 />
                 <Route
                     exact
@@ -58,6 +68,7 @@ const App = () => {
                     path="/signup"
                     element={<Signup />}
                 />
+
                 <Route
                     path="*"
                     element={<Navigate to='/' replace />}

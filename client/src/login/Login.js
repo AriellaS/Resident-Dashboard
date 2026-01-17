@@ -119,7 +119,7 @@ msg: ""
                     />
                 </form>
                 <S.StyledAlertBox state={errorState.isError ? "ERROR" : "HIDDEN"} msg={errorState.msg} />
-                {/*<S.StyledLink to={"/signup"} children="Need an acccount?" />*/}
+                <S.StyledLink to={"/forgotpw"} children="Forgot password?" />
             </S.Container>
         </S.CenterScreenContainer>
     )

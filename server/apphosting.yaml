@@ -24,6 +24,8 @@ env:
         - RUNTIME
   - variable: OPENAI_API_KEY
     secret: OPENAI_API_KEY
+  - variable: MAILGUN_API_KEY
+    secret: MAILGUN_API_KEY
 
   # Grant access to secrets in Cloud Secret Manager.
   # See https://firebase.google.com/docs/app-hosting/configure#secret-parameters

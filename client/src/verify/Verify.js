@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import CodeInput from '~/verify/CodeInput';
+import CodeInput from '~/shared/CodeInput';
 import ajax from '~/util';
 import * as S from '~/verify/styles';
 
@@ -83,10 +83,7 @@ const Verify = ({ currentUser, setCurrentUser }) => {
                 <S.Header children="Enter Verification Code" />
                 <S.SubHeader children={`We sent a code to ${currentUser.email}`} />
                 <CodeInput inputs={inputs} setInputs={setInputs} handleVerify={handleVerify} />
-                <S.SmallTextContainer>
-                    <S.SmallTextUnderlined children={'Click here'} onClick={handleRequestNewCode} />
-                    <S.SmallText children={'to resend verification code.'} />
-                </S.SmallTextContainer>
+                <S.StyledLink children="Click here to send new code" onClick={handleRequestNewCode}/>
                 <S.StyledAlertBox state={alert.state} msg={alert.msg} />
             </S.Container>
         </S.CenterScreenContainer>

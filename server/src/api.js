@@ -2,7 +2,8 @@
 
 const express = require('express');
 const jwt = require('jsonwebtoken');
-const nodemailer = require('nodemailer');
+const FormData = require('form-data');
+const Mailgun = require('mailgun.js');
 const bcrypt = require('bcryptjs');
 const OpenAI = require('openai');
 const User = require('./models/User');
@@ -13,38 +14,6 @@ const util = require('./util.js');
 
 const config = util.getConfig();
 const router = express.Router();
-
-const requestAIReport = async(condensedEvals, questionSchema) => {
-    const client = new OpenAI({
-        apiKey: process.env.OPENAI_API_KEY,
-    });
-
-    const prompt = `You are summarizing a surgical resident’s performance based on attending evaluations.
-
-Resident feedback data:
-${JSON.stringify(condensedEvals)}
-
-Question schema (defines the meaning of each response and any option labels):
-${JSON.stringify(questionSchema)}
-
-Write a concise narrative summary of the resident’s overall performance, highlighting key strengths and areas for improvement. Do not mention question identifiers or field names in the response. Ignore any data that does not appear in the question schema. Limit the response to a maximum of four sentences.`;
-
-    const response = await client.responses.create({
-        model: "gpt-5-nano",
-        input: prompt
-    });
-
-    return response.output_text;
-}
-
-const sendVerificationEmail = (recipient, verificationCode) => {
-    transporter.sendMail({
-        from: config.emailUser,
-        to: recipient,
-        subject: `Your EvalMD verification code: ${verificationCode}`,
-        text: `Your code is ${verificationCode}. Verify your account at https://evalmd.io/verify. If you did not request this code, please ignore this email.`
-    }, (err) => { err ? console.log("Error sending email") : console.log(`Email sent to ${recipient}`) });
-};
 
 const createNewAccessToken = (userId) => {
     let accessToken = jwt.sign({
@@ -81,6 +50,61 @@ const verifyAccount = async (req, res, next) => {
         return res.status(401).end("User not verified");
     }
     next();
+}
+
+const sendPasswordResetEmail = async (user, token) => {
+    const mailgun = new Mailgun(FormData);
+    const mg = mailgun.client({
+        username: "api",
+        key: process.env.MAILGUN_API_KEY,
+    });
+    const data = await mg.messages.create("evalmd.io", {
+        from: "EvalMD <noreply@evalmd.io>",
+        to: util.isProduction ? [`${user.firstname} ${user.lastname} <${user.email}>`] : [`<ariella.simoni@einsteinmed.edu>`],
+        subject: "Password Reset",
+        text: `Password Reset`,
+        html: `<p>Hi ${user.firstname} ${user.lastname}, we saw that you were having trouble logging in!</p><p>Click here to reset your password: <a href="https://evalmd.io/changepw/token/${token}">https://evalmd.io/changepw/token/${token}</a></p><p>If you did not request a password reset, kindly ignore this email. Thank you for using EvalMD!</p>`,
+    });
+    console.log(data)
+};
+
+const sendPasswordChangedEmail = async(user) => {
+    const mailgun = new Mailgun(FormData);
+    const mg = mailgun.client({
+        username: "api",
+        key: process.env.MAILGUN_API_KEY,
+    });
+    const data = await mg.messages.create("evalmd.io", {
+        from: "EvalMD <noreply@evalmd.io>",
+        to: util.isProduction ? [`${user.firstname} ${user.lastname} <${user.email}>`] : [`<ariella.simoni@einsteinmed.edu>`],
+        subject: "Password Changed",
+        text: `Password Changed`,
+        html: `<p>Your password has been updated.</p><p>If this wasn't you, please contact us!</p>`,
+    });
+    console.log(data)
+}
+
+const requestAIReport = async(condensedEvals, questionSchema) => {
+    const client = new OpenAI({
+        apiKey: process.env.OPENAI_API_KEY,
+    });
+
+    const prompt = `You are summarizing a surgical resident’s performance based on attending evaluations.
+
+Resident feedback data:
+${JSON.stringify(condensedEvals)}
+
+Question schema (defines the meaning of each response and any option labels):
+${JSON.stringify(questionSchema)}
+
+Write a concise narrative summary of the resident’s overall performance, highlighting key strengths and areas for improvement. Do not mention question identifiers or field names in the response. Ignore any data that does not appear in the question schema. Limit the response to a maximum of four sentences.`;
+
+    const response = await client.responses.create({
+        model: "gpt-5-nano",
+        input: prompt
+    });
+
+    return response.output_text;
 }
 
 router.post('/refresh', async (req, res) => {
@@ -182,8 +206,6 @@ router.post('/users', async (req, res) => {
 
     console.log("Account created for " + req.body.firstname);
 
-    //sendVerificationEmail(req.body.email, verificationCode);
-
     let refreshToken = await RefreshToken.createToken(user._id);
     let accessToken = createNewAccessToken(user._id);
     res.cookie('refreshToken', refreshToken, {
@@ -220,9 +242,29 @@ router.put('/verify/new', verifyAccessToken, async (req, res) => {
     let verificationCode = [...Array(6)].map(_=>Math.random()*10|0).join("");
     user.verification_code = verificationCode;
     await user.save();
-    //sendVerificationEmail(user.email, verificationCode);
 
     return res.status(200).end("New verification code created");
+});
+
+router.put('/forgotpw', async (req, res) => {
+    let user = await User.findOne({
+        email: req.body.email.toLowerCase()
+    })
+    if (!user) {
+        return res.status(200).end("User not found");
+    }
+    let token = jwt.sign({
+        id: user._id,
+    }, config.secret, {
+        expiresIn: config.pwResetExpirationSeconds,
+    });
+    try {
+        sendPasswordResetEmail(user, token);
+    } catch (err) {
+        console.log(err);
+        return res.status(500).end("Failed to send reset password email");
+    }
+    return res.status(200).end("Password reset link sent");
 });
 
 router.put('/changepw', verifyAccessToken, verifyAccount, async (req, res) => {
@@ -237,9 +279,54 @@ router.put('/changepw', verifyAccessToken, verifyAccount, async (req, res) => {
         user: req.user._id,
         token: { $ne: req.cookies.refreshToken }
     });
-    //TODO: send email to user
+    sendPasswordChangedEmail(user);
 
     return res.status(200).end("Password changed");
+});
+
+router.put('/changepw/token/:token', async (req, res) => {
+    let token = req.params.token;
+    jwt.verify(token, config.secret, async (err, decoded) => {
+        if (err) {
+            if (err instanceof jwt.TokenExpiredError) {
+                return res.status(401).end("Reset password token is expired")
+            }
+            console.log(err)
+            return res.status(401).end("Invalid reset password token");
+        }
+        let user = await User.findById(decoded.id);
+        if (!user) {
+            return res.status(400).end("User not found");
+        }
+        req.user = user;
+        if (req.body.password.length < 8) {
+            return res.status(400).end("Password requirements not met");
+        }
+        // TODO: expire the token after use
+
+        user.password = req.body.password;
+        await user.save();
+        await RefreshToken.deleteMany({
+            user: req.user._id,
+            token: { $ne: req.cookies.refreshToken }
+        });
+        user.password = undefined;
+        sendPasswordChangedEmail(user);
+        //TODO: send email to user confirming pw change
+
+        let refreshToken = await RefreshToken.createToken(user._id);
+        let accessToken = createNewAccessToken(user._id);
+
+        res.cookie('refreshToken', refreshToken, {
+            maxAge: config.refreshExpirationSeconds * 1000,
+            secure: util.isProduction,
+        });
+
+        return res.status(200).send({
+            accessToken: accessToken,
+            user: user
+        });
+    });
 });
 
 router.get('/users', verifyAccessToken, verifyAccount, async (req, res) => {
@@ -375,12 +462,11 @@ router.post('/users/id/:userId/evals', verifyAccessToken, verifyAccount, async (
     }
 
     if (evalType === "RESIDENT2RESIDENT") {
-            //eventually
+        //eventually
     }
 
     return res.status(200).end("Eval submitted");;
 });
-
 
 module.exports = router;
 

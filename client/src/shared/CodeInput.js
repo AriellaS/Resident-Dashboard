@@ -1,5 +1,26 @@
 import { useRef } from 'react';
-import * as S from '~/verify/styles';
+import styled from 'styled-components';
+import * as shared from '~/shared';
+
+const DigitInput = styled(shared.TextInput)`
+    width: 50px;
+`;
+
+const DigitInputContainer = styled.div`
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+`;
+
+const CodeInputContainer = styled.div`
+    padding-top: 20px;
+    padding-bottom: 20px;
+`;
+
+const Button = styled(shared.Button)`
+    margin-top: 20px
+`;
 
 const NUM_DIGITS = 6;
 
@@ -17,11 +38,11 @@ const CodeInput = ({ inputs, setInputs, handleVerify }) => {
     }
 
     return (
-        <S.CodeInputContainer>
+        <CodeInputContainer>
             <form onSubmit={handleVerify}>
-                <S.DigitInputContainer>
+                <DigitInputContainer>
                     {[...Array(NUM_DIGITS)].map((_,i) => (
-                        <S.DigitInput
+                        <DigitInput
                             key={i}
                             inputMode="decimal"
                             pattern="[0-9]"
@@ -39,10 +60,10 @@ const CodeInput = ({ inputs, setInputs, handleVerify }) => {
                             }}
                         />
                     ))}
-                </S.DigitInputContainer>
-                <S.Button text="Verify" onClick={handleVerify} />
+                </DigitInputContainer>
+                <Button text="Verify" onClick={handleVerify} />
             </form>
-        </S.CodeInputContainer>
+        </CodeInputContainer>
     )
 }
 
