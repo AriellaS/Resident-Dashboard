@@ -424,7 +424,7 @@ router.post('/users/id/:userId/evals', verifyAccessToken, verifyAccount, async (
         return res.status(400).end("One cannot evaluate oneself");
     }
 
-    let evaluatee = await User.findById(evaluateeId).select('role account_verified');
+    let evaluatee = await User.findById(evaluateeId).select('role pgy account_verified');
     if (!evaluatee) {
         return res.status(400).end("Evaluatee not found");
     }
@@ -454,6 +454,7 @@ router.post('/users/id/:userId/evals', verifyAccessToken, verifyAccount, async (
             let evaluation = await AttendingToResidentEval.create({
                 evaluator: req.user._id,
                 evaluatee: evaluateeId,
+                pgy: evaluatee.pgy,
                 form,
             });
         } catch(err) {

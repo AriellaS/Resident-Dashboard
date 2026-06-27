@@ -16,6 +16,7 @@ const Performance = () => {
 
     const [evals, setEvals] = useState([]);
     const [selectedSpecialty, setSelectedSpecialty] = useState('');
+    const [selectedPGY, setSelectedPGY] = useState(null);
     const [user, setUser] = useState({
         firstname: "",
         lastname: "",
@@ -36,7 +37,8 @@ const Performance = () => {
         questionText
     }));
 
-    const filteredEvals = selectedSpecialty ? evals.filter(e => e.form.find(f => f.name==='SUBSPECIALTY').option===SUBSPECIALTIES.findIndex(s => s.name===selectedSpecialty)+'') : evals;
+    const evalsPGY = evals.filter(e => e.pgy===selectedPGY);
+    const filteredEvals = selectedSpecialty ? evalsPGY.filter(e => e.form.find(f => f.name==='SUBSPECIALTY').option===SUBSPECIALTIES.findIndex(s => s.name===selectedSpecialty)+'') : evalsPGY;
     const numericalData = emptyNumericalData.map(q => ({
         ...q,
         data: q.data.map((o,i) => ({
@@ -50,7 +52,7 @@ const Performance = () => {
     }));
     const specialtyData = SUBSPECIALTIES.map((s,i) => ({
             name: s.name,
-            count: evals.flatMap(e => e.form)?.filter(f => f.name==='SUBSPECIALTY' && f.option===i+'').length
+            count: evalsPGY.flatMap(e => e.form)?.filter(f => f.name==='SUBSPECIALTY' && f.option===i+'').length
     }));
     const barData = numericalData.filter(d => ['PREP_RATING','GUIDANCE','PERFORMANCE'].includes(d.name));
     const selectedSpecialtyColor = SUBSPECIALTIES.find(s => s.name===selectedSpecialty)?.color;
@@ -100,6 +102,7 @@ const Performance = () => {
                         lastname: res.data.user.lastname,
                         pgy: res.data.user.pgy
                     });
+                    setSelectedPGY(res.data.user.pgy);
                 })
                 .catch(err => { console.log(err) });
         }
@@ -126,7 +129,7 @@ const Performance = () => {
                     <S.HorizontalContainer>
                         <S.DashboardItem>
                             <S.DashboardItemHeading children="Total Evals Recieved"/>
-                            <S.DashboardItemLargeText children={evals.length}/>
+                            <S.DashboardItemLargeText children={evalsPGY.length}/>
                         </S.DashboardItem>
                         <S.DashboardItem onClick={() => setSelectedSpecialty('')}>
                             <S.DashboardItemHeading children="Subspecialties"/>
@@ -220,6 +223,14 @@ const Performance = () => {
                             </Carousel>
                         </S.WrittenFeedbackContainer>
                     </S.DashboardItem>
+                    {user.pgy > 1 && <S.DashboardItem>
+                        <S.DashboardItemHeading children="See data from previous years"/>
+                        <S.HorizontalContainer>
+                            {[...Array(user.pgy).keys()].map(i => (
+                                <S.SmallButton text={`PGY-${i+1}`} key={i} onClick={() => setSelectedPGY(i+1)}/>
+                            ))}
+                        </S.HorizontalContainer>
+                    </S.DashboardItem> }
                 </S.Container>
             </S.CenterScreenContainer>
         </S.ScreenContainer>

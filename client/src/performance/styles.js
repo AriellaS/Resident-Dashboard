@@ -85,6 +85,11 @@ export const WrittenFeedbackText = styled.div`
     justify-content: center;
 `;
 
+export const SmallButton = styled(shared.Button)`
+    width: 100px;
+    margin: 10px;
+`;
+
 const fadeInOut = keyframes`
   0%, 100% { opacity: 0; }
   50% { opacity: 1; }

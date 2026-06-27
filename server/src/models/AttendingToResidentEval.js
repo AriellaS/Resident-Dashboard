@@ -18,6 +18,9 @@ const attendingToResidentEvalSchema = new Schema({
         ref: "User",
         required: true,
     },
+    pgy: {
+        type: Number
+    },
     form: {
         type: [{
             name: { type: String, enum: QUESTION_NAMES, required: true },
