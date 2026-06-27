@@ -31,10 +31,12 @@ const Navbar = () => {
                 <Nav className='me-auto'>
                     <Nav.Link href='/'>Home</Nav.Link>
                 </Nav>
+                {currentUser.admin && (<Nav className='justify-content-end'>
+                    <Nav.Link href={'/metrics'}>Metrics</Nav.Link>
+                </Nav>)}
                 <Nav className='justify-content-end'>
                     <Nav.Link href={`/users/${currentUser._id}`}>Profile</Nav.Link>
                 </Nav>
-
                 <Nav className='justify-content-end'>
                     <Nav.Link onClick={handleLogout}>Logout</Nav.Link>
                 </Nav>

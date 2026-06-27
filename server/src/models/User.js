@@ -33,6 +33,10 @@ const userSchema = new Schema({
     pgy: {
         type: Number,
     },
+    admin: {
+        type: Boolean,
+        default: false
+    },
     verification_code: {
         type: String,
         select: false

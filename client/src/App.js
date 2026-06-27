@@ -15,6 +15,7 @@ import Profile from '~/profile/Profile';
 import Eval from '~/eval/Eval';
 import Verify from '~/verify/Verify';
 import Performance from '~/performance/Performance';
+import Metrics from '~/metrics/Metrics';
 import PrivateRoute from '~/PrivateRoute';
 
 const App = () => {
@@ -38,6 +39,10 @@ const App = () => {
                 <Route
                     path="/users/:id/performance"
                     element={<PrivateRoute verificationRequired pwChangeRequired component={Performance} />}
+                />
+                <Route
+                    path="/metrics"
+                    element={<PrivateRoute verificationRequired pwChangeRequired adminRequired component={Metrics} />}
                 />
                 <Route
                     exact
@@ -68,7 +73,6 @@ const App = () => {
                     path="/signup"
                     element={<Signup />}
                 />
-
                 <Route
                     path="*"
                     element={<Navigate to='/' replace />}

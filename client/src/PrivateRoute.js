@@ -5,7 +5,7 @@ import Cookies from 'js-cookie';
 import useToken from '~/useToken';
 import useCurrentUser from '~/useCurrentUser';
 
-const PrivateRoute = ({ component: Component, verificationRequired, pwChangeRequired, ...rest }) => {
+const PrivateRoute = ({ component: Component, verificationRequired, pwChangeRequired, adminRequired, ...rest }) => {
 
     const { pathname } = useLocation();
     const { token, setToken, removeToken } = useToken();
@@ -14,7 +14,8 @@ const PrivateRoute = ({ component: Component, verificationRequired, pwChangeRequ
     const userIsAuthenticated = !!token;
     const userVerified = !!currentUser && currentUser.account_verified;
     const userRequiresPwChange = !!currentUser && currentUser.changepw_required;
-    const pageAccessibleToUser = userIsAuthenticated && (!verificationRequired || userVerified) && (!pwChangeRequired || !userRequiresPwChange);
+    const userIsAdmin = !!currentUser && currentUser.admin;
+    const pageAccessibleToUser = userIsAuthenticated && (!verificationRequired || userVerified) && (!pwChangeRequired || !userRequiresPwChange) && (!adminRequired || userIsAdmin);
 
     useEffect(() => {
         async function refreshToken() {
@@ -68,8 +69,13 @@ const PrivateRoute = ({ component: Component, verificationRequired, pwChangeRequ
             <Navigate to={`/verify`}/>
         )
     }
+    if (userRequiresPwChange) {
+        return (
+            <Navigate to={`/changepw`}/>
+        )
+    }
     return (
-        <Navigate to={`/changepw`}/>
+        <Navigate to={`/`}/>
     )
 }
 
