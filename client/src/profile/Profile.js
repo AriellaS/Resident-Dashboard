@@ -66,7 +66,7 @@ const Profile = ({ currentUser }) => {
                         <S.TextContainer>
                             <div>{getName()}</div>
                             <div>{user.email}</div>
-                            <S.RoleText children={`${user.role}${user.pgy ? `, PGY-${user.pgy}` : ''}`} />
+                            <S.RoleText children={`${user.role}${user.role==='RESIDENT' ? `, PGY-${user.pgy}` : ''}`} />
                         </S.TextContainer>
                         <hr />
                         {currentUser.role==='ATTENDING' && user.role==='RESIDENT' && (
@@ -76,7 +76,7 @@ const Profile = ({ currentUser }) => {
                                 onClick={handleEvaluate}
                             />
                         )}
-                        {(currentUser.role==='ATTENDING' || currentUser._id===userId) && user.role==='RESIDENT' && (
+                        {(currentUser.role==='ATTENDING' || currentUser._id===userId) && (user.role==='RESIDENT' || user.role==='ALUM') && (
                             <S.Button
                                 text='See Performance'
                                 type='button'

@@ -331,7 +331,7 @@ router.put('/changepw/token/:token', async (req, res) => {
 
 router.get('/users', verifyAccessToken, verifyAccount, async (req, res) => {
     let role = req.query.role;
-    if (role != "RESIDENT" && role != "ATTENDING") {
+    if (role != "RESIDENT" && role != "ATTENDING" && role != "ALUM") {
         return res.status(400).end("Invalid role");
     }
     let users = await User.find({
@@ -416,7 +416,7 @@ router.post('/users/id/:userId/evals', verifyAccessToken, verifyAccount, async (
     let formObject = req.body.form;
     let evaluateeId = new ObjectId(req.params.userId);
 
-    if (evalType !== "ATTENDING2RESIDENT" && evalType !== "RESIDENT2RESIDENT") {
+    if (evalType !== "ATTENDING2RESIDENT") {
         return res.status(400).end("Invalid eval type");
     }
 
@@ -460,10 +460,6 @@ router.post('/users/id/:userId/evals', verifyAccessToken, verifyAccount, async (
         } catch(err) {
             return res.status(500).end("Unable to submit eval");
         }
-    }
-
-    if (evalType === "RESIDENT2RESIDENT") {
-        //eventually
     }
 
     return res.status(200).end("Eval submitted");;
