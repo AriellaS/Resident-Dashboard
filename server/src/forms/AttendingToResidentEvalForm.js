@@ -40,15 +40,7 @@ const Questions = [{
         type: 'RADIO',
         numOptions: 3,
     }, {
-        name: 'APPROACH',
-        type: 'RADIO',
-        numOptions: 3,
-    }, {
         name: 'PLANES',
-        type: 'RADIO',
-        numOptions: 3,
-    }, {
-        name: 'HANDLING',
         type: 'RADIO',
         numOptions: 3,
     }, {
@@ -68,6 +60,10 @@ const Questions = [{
     }, {
         name: 'GENERAL',
         type: 'TEXT',
+    }, {
+        name: 'CONCERNS',
+        type: 'RADIO',
+        numOptions: 2
     }
 ];
 

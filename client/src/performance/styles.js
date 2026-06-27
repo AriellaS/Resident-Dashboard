@@ -63,7 +63,7 @@ export const DashboardItemLargeText = styled.div`
 `;
 
 export const ProgressBar = styled(CircularProgressbarWithChildren)`
-    width: 12vw;
+    width: 13vw;
     min-width: 150px;
     margin: 10px;
 `;
