@@ -187,9 +187,9 @@ const Performance = () => {
                                             barSize={15}
                                             data={d.data}
                                         >
+                                            <Tooltip />
                                             <Bar dataKey="count" fill={selectedSpecialtyColor || S.accentColor} />
                                             <XAxis interval={0} height={50} tick={<CustomizedAxisTick />} dataKey="name" />
-                                            <Tooltip />
                                         </BarChart>
                                     </ResponsiveContainer>
                                     </S.BarChartContainer>
