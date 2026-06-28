@@ -1,12 +1,12 @@
 "use strict"
 
 const mongoose = require("mongoose");
-const Questions = require('../forms/AttendingToResidentEvalForm');
+const Questions = require('../forms/FacultyToResidentEvalForm');
 const Schema = mongoose.Schema;
 
 const QUESTION_NAMES = Questions.map(q => { return q.name });
 
-const attendingToResidentEvalSchema = new Schema({
+const facultyToResidentEvalSchema = new Schema({
     evaluator: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
@@ -29,7 +29,7 @@ const attendingToResidentEvalSchema = new Schema({
     }
 }, { timestamps: true });
 
-attendingToResidentEvalSchema.statics.validateInput = (form) => {
+facultyToResidentEvalSchema.statics.validateInput = (form) => {
     // TODO also check that for radio questions, option is a number less than numOptions
     form.forEach(q => {
         if (!QUESTION_NAMES.includes(q.name)) return false;
@@ -37,6 +37,6 @@ attendingToResidentEvalSchema.statics.validateInput = (form) => {
     return true;
 }
 
-const AttendingToResidentEval = mongoose.model("AttendingToResidentEval", attendingToResidentEvalSchema);
+const FacultyToResidentEval = mongoose.model("FacultyToResidentEval", facultyToResidentEvalSchema);
 
-module.exports = AttendingToResidentEval;
+module.exports = FacultyToResidentEval;

@@ -125,8 +125,8 @@ const Signup = () => {
                     />
                     <S.StyledFancyRadio
                         name="roletoggle"
-                        values={["RESIDENT", "ATTENDING"]}
-                        texts={["Resident", "Attending"]}
+                        values={["RESIDENT", "FACULTY"]}
+                        texts={["Resident", "Faculty"]}
                         default={0}
                         onChange={e => {setFormState({ ...formState, role: e.target.value})} }
                     />

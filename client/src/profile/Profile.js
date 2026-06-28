@@ -73,21 +73,21 @@ const Profile = ({ currentUser }) => {
                             <S.RoleText children={`${user.role}${user.role==='RESIDENT' ? `, PGY-${user.pgy}` : ''}`} />
                         </S.TextContainer>
                         <hr />
-                        {currentUser.role==='ATTENDING' && user.role==='RESIDENT' && (
+                        {currentUser.role==='FACULTY' && user.role==='RESIDENT' && (
                             <S.Button
                                 text='Evaluate'
                                 type='button'
                                 onClick={handleEvaluate}
                             />
                         )}
-                        {(currentUser.role==='ATTENDING' || currentUser._id===userId) && (user.role==='RESIDENT' || user.role==='ALUM') && (
+                        {(currentUser.role==='FACULTY' || currentUser._id===userId) && (user.role==='RESIDENT' || user.role==='ALUM') && (
                             <S.Button
                                 text='See Performance'
                                 type='button'
                                 onClick={handleSeePerformance}
                             />
                         )}
-                        {currentUser.role==='RESIDENT' && user.role==='ATTENDING' && (
+                        {currentUser.role==='RESIDENT' && user.role==='FACULTY' && (
                             <S.Button
                                 text='Request Evaluation'
                                 type='button'

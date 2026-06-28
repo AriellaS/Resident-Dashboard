@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import { useNavigate } from 'react-router-dom';
 import Question from '~/eval/Question';
-import { Pages, Questions } from  '~/shared/AttendingToResidentEvalForm';
+import { Pages, Questions } from  '~/shared/FacultyToResidentEvalForm';
 import * as S from '~/eval/styles';
 import AlertBox from '~/shared/AlertBox';
 import ajax from '~/util';
@@ -42,7 +42,7 @@ const EvalForm = (props) => {
     const handleSubmit = async(e) => {
         e.preventDefault();
         await ajax.request('post', `/users/id/${props.userData.id}/evals`, {
-            type: "ATTENDING2RESIDENT",
+            type: "FACULTY2RESIDENT",
             form: formState,
         }).then(res => {
             setSubmissionState(true);

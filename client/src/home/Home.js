@@ -12,7 +12,7 @@ const Home = ({ currentUser }) => {
     const [allUserData, setAllUserData] = useState([]);
     const [queriedUserData, setQueriedUserData] = useState([]);
 
-    const roleToSearch = currentUser.role==='ATTENDING' ? 'RESIDENT' : 'ATTENDING';
+    const roleToSearch = currentUser.role==='FACULTY' ? 'RESIDENT' : 'FACULTY';
 
     const handleSearchBarFocus = () => {
         setSearchFocus(true);
@@ -49,7 +49,7 @@ const Home = ({ currentUser }) => {
             <S.CenterScreenContainer>
                 <S.SearchContainer>
                     <S.SearchBar
-                        placeholder={`Search ${roleToSearch.toLowerCase()}s...`}
+                        placeholder={`Search ${roleToSearch.toLowerCase()}${roleToSearch==='RESIDENT'?'s':''}...`}
                         value={queryState}
                         onFocus={handleSearchBarFocus}
                         onBlur={handleSearchBarFocusOut}

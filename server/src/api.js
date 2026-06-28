@@ -7,7 +7,7 @@ const Mailgun = require('mailgun.js');
 const bcrypt = require('bcryptjs');
 const OpenAI = require('openai');
 const User = require('./models/User');
-const AttendingToResidentEval = require('./models/AttendingToResidentEval');
+const FacultyToResidentEval = require('./models/FacultyToResidentEval');
 const EvalRequest = require('./models/EvalRequest');
 const ObjectId = require('mongodb').ObjectId;
 const RefreshToken = require('./models/RefreshToken');
@@ -184,7 +184,7 @@ router.post('/users', async (req, res) => {
     }
 
     let role = req.body.role.toUpperCase();
-    if (!["RESIDENT","ATTENDING"].includes(role)) {
+    if (!["RESIDENT","FACULTY"].includes(role)) {
         return res.status(400).end("Invalid role");
     }
 
@@ -338,7 +338,7 @@ router.put('/changepw/token/:token', async (req, res) => {
 
 router.get('/users', verifyAccessToken, verifyAccount, async (req, res) => {
     let role = req.query.role;
-    if (role != "RESIDENT" && role != "ATTENDING" && role != "ALUM") {
+    if (role != "RESIDENT" && role != "FACULTY" && role != "ALUM") {
         return res.status(400).end("Invalid role");
     }
     let users = await User.find({
@@ -368,14 +368,14 @@ router.get('/users/id/:userId/evals', verifyAccessToken, verifyAccount, async (r
     } catch (err) {
         return res.status(400).end("Invalid user ID");
     }
-    if (req.user.role !== "ATTENDING" && !req.user._id.equals(userId)) {
+    if (req.user.role !== "FACULTY" && !req.user._id.equals(userId)) {
         return res.status(401).end("Unauthorized");
     }
     let user = await User.findById(userId).exec();
     if (!user) {
         res.status(404).end("User not found");
     }
-    let evals = await AttendingToResidentEval.find({
+    let evals = await FacultyToResidentEval.find({
         evaluatee: userId,
     });
     res.json({ evals: evals, user: user });
@@ -390,14 +390,14 @@ router.post('/users/id/:userId/evals/aisummary', verifyAccessToken, verifyAccoun
     } catch (err) {
         return res.status(400).end("Invalid user ID");
     }
-    if (req.user.role !== "ATTENDING" && !req.user._id.equals(userId)) {
+    if (req.user.role !== "FACULTY" && !req.user._id.equals(userId)) {
         return res.status(401).end("Unauthorized");
     }
     let user = await User.findById(userId).exec();
     if (!user) {
         res.status(404).end("User not found");
     }
-    let evals = await AttendingToResidentEval.find({
+    let evals = await FacultyToResidentEval.find({
         evaluatee: userId,
     });
 
@@ -423,7 +423,7 @@ router.post('/users/id/:userId/evals', verifyAccessToken, verifyAccount, async (
     let formObject = req.body.form;
     let evaluateeId = new ObjectId(req.params.userId);
 
-    if (evalType !== "ATTENDING2RESIDENT") {
+    if (evalType !== "FACULTY2RESIDENT") {
         return res.status(400).end("Invalid eval type");
     }
 
@@ -447,18 +447,18 @@ router.post('/users/id/:userId/evals', verifyAccessToken, verifyAccount, async (
         }
     });
 
-    if (evalType === "ATTENDING2RESIDENT") {
-        if (req.user.role !== "ATTENDING") {
-            return res.status(400).end("Evaluator must be an attending");
+    if (evalType === "FACULTY2RESIDENT") {
+        if (req.user.role !== "FACULTY") {
+            return res.status(400).end("Evaluator must be faculty");
         }
         if (evaluatee.role !== "RESIDENT") {
             return res.status(400).end("Evaluatee must be a resident");
         }
-        if (!AttendingToResidentEval.validateInput(form)) {
+        if (!FacultyToResidentEval.validateInput(form)) {
             return res.status(400).end("Invalid input");
         }
         try {
-            let evaluation = await AttendingToResidentEval.create({
+            let evaluation = await FacultyToResidentEval.create({
                 evaluator: req.user._id,
                 evaluatee: evaluateeId,
                 pgy: evaluatee.pgy,
@@ -489,8 +489,8 @@ router.post('/users/id/:userId/evalrequest', verifyAccessToken, verifyAccount, a
     if (!evaluator) {
         return res.status(400).end("Evaluator not found");
     }
-    if (evaluator.role !== "ATTENDING") {
-        return res.status(400).end("Evaluator must be an attending");
+    if (evaluator.role !== "FACULTY") {
+        return res.status(400).end("Evaluator must be faculty");
     }
     if (req.user.role !== "RESIDENT") {
         return res.status(400).end("Evaluatee must be a resident");

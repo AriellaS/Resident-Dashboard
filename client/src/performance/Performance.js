@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { PieChart, Pie, BarChart, Bar, XAxis, Cell, Legend, Tooltip, Text, ResponsiveContainer } from 'recharts';
 import Carousel from 'react-bootstrap/Carousel';
 import 'react-circular-progressbar/dist/styles.css';
-import { Questions, SUBSPECIALTIES } from  '~/shared/AttendingToResidentEvalForm';
+import { Questions, SUBSPECIALTIES } from  '~/shared/FacultyToResidentEvalForm';
 import Navbar from '~/shared/Navbar';
 import ajax from '~/util';
 import * as S from '~/performance/styles';
