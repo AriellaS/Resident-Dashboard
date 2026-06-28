@@ -8,12 +8,19 @@ const bcrypt = require('bcryptjs');
 const OpenAI = require('openai');
 const User = require('./models/User');
 const AttendingToResidentEval = require('./models/AttendingToResidentEval');
+const EvalRequest = require('./models/EvalRequest');
 const ObjectId = require('mongodb').ObjectId;
 const RefreshToken = require('./models/RefreshToken');
 const util = require('./util.js');
 
 const config = util.getConfig();
 const router = express.Router();
+
+const mailgun = new Mailgun(FormData);
+const mg = mailgun.client({
+    username: "api",
+    key: process.env.MAILGUN_API_KEY,
+});
 
 const createNewAccessToken = (userId) => {
     let accessToken = jwt.sign({
@@ -53,11 +60,6 @@ const verifyAccount = async (req, res, next) => {
 }
 
 const sendPasswordResetEmail = async (user, token) => {
-    const mailgun = new Mailgun(FormData);
-    const mg = mailgun.client({
-        username: "api",
-        key: process.env.MAILGUN_API_KEY,
-    });
     const data = await mg.messages.create("evalmd.io", {
         from: "EvalMD <noreply@evalmd.io>",
         to: util.isProduction ? [`${user.firstname} ${user.lastname} <${user.email}>`] : [`<ariella.simoni@einsteinmed.edu>`],
@@ -65,15 +67,10 @@ const sendPasswordResetEmail = async (user, token) => {
         text: `Password Reset`,
         html: `<p>Hi ${user.firstname} ${user.lastname}, we saw that you were having trouble logging in!</p><p>Click here to reset your password: <a href="https://evalmd.io/changepw/token/${token}">https://evalmd.io/changepw/token/${token}</a></p><p>If you did not request a password reset, kindly ignore this email. Thank you for using EvalMD!</p>`,
     });
-    console.log(data)
+    console.log(data);
 };
 
 const sendPasswordChangedEmail = async(user) => {
-    const mailgun = new Mailgun(FormData);
-    const mg = mailgun.client({
-        username: "api",
-        key: process.env.MAILGUN_API_KEY,
-    });
     const data = await mg.messages.create("evalmd.io", {
         from: "EvalMD <noreply@evalmd.io>",
         to: util.isProduction ? [`${user.firstname} ${user.lastname} <${user.email}>`] : [`<ariella.simoni@einsteinmed.edu>`],
@@ -81,7 +78,18 @@ const sendPasswordChangedEmail = async(user) => {
         text: `Password Changed`,
         html: `<p>Your password has been updated.</p><p>If this wasn't you, please contact us!</p>`,
     });
-    console.log(data)
+    console.log(data);
+}
+
+const sendEvalRequestEmail = async (evaluator, evaluatee, note) => {
+    const data = await mg.messages.create("evalmd.io", {
+        from: "EvalMD <noreply@evalmd.io>",
+        to: util.isProduction ? [`${evaluator.firstname} ${evaluator.lastname} <${evaluator.email}>`] : [`<ariella.simoni@einsteinmed.edu>`],
+        subject: `Evaluation Request from ${evaluatee.firstname} ${evaluatee.lastname}`,
+        text: `Evaluation request`,
+        html: `<p>You have a new evaluation request from ${evaluatee.firstname} ${evaluatee.lastname}.</p><p>They provided the following note: ${note}</p><p>Click here to submit your feedback: <a href="https://evalmd.io/users/${evaluatee._id}">https://evalmd.io/users/${evaluatee._id}</a></p>`
+    });
+    console.log(data);
 }
 
 const requestAIReport = async(condensedEvals, questionSchema) => {
@@ -312,7 +320,6 @@ router.put('/changepw/token/:token', async (req, res) => {
         });
         user.password = undefined;
         sendPasswordChangedEmail(user);
-        //TODO: send email to user confirming pw change
 
         let refreshToken = await RefreshToken.createToken(user._id);
         let accessToken = createNewAccessToken(user._id);
@@ -457,12 +464,48 @@ router.post('/users/id/:userId/evals', verifyAccessToken, verifyAccount, async (
                 pgy: evaluatee.pgy,
                 form,
             });
+            // TODO: right now this arbitrarily chooses one matching evalrequest to mark as completed, eventually want evals linked to specific requests
+            let evalRequest = await EvalRequest.findOne({
+                evaluator: req.user._id,
+                evaluatee: evaluateeId,
+                complete: false,
+            });
+            if (evalRequest) {
+                evalRequest.complete = true;
+                await evalRequest.save();
+            }
         } catch(err) {
             return res.status(500).end("Unable to submit eval");
         }
     }
 
     return res.status(200).end("Eval submitted");;
+});
+
+router.post('/users/id/:userId/evalrequest', verifyAccessToken, verifyAccount, async (req, res) => {
+    let evaluatorId = new ObjectId(req.params.userId);
+    let evaluator = await User.findById(evaluatorId).select('role');
+    let note = req.body.note;
+    if (!evaluator) {
+        return res.status(400).end("Evaluator not found");
+    }
+    if (evaluator.role !== "ATTENDING") {
+        return res.status(400).end("Evaluator must be an attending");
+    }
+    if (req.user.role !== "RESIDENT") {
+        return res.status(400).end("Evaluatee must be a resident");
+    }
+    try {
+        let evalRequest = await EvalRequest.create({
+            evaluator: evaluatorId,
+            evaluatee: req.user._id,
+            note,
+        });
+        sendEvalRequestEmail(evaluator, req.user, note);
+    } catch(err) {
+        return res.status(500).end("Unable to request eval");
+    }
+    return res.status(200).end("Eval requested");;
 });
 
 module.exports = router;

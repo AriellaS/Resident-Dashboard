@@ -5,12 +5,14 @@ import Navbar from '~/shared/Navbar';
 
 import ajax from '~/util';
 
-const Home = () => {
+const Home = ({ currentUser }) => {
 
     const [queryState, setQueryState] = useState('');
     const [searchFocus, setSearchFocus] = useState(false);
     const [allUserData, setAllUserData] = useState([]);
     const [queriedUserData, setQueriedUserData] = useState([]);
+
+    const roleToSearch = currentUser.role==='ATTENDING' ? 'RESIDENT' : 'ATTENDING';
 
     const handleSearchBarFocus = () => {
         setSearchFocus(true);
@@ -30,7 +32,7 @@ const Home = () => {
 
     useEffect(() => {
         async function fetchData() {
-            await ajax.request('get', `/users?role=RESIDENT`)
+            await ajax.request('get', `/users?role=${roleToSearch}`)
             .then(res => {
                 setAllUserData(res.data);
                 setQueriedUserData(res.data);
@@ -39,7 +41,7 @@ const Home = () => {
             });
         }
         fetchData();
-    }, []);
+    }, [roleToSearch]);
 
     return (
         <S.ScreenContainer>
@@ -47,7 +49,7 @@ const Home = () => {
             <S.CenterScreenContainer>
                 <S.SearchContainer>
                     <S.SearchBar
-                        placeholder="Search residents..."
+                        placeholder={`Search ${roleToSearch.toLowerCase()}s...`}
                         value={queryState}
                         onFocus={handleSearchBarFocus}
                         onBlur={handleSearchBarFocusOut}

@@ -55,6 +55,10 @@ const Profile = ({ currentUser }) => {
         navigate('performance');
     }
 
+    const handleRequestEval = () => {
+        navigate('evalrequest');
+    }
+
     return (
         <S.ScreenContainer>
             <Navbar />
@@ -81,6 +85,13 @@ const Profile = ({ currentUser }) => {
                                 text='See Performance'
                                 type='button'
                                 onClick={handleSeePerformance}
+                            />
+                        )}
+                        {currentUser.role==='RESIDENT' && user.role==='ATTENDING' && (
+                            <S.Button
+                                text='Request Evaluation'
+                                type='button'
+                                onClick={handleRequestEval}
                             />
                         )}
                     </div>

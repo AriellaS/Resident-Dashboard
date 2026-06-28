@@ -11,8 +11,8 @@ const UserSearchDropdown = (props) => {
                         href={`/users/${user._id}`}
                         active={false}
                     >
-                        <S.SearchText_Name>{`${user.firstname} ${user.lastname}`}</S.SearchText_Name>
-                        <S.SearchText_Pgy>{`(PGY-${user.pgy})`}</S.SearchText_Pgy>
+                        <S.SearchText_Name>{`${user.lastname}, ${user.firstname}`}</S.SearchText_Name>
+                        {user.role==='RESIDENT' && (<S.SearchText_Pgy>{`(PGY-${user.pgy})`}</S.SearchText_Pgy>)}
                     </S.StyledListGroupItem>
                 )
             })}
