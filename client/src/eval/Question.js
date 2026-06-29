@@ -57,6 +57,7 @@ const Question = (props) => {
                     value={props.value}
                     onChange={props.onChange}
                     format='MM/dd/yyyy'
+                    editable={false}
                 />
             </S.QuestionContainer>
         )

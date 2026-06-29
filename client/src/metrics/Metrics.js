@@ -49,6 +49,10 @@ const Metrics = () => {
         enableFullScreenToggle: false,
         enableFilterMatchHighlighting: false,
         layoutMode: 'grid',
+        mantinePaginationProps: {
+            showRowsPerPage: false,
+            rowsPerPage: 20,
+        },
         initialState: {
             sorting: [{
                 id: 'evalCount',
@@ -88,6 +92,7 @@ const Metrics = () => {
                         defaultValue={formState.startDate}
                         onChange={e => setFormState({...formState, startDate: e})}
                         format='MM/dd/yyyy'
+                        editable={false}
                     />
                 </S.DateSelectContainer>
                 <S.DateSelectContainer>
@@ -97,6 +102,7 @@ const Metrics = () => {
                         defaultValue={formState.endDate}
                         onChange={e => setFormState({...formState, endDate: e})}
                         format='MM/dd/yyyy'
+                        editable={false}
                     />
                 </S.DateSelectContainer>
             </S.DateRangeContainer>
