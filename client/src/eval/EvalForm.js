@@ -96,6 +96,7 @@ const EvalForm = (props) => {
                         name={q.name}
                         type={q.type}
                         text={q.questionText}
+                        note={q.questionNote}
                         value={formState[q.name]}
                         optionValues={q.type==='RADIO' ?
                                 [...Array(q.optionTexts.length).keys()] : null

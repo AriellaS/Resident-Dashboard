@@ -48,6 +48,10 @@ const Questions = [{
         type: 'RADIO',
         numOptions: 3,
     }, {
+        name: 'DECISION',
+        type: 'RADIO',
+        numOptions: 3,
+    }, {
         name: 'POSTOP_PLAN',
         type: 'RADIO',
         numOptions: 3,

@@ -24,6 +24,11 @@ export const QuestionText = styled.div`
     text-align: left;
 `;
 
+export const QuestionNote = styled.div`
+    font-size: min(3.5vw, 15px);
+    color: #a3a3a3;
+`;
+
 export const OptionsContainer = styled.div`
     text-align: left;
 `;

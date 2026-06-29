@@ -2,12 +2,19 @@ import * as S from '~/eval/styles';
 import { DatePicker } from 'rsuite';
 
 const Question = (props) => {
-
+    const questionHeading = (
+        <S.QuestionText>
+            {props.text}
+            {props.note && (
+                <S.QuestionNote children={props.note}/>
+            )}
+        </S.QuestionText>
+    )
     if  (props.type === 'RADIO') {
         return (
             <S.QuestionContainer>
                 <hr />
-                <S.QuestionText>{props.text}</S.QuestionText>
+                {questionHeading}
                 <S.OptionsContainer>
                     {props.optionValues.map((optionValue, i) => {
                         let id = `${props.name}_${i}`;
@@ -34,7 +41,7 @@ const Question = (props) => {
         return (
             <S.QuestionContainer>
                 <hr />
-                <S.QuestionText>{props.text}</S.QuestionText>
+                {questionHeading}
                 <S.TextInput onChange={props.onChange} value={props.value} />
             </S.QuestionContainer>
         )
@@ -42,7 +49,7 @@ const Question = (props) => {
         return (
             <S.QuestionContainer>
                 <hr />
-                <S.QuestionText>{props.text}</S.QuestionText>
+                {questionHeading}
                 <S.TextArea onChange={props.onChange} value={props.value} />
             </S.QuestionContainer>
         )
@@ -50,7 +57,7 @@ const Question = (props) => {
         return (
             <S.QuestionContainer>
                 <hr />
-                <S.QuestionText>{props.text}</S.QuestionText>
+                {questionHeading}
                 <DatePicker
                     oneTap
                     defaultValue={new Date()}

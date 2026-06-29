@@ -38,9 +38,6 @@ export const Pages = [{
 }, {
     name: 'WRITTEN',
     text: 'Written Feedback',
-}, {
-    name: 'REDFLAG',
-    text: 'Red Flags'
 }];
 
 export const Questions = [{
@@ -93,13 +90,19 @@ export const Questions = [{
     page: 'ATTRIBUTES',
     name: 'PLANES',
     type: 'RADIO',
-    questionText: 'Tissue planes and handling',
+    questionText: 'Tissue planes & handling',
     optionTexts: ATTRIBUTE_OPTIONS,
 }, {
     page: 'ATTRIBUTES',
     name: 'INSTRUMENT',
     type: 'RADIO',
-    questionText: 'Instrument choice and use',
+    questionText: 'Instrument choice & use',
+    optionTexts: ATTRIBUTE_OPTIONS,
+}, {
+    page: 'ATTRIBUTES',
+    name: 'DECISION',
+    type: 'RADIO',
+    questionText: 'Decision-making & judgement',
     optionTexts: ATTRIBUTE_OPTIONS,
 }, {
     page: 'ATTRIBUTES',
@@ -118,9 +121,10 @@ export const Questions = [{
     type: 'LONG_TEXT',
     questionText: 'Please list 2-3 ways the resident could have improved.',
 }, {
-    page: 'REDFLAG',
+    page: 'WRITTEN',
     name: 'CONCERNS',
     type: 'RADIO',
-    questionText: 'Are you concerned about this resident\'s performance given their PGY-level? This will only be shared with administrators.',
+    questionText: 'Are you concerned about this resident\'s performance given their PGY-level?',
+    questionNote: '(This will only be shared with administrators)',
     optionTexts: ['Yes','No']
 }];
