@@ -34,8 +34,9 @@ const Home = ({ currentUser }) => {
         async function fetchData() {
             await ajax.request('get', `/users?role=${roleToSearch}`)
             .then(res => {
-                setAllUserData(res.data);
-                setQueriedUserData(res.data);
+                let data = res.data.filter(u => !u.hidden);
+                setAllUserData(data);
+                setQueriedUserData(data);
             }).catch(err => {
                 console.log(err);
             });

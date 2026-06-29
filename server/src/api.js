@@ -87,7 +87,7 @@ const sendEvalRequestEmail = async (evaluator, evaluatee, note) => {
         to: util.isProduction ? [`${evaluator.firstname} ${evaluator.lastname} <${evaluator.email}>`] : [`<ariella.simoni@einsteinmed.edu>`],
         subject: `Evaluation Request from ${evaluatee.firstname} ${evaluatee.lastname}`,
         text: `Evaluation request`,
-        html: `<p>You have a new evaluation request from ${evaluatee.firstname} ${evaluatee.lastname}.</p><p>They provided the following note: ${note}</p><p>Click here to submit your feedback: <a href="https://evalmd.io/users/${evaluatee._id}">https://evalmd.io/users/${evaluatee._id}</a></p>`
+        html: `<p>You have a new evaluation request from <b>${evaluatee.firstname} ${evaluatee.lastname}</b>.</p><p>They provided the following note: <b>${note}</b></p><p>Click here to submit your feedback: <a href="https://evalmd.io/users/${evaluatee._id}">https://evalmd.io/users/${evaluatee._id}</a></p>`
     });
     console.log(data);
 }
@@ -343,7 +343,7 @@ router.get('/users', verifyAccessToken, verifyAccount, async (req, res) => {
     }
     let users = await User.find({
         role: role,
-    }).select('firstname lastname role pgy');
+    }).select('firstname lastname role pgy hidden');
     res.json(users);
 });
 
@@ -484,7 +484,7 @@ router.post('/users/id/:userId/evals', verifyAccessToken, verifyAccount, async (
 
 router.post('/users/id/:userId/evalrequest', verifyAccessToken, verifyAccount, async (req, res) => {
     let evaluatorId = new ObjectId(req.params.userId);
-    let evaluator = await User.findById(evaluatorId).select('role');
+    let evaluator = await User.findById(evaluatorId).select('firstname lastname email role');
     let note = req.body.note;
     if (!evaluator) {
         return res.status(400).end("Evaluator not found");
@@ -506,6 +506,90 @@ router.post('/users/id/:userId/evalrequest', verifyAccessToken, verifyAccount, a
         return res.status(500).end("Unable to request eval");
     }
     return res.status(200).end("Eval requested");;
+});
+
+router.get('/metrics', verifyAccessToken, verifyAccount, async (req, res) => {
+    if (!req.user.admin) {
+        return res.status(401).end("Unauthorized");
+    }
+    const { startDate, endDate } = req.query
+    if (!startDate || !endDate) {
+        return res.status(400).json({
+            message: "Both startDate and endDate query parameters are required.",
+        });
+    }
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+        return res.status(400).json({
+            message:
+            "Invalid date format. Please provide dates in ISO 8601 format (e.g., 2024-01-01).",
+        });
+    }
+    if (start > end) {
+        return res.status(400).json({
+            message: "startDate must be before or equal to endDate.",
+        });
+    }
+
+    try {
+        const metrics = await User.aggregate([
+            {
+                $match: {
+                    role: "FACULTY",
+                    hidden: { $ne: true },
+                }
+            }, {
+                $lookup: {
+                    from: "facultytoresidentevals",
+                    let: { facultyId: "$_id" },
+                    pipeline: [{
+                        $match: {
+                            $expr: {
+                                $and: [
+                                    { $eq: ["$evaluator", "$$facultyId"] },
+                                    { $gte: ["$createdAt", start] },
+                                    { $lte: ["$createdAt", end] },
+                                ]
+                            }
+                        }
+                    }, { $project: { _id: 1 } }],
+                    as: "completedEvals"
+                }
+            }, {
+                $lookup: {
+                    from: "evalrequests",
+                    let: { facultyId: "$_id" },
+                    pipeline: [{
+                        $match: {
+                            $expr: {
+                                $and: [
+                                    { $eq: ["$evaluator", "$$facultyId"] },
+                                    { $eq: ["$complete", false] },
+                                    { $gte: ["$createdAt", start] },
+                                    { $lte: ["$createdAt", end] },
+                                ]
+                            }
+                        }
+                    }, { $project: { _id: 1 } }],
+                    as: "incompleteRequests"
+                }
+            }, {
+                $project: {
+                    _id: 1,
+                    firstname: 1,
+                    lastname: 1,
+                    evalCount: { $size: "$completedEvals" },
+                    incompleteRequestCount: { $size: "$incompleteRequests" }
+                }
+            }]);
+        return res.status(200).send({ metrics });
+    } catch (err) {
+        console.log(err)
+        return res.status(400).json({
+            message: "Unable to get metrics",
+        });
+    }
 });
 
 module.exports = router;

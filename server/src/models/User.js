@@ -37,6 +37,10 @@ const userSchema = new Schema({
         type: Boolean,
         default: false
     },
+    hidden: {
+        type: Boolean,
+        default: false
+    },
     verification_code: {
         type: String,
         select: false

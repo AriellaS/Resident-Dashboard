@@ -45,12 +45,10 @@ export const SubmissionText = styled.div`
 `;
 
 export const TextInput = styled(shared.TextInput)`
-    //font-family: 'Helvetica';
     padding: min(3vw, 10px);
 `;
 
 export const TextArea = styled(shared.TextArea)`
-    //font-family: 'Helvetica';
 `;
 
 
