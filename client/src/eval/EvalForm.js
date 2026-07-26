@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import Question from '~/eval/Question';
 import { Pages, Questions } from  '~/shared/FacultyToResidentEvalForm';
 import * as S from '~/eval/styles';
@@ -9,6 +9,8 @@ import ajax from '~/util';
 const EvalForm = (props) => {
 
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
+    const evalRequestId = searchParams.get('evalRequestId');
 
     const [pageState, setPageState] = useState(0);
 
@@ -44,6 +46,7 @@ const EvalForm = (props) => {
         await ajax.request('post', `/users/id/${props.userData.id}/evals`, {
             type: "FACULTY2RESIDENT",
             form: formState,
+            evalRequestId,
         }).then(res => {
             setSubmissionState(true);
             setErrorState({

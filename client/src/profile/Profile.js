@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import QRCode from 'react-qr-code';
 import * as S from '~/profile/styles';
 import ajax from '~/util';
@@ -9,6 +9,7 @@ const Profile = ({ currentUser }) => {
 
     const navigate = useNavigate();
     const params = useParams();
+    const [searchParams] = useSearchParams();
     const userId = params.id;
 
     const [user, setUser] = useState({
@@ -21,6 +22,7 @@ const Profile = ({ currentUser }) => {
     });
 
     const [errorState, setErrorState] = useState(false);
+    const evalRequestId = searchParams.get('evalRequestId');
 
     useEffect(() => {
         async function fetchData() {
@@ -48,11 +50,17 @@ const Profile = ({ currentUser }) => {
     }
 
     const handleEvaluate = () => {
-        navigate('eval');
+        navigate({
+            pathname: 'eval',
+            search: `${!evalRequestId ? '' : `?evalRequestId=${evalRequestId}`}`
+        });
     }
 
     const handleSeePerformance = () => {
-        navigate('performance');
+        navigate({
+            pathname: 'performance',
+            search: `${!evalRequestId ? '' : `?evalRequestId=${evalRequestId}`}`
+        });
     }
 
     const handleRequestEval = () => {

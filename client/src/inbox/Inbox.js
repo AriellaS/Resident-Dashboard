@@ -58,7 +58,6 @@ const Inbox = ({ currentUser }) => {
         },
         mantineTableBodyRowProps: ({ row }) => ({
             onClick: () => {
-                console.log(row.original.evaluateeId)
                 navigate(`/users/${row.original.evaluateeId}?evalRequestId=${row.original.id}`);
             },
             sx: {

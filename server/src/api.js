@@ -81,13 +81,13 @@ const sendPasswordChangedEmail = async(user) => {
     console.log(data);
 }
 
-const sendEvalRequestEmail = async (evaluator, evaluatee, note) => {
+const sendEvalRequestEmail = async (evaluator, evaluatee, note, evalRequestId) => {
     const data = await mg.messages.create("evalmd.io", {
         from: "EvalMD <noreply@evalmd.io>",
         to: util.isProduction ? [`${evaluator.firstname} ${evaluator.lastname} <${evaluator.email}>`] : [`<ariella.simoni@einsteinmed.edu>`],
         subject: `Evaluation Request from ${evaluatee.firstname} ${evaluatee.lastname}`,
         text: `Evaluation request`,
-        html: `<p>You have a new evaluation request from <b>${evaluatee.firstname} ${evaluatee.lastname}</b>.</p><p>They provided the following note: <b>${note}</b></p><p>Click here to submit your feedback: <a href="https://evalmd.io/users/${evaluatee._id}">https://evalmd.io/users/${evaluatee._id}</a></p>`
+        html: `<p>You have a new evaluation request from <b>${evaluatee.firstname} ${evaluatee.lastname}</b>.</p><p>They provided the following note: <b>${note}</b></p><p>Click here to submit your feedback: <a href="https://evalmd.io/users/${evaluatee._id}">https://evalmd.io/users/${evaluatee._id}?evalRequestId=${evalRequestId}</a></p>`
     });
     console.log(data);
 }
@@ -422,6 +422,7 @@ router.post('/users/id/:userId/evals', verifyAccessToken, verifyAccount, async (
     let evalType = req.body.type;
     let formObject = req.body.form;
     let evaluateeId = new ObjectId(req.params.userId);
+    let evalRequestId = req.body.evalRequestId;
 
     if (evalType !== "FACULTY2RESIDENT") {
         return res.status(400).end("Invalid eval type");
@@ -458,23 +459,34 @@ router.post('/users/id/:userId/evals', verifyAccessToken, verifyAccount, async (
             return res.status(400).end("Invalid input");
         }
         try {
-            let evaluation = await FacultyToResidentEval.create({
+            let evaluation = {
                 evaluator: req.user._id,
                 evaluatee: evaluateeId,
                 pgy: evaluatee.pgy,
                 form,
-            });
-            // TODO: right now this arbitrarily chooses one matching evalrequest to mark as completed, eventually want evals linked to specific requests
-            let evalRequest = await EvalRequest.findOne({
-                evaluator: req.user._id,
-                evaluatee: evaluateeId,
-                complete: false,
-            });
+            }
+            let evalRequest;
+            if (evalRequestId) {
+                evalRequest = await EvalRequest.findById(new ObjectId(evalRequestId));
+                if (evalRequest.complete) {
+                    evalRequest = null;
+                }
+            } else {
+                evalRequest = await EvalRequest.findOne({
+                    evaluator: req.user._id,
+                    evaluatee: evaluateeId,
+                    complete: false,
+                });
+                //TODO: Right now, if no evalrequest is specified, it finds an arbitrary one btwn the same faculty and resident and marks it complete. Eventually there should perhaps be a screen before the eval form to assign it to a specific request if there are pending requests + no evalrequest is specified in search params
+            }
             if (evalRequest) {
                 evalRequest.complete = true;
                 await evalRequest.save();
+                evaluation.evalRequest = evalRequest._id;
             }
+            await FacultyToResidentEval.create(evaluation);
         } catch(err) {
+            console.log(err)
             return res.status(500).end("Unable to submit eval");
         }
     }
@@ -501,8 +513,9 @@ router.post('/users/id/:userId/evalrequest', verifyAccessToken, verifyAccount, a
             evaluatee: req.user._id,
             note,
         });
-        sendEvalRequestEmail(evaluator, req.user, note);
+        sendEvalRequestEmail(evaluator, req.user, note, evalRequest._id);
     } catch(err) {
+        console.log(err)
         return res.status(500).end("Unable to request eval");
     }
     return res.status(200).end("Eval requested");;

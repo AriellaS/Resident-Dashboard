@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { PieChart, Pie, BarChart, Bar, XAxis, Cell, Legend, Tooltip, Text, ResponsiveContainer } from 'recharts';
 import Carousel from 'react-bootstrap/Carousel';
 import 'react-circular-progressbar/dist/styles.css';
@@ -12,7 +12,10 @@ const Performance = () => {
 
     const params = useParams();
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
     const userId = params.id;
+
+    const evalRequestId = searchParams.get('evalRequestId');
 
     const [evals, setEvals] = useState([]);
     const [selectedSpecialty, setSelectedSpecialty] = useState('');
@@ -116,7 +119,11 @@ const Performance = () => {
             <S.CenterScreenContainer>
                 <S.Container>
                     <S.PageTitle
-                        onClick={() => navigate('..', { relative: "path" })}
+                        onClick={() => navigate( {
+                            pathname: `/users/${userId}`,
+                            relative: "path",
+                            search: `${!evalRequestId ? '' : `?evalRequestId=${evalRequestId}`}`
+                        })}
                         children={`${user.firstname} ${user.lastname}, PGY-${user.pgy}`}
                     />
                     <S.DashboardItem>

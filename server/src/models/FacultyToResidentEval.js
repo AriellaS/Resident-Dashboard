@@ -21,6 +21,10 @@ const facultyToResidentEvalSchema = new Schema({
     pgy: {
         type: Number
     },
+    evalRequest: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "EvalRequest",
+    },
     form: {
         type: [{
             name: { type: String, enum: QUESTION_NAMES, required: true },
