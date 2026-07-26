@@ -7,7 +7,7 @@ import useCurrentUser from '~/useCurrentUser';
 
 const PrivateRoute = ({ component: Component, verificationRequired, pwChangeRequired, adminRequired, ...rest }) => {
 
-    const { pathname } = useLocation();
+    const { pathname, search } = useLocation();
     const { token, setToken, removeToken } = useToken();
     const { currentUser, setCurrentUser } = useCurrentUser();
 
@@ -61,7 +61,7 @@ const PrivateRoute = ({ component: Component, verificationRequired, pwChangeRequ
     }
     if (!userIsAuthenticated) {
         return (
-            <Navigate to={`/login?next=${pathname}`}/>
+            <Navigate to={`/login?next=${pathname}${search}`}/>
         )
     }
     if (!userVerified) {

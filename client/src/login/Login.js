@@ -27,11 +27,13 @@ msg: ""
     const { setCurrentUser } = useCurrentUser();
     const { search } = useLocation();
     const next = new URLSearchParams(search).get('next');
+    const evalRequestId = new URLSearchParams(search).get('evalRequestId');
+    const nextPath = `${next}${evalRequestId ? `?evalRequestId=${evalRequestId}` : ''}`;
 
     useEffect(() => {
         if (token) {
             if (next) {
-                navigate(next);
+                navigate(nextPath);
             } else {
                 navigate('/');
             }
@@ -41,7 +43,7 @@ msg: ""
                 .then(res => {
                     setToken(res.data.accessToken);
                     if (next) {
-                        navigate(next);
+                        navigate(nextPath);
                     } else {
                         navigate('/');
                     }
@@ -79,7 +81,7 @@ msg: ""
                  setToken(res.data.accessToken);
                  setCurrentUser(res.data.user);
                  if (next) {
-                     navigate(next);
+                     navigate(nextPath);
                  } else {
                      navigate('/');
                  }
