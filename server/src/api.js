@@ -87,7 +87,7 @@ const sendEvalRequestEmail = async (evaluator, evaluatee, note, evalRequestId) =
         to: util.isProduction ? [`${evaluator.firstname} ${evaluator.lastname} <${evaluator.email}>`] : [`<ariella.simoni@einsteinmed.edu>`],
         subject: `Evaluation Request from ${evaluatee.firstname} ${evaluatee.lastname}`,
         text: `Evaluation request`,
-        html: `<p>You have a new evaluation request from <b>${evaluatee.firstname} ${evaluatee.lastname}</b>.</p><p>They provided the following note: <b>${note}</b></p><p>Click here to submit your feedback: <a href="https://evalmd.io/users/${evaluatee._id}?evalRequestId=${evalRequestId}">https://evalmd.io/users/${evaluatee._id}?evalRequestId=${evalRequestId}</a></p>`
+        html: `<p>You have a new evaluation request from <b>${evaluatee.firstname} ${evaluatee.lastname}</b>.</p><p>They provided the following note: <b>${note}</b></p><p>Click here to submit your feedback: <a href="https://evalmd.io/users/${evaluatee._id}/eval?evalRequestId=${evalRequestId}">https://evalmd.io/users/${evaluatee._id}/eval?evalRequestId=${evalRequestId}</a></p>`
     });
     console.log(data);
 }

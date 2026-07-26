@@ -58,7 +58,7 @@ const Inbox = ({ currentUser }) => {
         },
         mantineTableBodyRowProps: ({ row }) => ({
             onClick: () => {
-                navigate(`/users/${row.original.evaluateeId}?evalRequestId=${row.original.id}`);
+                navigate(`/users/${row.original.evaluateeId}/eval?evalRequestId=${row.original.id}`);
             },
             sx: {
                 cursor: 'pointer',
@@ -88,6 +88,7 @@ const Inbox = ({ currentUser }) => {
     return (
         <S.ScreenContainer>
             <Navbar />
+            <S.Header>Evaluation Requests</S.Header>
             <MantineReactTable table={table} />
         </S.ScreenContainer>
     )
