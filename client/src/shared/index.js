@@ -66,7 +66,7 @@ const StyledBootstrapButton = styled(BootstrapButton)`
 `;
 
 export const Button = (props) => {
-    return (<StyledBootstrapButton {...props}>{props.text}</StyledBootstrapButton>)
+    return (<StyledBootstrapButton {...props}>{props.text}{props.children}</StyledBootstrapButton>)
 }
 
 export const StyledLink = styled(Link)`

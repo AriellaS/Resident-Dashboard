@@ -508,7 +508,48 @@ router.post('/users/id/:userId/evalrequest', verifyAccessToken, verifyAccount, a
     return res.status(200).end("Eval requested");;
 });
 
-router.get('/metrics', verifyAccessToken, verifyAccount, async (req, res) => {
+router.get('/users/id/:userId/evalrequest', verifyAccessToken, verifyAccount, async (req, res) => {
+    let userId;
+    try {
+        userId = new ObjectId(req.params.userId);
+    } catch (err) {
+        return res.status(400).end("Invalid user ID");
+    }
+    let user = await User.findById(userId).exec();
+    if (!user) {
+        res.status(404).end("User not found");
+    }
+    let evalRequests;
+    try {
+        evalRequests = await EvalRequest.aggregate([
+            {
+                $match: {
+                    evaluator: userId,
+                    complete: false,
+                },
+            }, {
+                $lookup: {
+                    from: "users",
+                    let: { evaluateeId: "$evaluatee" },
+                    pipeline: [{
+                        $match: { $expr: { $eq: ["$_id", "$$evaluateeId"] } }
+                    }, {
+                        $project: { firstname: 1, lastname: 1, _id: 1 }
+                    }],
+                    as: "evaluatee"
+                },
+            }, {
+                $unwind: { path: "$evaluatee" }
+            },
+        ])
+    } catch (err) {
+        console.log(err)
+        return res.status(500).end("Unable to get eval requests");
+    }
+    res.json(evalRequests);
+});
+
+    router.get('/metrics', verifyAccessToken, verifyAccount, async (req, res) => {
     if (!req.user.admin) {
         return res.status(401).end("Unauthorized");
     }

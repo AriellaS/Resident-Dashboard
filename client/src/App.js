@@ -17,6 +17,7 @@ import Verify from '~/verify/Verify';
 import Performance from '~/performance/Performance';
 import EvalRequest from '~/evalrequest/EvalRequest';
 import Metrics from '~/metrics/Metrics';
+import Inbox from '~/inbox/Inbox';
 import PrivateRoute from '~/PrivateRoute';
 
 const App = () => {
@@ -48,6 +49,10 @@ const App = () => {
                 <Route
                     path='/metrics'
                     element={<PrivateRoute verificationRequired pwChangeRequired adminRequired component={Metrics} />}
+                />
+                <Route
+                    path='/inbox'
+                    element={<PrivateRoute verificationRequired pwChangeRequired component={Inbox} />}
                 />
                 <Route
                     exact

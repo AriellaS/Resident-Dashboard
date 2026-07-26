@@ -84,28 +84,28 @@ const Metrics = () => {
         <S.ScreenContainer>
             <Navbar />
             <S.Container>
-            <S.DateRangeContainer>
-                <S.DateSelectContainer>
-                    Start Date
-                    <DatePicker
-                        oneTap
-                        defaultValue={formState.startDate}
-                        onChange={e => setFormState({...formState, startDate: e})}
-                        format='MM/dd/yyyy'
-                        editable={false}
-                    />
-                </S.DateSelectContainer>
-                <S.DateSelectContainer>
-                    End Date
-                    <DatePicker
-                        oneTap
-                        defaultValue={formState.endDate}
-                        onChange={e => setFormState({...formState, endDate: e})}
-                        format='MM/dd/yyyy'
-                        editable={false}
-                    />
-                </S.DateSelectContainer>
-            </S.DateRangeContainer>
+                <S.DateRangeContainer>
+                    <S.DateSelectContainer>
+                        Start Date
+                        <DatePicker
+                            oneTap
+                            defaultValue={formState.startDate}
+                            onChange={e => setFormState({...formState, startDate: e})}
+                            format='MM/dd/yyyy'
+                            editable={false}
+                        />
+                    </S.DateSelectContainer>
+                    <S.DateSelectContainer>
+                        End Date
+                        <DatePicker
+                            oneTap
+                            defaultValue={formState.endDate}
+                            onChange={e => setFormState({...formState, endDate: e})}
+                            format='MM/dd/yyyy'
+                            editable={false}
+                        />
+                    </S.DateSelectContainer>
+                </S.DateRangeContainer>
                 <MantineReactTable table={table} />
             </S.Container>
         </S.ScreenContainer>
