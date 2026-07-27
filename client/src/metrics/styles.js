@@ -18,5 +18,9 @@ export const DateSelectContainer = styled.div`
 export const Container = styled.div`
 `;
 
+export const Header = styled(shared.Header)`
+    padding: 20px;
+`;
+
 export const ScreenContainer = shared.ScreenContainer;
 

@@ -10,7 +10,7 @@ import ajax from '~/util';
 
 const Metrics = () => {
 
-    const defaultStartDate = new Date(Date.now() - 30*24*60*60*1000); // 30 days ago
+    const defaultStartDate = new Date(Date.now() - 3*30*24*60*60*1000); // 3 months ago
     const defaultEndDate = new Date();
 
     const columns = useMemo(() => [
@@ -106,6 +106,8 @@ const Metrics = () => {
                         />
                     </S.DateSelectContainer>
                 </S.DateRangeContainer>
+
+                <S.Header>Evaluation Completion Metrics</S.Header>
                 <MantineReactTable table={table} />
             </S.Container>
         </S.ScreenContainer>
